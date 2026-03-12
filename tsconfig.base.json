@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@branch-ai/types": ["packages/types/src"],
+      "@branch-ai/database": ["packages/database/src"],
+      "@branch-ai/ai": ["packages/ai/src"],
+      "@branch-ai/ui": ["packages/ui/src"]
+    }
+  }
+}
