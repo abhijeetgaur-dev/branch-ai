@@ -1,17 +1,22 @@
 {
   "name": "branch-ai",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "private": true,
   "packageManager": "pnpm@10.24.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter=web --filter=api dev",
+    "dev:web": "pnpm --filter=web dev",
+    "dev:api": "pnpm --filter=api dev",
+    "build": "pnpm --filter=web build && pnpm --filter=api build",
+    "db:generate": "pnpm --filter=@branch-ai/database db:generate",
+    "db:migrate": "pnpm --filter=@branch-ai/database db:migrate",
+    "db:push": "pnpm --filter=@branch-ai/database db:push",
+    "db:seed": "pnpm --filter=@branch-ai/database db:seed",
+    "db:studio": "pnpm --filter=@branch-ai/database db:studio"
+  },
   "devDependencies": {
-    "eslint": "^10.0.3",
+    "@types/node": "^25.5.0",
+    "eslint": "^9.0.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3"
   }

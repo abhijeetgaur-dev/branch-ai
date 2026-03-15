@@ -3,49 +3,50 @@ import React, { useState } from 'react';
 import {
   GitBranch,
   Plus,
-  FolderOpen,
   Star,
   Clock,
   Archive,
   ChevronRight,
-  Hash,
   MoreHorizontal,
-  Trash2,
-  Edit3,
-  Share2,
+  Loader2,
 } from 'lucide-react';
 import { cn, formatDate, truncate } from '../../lib/utils';
 import { Button } from '../ui/Button';
-import { type Conversation } from '../../types';
+import type { ConversationSummary } from '../../types';
 
 interface SidebarProps {
-  conversations: Conversation[];
+  conversations:        ConversationSummary[];
   activeConversationId: string | null;
-  onSelectConversation: (id: string) => void;
-  onNewConversation: () => void;
+  isLoading?:           boolean;
+  onSelectConversation: (id: string) => void;  // can be async — void return is fine
+  onNewConversation:    () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   conversations,
   activeConversationId,
+  isLoading = false,
   onSelectConversation,
   onNewConversation,
 }) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     favorites: true,
-    recent: true,
+    recent:    true,
   });
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const favorites = conversations.filter(c => c.isFavorite);
-  const recent = conversations.filter(c => !c.isFavorite);
+  const favorites = conversations.filter((c) =>  c.isFavorite);
+  const recent    = conversations.filter((c) => !c.isFavorite);
 
-  const ConversationItem: React.FC<{ conversation: Conversation }> = ({ conversation }) => {
-    const isActive = activeConversationId === conversation.id;
+  // ── Conversation item ───────────────────────────
+  const ConversationItem: React.FC<{ conversation: ConversationSummary }> = ({
+    conversation,
+  }) => {
+    const isActive  = activeConversationId === conversation.id;
     const isHovered = hoveredId === conversation.id;
 
     return (
@@ -71,16 +72,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}>
             {truncate(conversation.title, 28)}
           </p>
-          <p className="text-xs text-surface-400 mt-0.5">
-            {formatDate(conversation.updatedAt)}
-          </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <p className="text-xs text-surface-400">
+              {formatDate(conversation.updatedAt)}
+            </p>
+            {/* Node count badge */}
+            {conversation._count?.nodes > 0 && (
+              <span className="text-xs text-surface-400">
+                · {conversation._count.nodes} nodes
+              </span>
+            )}
+          </div>
         </div>
         {(isHovered || isActive) && (
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              // Show menu
-            }}
+            onClick={(e) => e.stopPropagation()}
             className="p-1 rounded hover:bg-surface-200 transition-colors"
           >
             <MoreHorizontal className="w-4 h-4 text-surface-400" />
@@ -90,11 +96,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
+  // ── Section header ──────────────────────────────
   const SectionHeader: React.FC<{
-    title: string;
-    icon: React.ReactNode;
+    title:      string;
+    icon:       React.ReactNode;
     sectionKey: string;
-    count: number;
+    count:      number;
   }> = ({ title, icon, sectionKey, count }) => (
     <button
       onClick={() => toggleSection(sectionKey)}
@@ -103,20 +110,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex items-center gap-2">
         {icon}
         <span>{title}</span>
-        <span className="text-surface-400 font-normal">({count})</span>
+        <span className="text-surface-400 font-normal normal-case">({count})</span>
       </div>
-      <ChevronRight
-        className={cn(
-          'w-3 h-3 transition-transform duration-200',
-          expandedSections[sectionKey] && 'rotate-90'
-        )}
-      />
+      <ChevronRight className={cn(
+        'w-3 h-3 transition-transform duration-200',
+        expandedSections[sectionKey] && 'rotate-90'
+      )} />
     </button>
   );
 
   return (
     <aside className="w-72 h-screen bg-white border-r border-surface-200 flex flex-col">
-      {/* Logo */}
+
+      {/* ── Logo ─────────────────────────────────── */}
       <div className="h-16 px-5 flex items-center justify-between border-b border-surface-200">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center">
@@ -126,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* New Conversation Button */}
+      {/* ── New conversation ─────────────────────── */}
       <div className="p-4">
         <Button
           variant="primary"
@@ -139,10 +145,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </Button>
       </div>
 
-      {/* Navigation */}
+      {/* ── Nav ──────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto px-3 pb-4">
+
+        {/* Loading skeleton */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-8 text-surface-400 gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Loading...</span>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!isLoading && conversations.length === 0 && (
+          <div className="text-center py-8 px-4">
+            <GitBranch className="w-8 h-8 text-surface-300 mx-auto mb-2" />
+            <p className="text-sm text-surface-400">No conversations yet</p>
+            <p className="text-xs text-surface-300 mt-1">Click "New Conversation" to start</p>
+          </div>
+        )}
+
         {/* Favorites */}
-        {favorites.length > 0 && (
+        {!isLoading && favorites.length > 0 && (
           <div className="mb-4">
             <SectionHeader
               title="Favorites"
@@ -152,7 +176,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             />
             {expandedSections.favorites && (
               <div className="mt-1 space-y-0.5">
-                {favorites.map(conv => (
+                {favorites.map((conv) => (
                   <ConversationItem key={conv.id} conversation={conv} />
                 ))}
               </div>
@@ -161,34 +185,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* Recent */}
-        <div className="mb-4">
-          <SectionHeader
-            title="Recent"
-            icon={<Clock className="w-3 h-3" />}
-            sectionKey="recent"
-            count={recent.length}
-          />
-          {expandedSections.recent && (
-            <div className="mt-1 space-y-0.5">
-              {recent.map(conv => (
-                <ConversationItem key={conv.id} conversation={conv} />
-              ))}
-            </div>
-          )}
-        </div>
+        {!isLoading && recent.length > 0 && (
+          <div className="mb-4">
+            <SectionHeader
+              title="Recent"
+              icon={<Clock className="w-3 h-3" />}
+              sectionKey="recent"
+              count={recent.length}
+            />
+            {expandedSections.recent && (
+              <div className="mt-1 space-y-0.5">
+                {recent.map((conv) => (
+                  <ConversationItem key={conv.id} conversation={conv} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </nav>
 
-      {/* Bottom section */}
+      {/* ── Storage footer ───────────────────────── */}
       <div className="p-4 border-t border-surface-200">
         <div className="bg-gradient-to-r from-brand-50 to-violet-50 rounded-xl p-4">
           <div className="flex items-center gap-2 text-brand-700 mb-2">
             <Archive className="w-4 h-4" />
-            <span className="text-sm font-medium">Storage</span>
+            <span className="text-sm font-medium">Conversations</span>
           </div>
           <div className="w-full bg-white rounded-full h-2 overflow-hidden">
-            <div className="bg-gradient-to-r from-brand-500 to-violet-500 h-full w-3/5 rounded-full" />
+            <div
+              className="bg-gradient-to-r from-brand-500 to-violet-500 h-full rounded-full transition-all"
+              style={{ width: `${Math.min((conversations.length / 25) * 100, 100)}%` }}
+            />
           </div>
-          <p className="text-xs text-surface-500 mt-2">15 of 25 conversations used</p>
+          <p className="text-xs text-surface-500 mt-2">
+            {conversations.length} of 25 conversations used
+          </p>
         </div>
       </div>
     </aside>

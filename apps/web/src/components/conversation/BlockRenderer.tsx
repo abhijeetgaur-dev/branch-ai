@@ -4,16 +4,12 @@ import {
   GitBranch,
   Copy,
   Check,
-  ChevronDown,
-  ChevronRight,
   Info,
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Sparkles,
-  MessageSquare,
 } from 'lucide-react';
-import { cn, getDepthBorderColor } from '../../lib/utils';
+import { cn } from '../../lib/utils';
 import type { Block, Node } from '../../types';
 import { BranchInput } from './BranchInput';
 
@@ -21,21 +17,19 @@ interface BlockRendererProps {
   block: Block;
   depth: number;
   childBranches?: Node[];
-  onBranchClick?: (blockId: string) => void;
   onAskFollowup?: (blockId: string, question: string) => void;
 }
 
 export const BlockRenderer: React.FC<BlockRendererProps> = ({
   block,
-  depth,
   childBranches = [],
-  onBranchClick,
   onAskFollowup,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const [showBranchInput, setShowBranchInput] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [copied, setCopied]                   = useState(false);
+  const [isHovered, setIsHovered]             = useState(false);
+
+  const hasChildBranches = childBranches.length > 0;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(block.content);
@@ -48,51 +42,21 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
     setShowBranchInput(false);
   };
 
-  const hasChildBranches = childBranches.length > 0;
-
-  // Get callout styles
+  // ── Callout styles ──────────────────────────────
   const getCalloutStyles = () => {
     switch (block.calloutType) {
-      case 'info':
-        return {
-          bg: 'bg-blue-50',
-          border: 'border-blue-200',
-          icon: <Info className="w-4 h-4 text-blue-500" />,
-          text: 'text-blue-800',
-        };
-      case 'warning':
-        return {
-          bg: 'bg-amber-50',
-          border: 'border-amber-200',
-          icon: <AlertTriangle className="w-4 h-4 text-amber-500" />,
-          text: 'text-amber-800',
-        };
-      case 'success':
-        return {
-          bg: 'bg-emerald-50',
-          border: 'border-emerald-200',
-          icon: <CheckCircle className="w-4 h-4 text-emerald-500" />,
-          text: 'text-emerald-800',
-        };
-      case 'error':
-        return {
-          bg: 'bg-red-50',
-          border: 'border-red-200',
-          icon: <XCircle className="w-4 h-4 text-red-500" />,
-          text: 'text-red-800',
-        };
-      default:
-        return {
-          bg: 'bg-surface-50',
-          border: 'border-surface-200',
-          icon: <Info className="w-4 h-4 text-surface-500" />,
-          text: 'text-surface-700',
-        };
+      case 'info':    return { bg: 'bg-blue-50',    border: 'border-blue-200',   icon: <Info         className="w-4 h-4 text-blue-500"    />, text: 'text-blue-800'    };
+      case 'warning': return { bg: 'bg-amber-50',   border: 'border-amber-200',  icon: <AlertTriangle className="w-4 h-4 text-amber-500"   />, text: 'text-amber-800'   };
+      case 'success': return { bg: 'bg-emerald-50', border: 'border-emerald-200',icon: <CheckCircle  className="w-4 h-4 text-emerald-500"  />, text: 'text-emerald-800' };
+      case 'error':   return { bg: 'bg-red-50',     border: 'border-red-200',    icon: <XCircle      className="w-4 h-4 text-red-500"      />, text: 'text-red-800'     };
+      default:        return { bg: 'bg-surface-50', border: 'border-surface-200',icon: <Info         className="w-4 h-4 text-surface-500"  />, text: 'text-surface-700' };
     }
   };
 
+  // ── Block content ───────────────────────────────
   const renderContent = () => {
     switch (block.type) {
+
       case 'heading':
         return (
           <div className="relative group">
@@ -100,15 +64,15 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
               <h3 className="text-lg font-semibold text-surface-900 flex-1">
                 {block.content}
               </h3>
-              
-              {/* Branch indicator & actions */}
+
+              {/* Branch button — always visible if branch exists, hover otherwise */}
               <div className={cn(
-                'flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity',
-                (block.hasBranch || hasChildBranches) && 'opacity-100'
+                'flex items-center gap-1 transition-opacity',
+                (hasChildBranches || isHovered) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
               )}>
                 {hasChildBranches && (
                   <span className="text-xs text-brand-500 font-medium px-2 py-0.5 bg-brand-50 rounded-full">
-                    {childBranches.length} branch{childBranches.length > 1 ? 'es' : ''}
+                    {childBranches.length} {childBranches.length === 1 ? 'branch' : 'branches'}
                   </span>
                 )}
                 <button
@@ -119,16 +83,15 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
                       ? 'bg-brand-100 text-brand-600'
                       : 'hover:bg-surface-100 text-surface-400 hover:text-brand-500'
                   )}
-                  title="Ask follow-up question"
+                  title="Ask follow-up about this section"
                 >
                   <GitBranch className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Branch input */}
             {showBranchInput && (
-              <div className="mt-3 animate-slide-down">
+              <div className="mt-3">
                 <BranchInput
                   onSubmit={handleBranchSubmit}
                   onCancel={() => setShowBranchInput(false)}
@@ -150,21 +113,15 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
         return (
           <div className="relative group rounded-xl overflow-hidden border border-surface-200">
             <div className="flex items-center justify-between px-4 py-2 bg-surface-800 text-surface-300 text-xs">
-              <span className="font-mono">{block.language || 'code'}</span>
+              <span className="font-mono">{block.language ?? 'code'}</span>
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-surface-700 transition-colors"
               >
                 {copied ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-emerald-400">Copied!</span>
-                  </>
+                  <><Check className="w-3.5 h-3.5 text-emerald-400" /><span className="text-emerald-400">Copied!</span></>
                 ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copy</span>
-                  </>
+                  <><Copy className="w-3.5 h-3.5" /><span>Copy</span></>
                 )}
               </button>
             </div>
@@ -177,10 +134,11 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
       case 'bullet_list':
         return (
           <ul className="space-y-2">
-            {block.items?.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-surface-600">
+            {/* items is BlockItem[] from API — use item.content */}
+            {block.items.map((item) => (
+              <li key={item.id} className="flex items-start gap-3 text-surface-600">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-500 mt-2 flex-shrink-0" />
-                <span>{item}</span>
+                <span>{item.content}</span>
               </li>
             ))}
           </ul>
@@ -189,29 +147,26 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
       case 'numbered_list':
         return (
           <ol className="space-y-2">
-            {block.items?.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-surface-600">
+            {block.items.map((item, idx) => (
+              <li key={item.id} className="flex items-start gap-3 text-surface-600">
                 <span className="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold flex items-center justify-center flex-shrink-0">
                   {idx + 1}
                 </span>
-                <span className="pt-0.5">{item}</span>
+                <span className="pt-0.5">{item.content}</span>
               </li>
             ))}
           </ol>
         );
 
-      case 'callout':
+      case 'callout': {
         const styles = getCalloutStyles();
         return (
-          <div className={cn(
-            'flex items-start gap-3 p-4 rounded-xl border',
-            styles.bg,
-            styles.border
-          )}>
+          <div className={cn('flex items-start gap-3 p-4 rounded-xl border', styles.bg, styles.border)}>
             {styles.icon}
             <p className={cn('text-sm', styles.text)}>{block.content}</p>
           </div>
         );
+      }
 
       case 'quote':
         return (
@@ -227,10 +182,6 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
 
   return (
     <div
-      className={cn(
-        'relative',
-        block.type !== 'heading' && 'pl-0'
-      )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
