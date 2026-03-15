@@ -1,140 +1,54 @@
 // apps/api/src/ai/prompt.ts
-// Builds the prompt sent to the AI for each branch request.
-//
-// The core rule: never send the full conversation tree.
-// Send only the ancestry path from root to the current node.
-// This keeps tokens low and context sharp.
+// Owns the system prompt and delegates context assembly to context.ts.
+// This file should only change when the AI's instructions need to change.
 
-import { getNodePath } from '@branch-ai/database';
-import type { AiMessage } from './types';
+import { buildContext } from './context';
+import type { BuildContextOptions, BuiltContext } from './context';
 
 // ─────────────────────────────────────────────
 // System prompt
-// Tells the model exactly what to return.
 // ─────────────────────────────────────────────
 
-export const SYSTEM_PROMPT = `You are BranchAI, a structured knowledge assistant.
+export const SYSTEM_PROMPT = `You are BranchAI, a structured knowledge assistant designed for deep exploration.
 
-IMPORTANT: You must ALWAYS respond with valid JSON only. No markdown, no preamble, no explanation outside the JSON.
+CRITICAL: Respond ONLY with valid JSON. No markdown fences, no preamble, no text outside the JSON object.
 
 Response format:
 {
   "blocks": [
-    { "type": "heading", "content": "Section title" },
-    { "type": "paragraph", "content": "Explanation text" },
+    { "type": "heading", "content": "Title of this section" },
+    { "type": "paragraph", "content": "Explanation text here" },
     { "type": "code", "content": "code here", "language": "typescript" },
-    { "type": "bullet_list", "items": ["item 1", "item 2"] },
+    { "type": "bullet_list", "items": ["item 1", "item 2", "item 3"] },
     { "type": "numbered_list", "items": ["step 1", "step 2"] },
     { "type": "callout", "content": "Important note", "calloutType": "info" },
-    { "type": "quote", "content": "A relevant quote" }
+    { "type": "quote", "content": "A relevant quote or key insight" }
   ]
 }
 
-Rules:
-- Always start with a "heading" block
-- Use 3–6 blocks per response (more if the topic genuinely requires depth)
-- calloutType must be one of: info, warning, success, error
-- For code blocks, always specify the language field
-- Be technically precise and thorough
-- Structure the answer so each section could independently be explored deeper
-- Do not add any text outside the JSON object`;
+Block type rules:
+- Always start with a "heading" block that names this section clearly
+- Use "paragraph" for explanation (most common block type)
+- Use "code" for any code — always specify the language field
+- Use "bullet_list" for unordered concepts, features, trade-offs
+- Use "numbered_list" for steps, procedures, sequences
+- Use "callout" for important warnings, tips, or key insights
+  calloutType must be one of: info | warning | success | error
+- Use "quote" sparingly — only for genuinely quotable insights
+
+Quality rules:
+- Aim for 4–7 blocks. Add more only if the topic genuinely requires depth.
+- Each heading should name a concept that could itself be explored further.
+- Be precise and technically accurate.
+- When given a specific section to focus on (marked with ---), answer about THAT section specifically.
+- Build on the conversation history — do not repeat what was already explained.`;
 
 // ─────────────────────────────────────────────
-// Context builder
+// Public API
 // ─────────────────────────────────────────────
-
-interface BuildPromptOptions {
-  parentNodeId: string | null;   // null = root question (first ever)
-  parentBlockId: string | null;  // null = general follow-up
-  question: string;              // the new question being asked
-}
 
 export async function buildPromptMessages(
-  options: BuildPromptOptions
-): Promise<AiMessage[]> {
-  const messages: AiMessage[] = [
-    { role: 'system', content: SYSTEM_PROMPT },
-  ];
-
-  // Root question — no history to load
-  if (!options.parentNodeId) {
-    messages.push({
-      role:    'user',
-      content: options.question,
-    });
-    return messages;
-  }
-
-  // Load ancestry chain: root → ... → parentNode
-  const pathNodes = await getNodePath(options.parentNodeId);
-
-  // Build a readable conversation history from the path
-  // Each node becomes a turn in the message history
-  for (const node of pathNodes) {
-    if (node.role === 'user') {
-      messages.push({
-        role:    'user',
-        content: node.content ?? '',
-      });
-    } else {
-      // assistant node — reconstruct a text summary from blocks
-      const summary = node.blocks
-        .map((block) => {
-          switch (block.type) {
-            case 'heading':
-              return `## ${block.content}`;
-            case 'paragraph':
-            case 'quote':
-            case 'callout':
-              return block.content;
-            case 'code':
-              return `\`\`\`${block.language ?? ''}\n${block.content}\n\`\`\``;
-            case 'bullet_list':
-            case 'numbered_list':
-              return block.items.map((i) => `- ${i.content}`).join('\n');
-            default:
-              return block.content;
-          }
-        })
-        .join('\n\n');
-
-      messages.push({
-        role:    'assistant',
-        content: summary,
-      });
-    }
-  }
-
-  // If this is an inline block branch, add context about which section
-  if (options.parentBlockId) {
-    const lastAssistantNode = [...pathNodes]
-      .reverse()
-      .find((n) => n.role === 'assistant');
-
-    const targetBlock = lastAssistantNode?.blocks.find(
-      (b) => b.id === options.parentBlockId
-    );
-
-    if (targetBlock) {
-      const blockLabel =
-        targetBlock.type === 'heading'
-          ? `"${targetBlock.content}"`
-          : `the section about "${targetBlock.content?.slice(0, 60)}..."`;
-
-      messages.push({
-        role: 'user',
-        content:
-          `Regarding ${blockLabel} specifically:\n\n${options.question}`,
-      });
-      return messages;
-    }
-  }
-
-  // General follow-up — just append the question
-  messages.push({
-    role:    'user',
-    content: options.question,
-  });
-
-  return messages;
+  options: BuildContextOptions
+): Promise<BuiltContext> {
+  return buildContext(options, SYSTEM_PROMPT);
 }
