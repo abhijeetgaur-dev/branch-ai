@@ -8,82 +8,77 @@ import {
   toggleFavorite,
   deleteConversation,
 } from '@branch-ai/database';
+import { requireAuth } from '../middleware/auth';
+import type { AuthedRequest } from '../middleware/auth';
 
 export const conversationRouter = Router();
 
-// ── Validation schemas ─────────────────────────────
+// All conversation routes require auth
+conversationRouter.use(requireAuth);
 
 const CreateConversationSchema = z.object({
   title:       z.string().min(1).max(200),
   description: z.string().max(500).optional(),
-  ownerId:     z.string().cuid(),
   workspaceId: z.string().cuid().optional(),
   tags:        z.array(z.string()).default([]),
 });
 
-// ── GET /api/conversations?ownerId=xxx ─────────────
-// List all conversations for a user
+// ── GET /api/conversations ───────────────────────
+// userId comes from the verified session — not the request
 conversationRouter.get('/', async (req, res, next) => {
   try {
-    const { ownerId } = req.query;
-
-    if (!ownerId || typeof ownerId !== 'string') {
-      res.status(400).json({ error: 'ownerId query param required' });
-      return;
-    }
-
-    const conversations = await getConversationsByOwner(ownerId);
+    const { userId } = (req as AuthedRequest).auth;
+    const conversations = await getConversationsByOwner(userId);
     res.json(conversations);
   } catch (err) {
     next(err);
   }
 });
 
-// ── POST /api/conversations ────────────────────────
-// Create a new conversation
+// ── POST /api/conversations ──────────────────────
 conversationRouter.post('/', async (req, res, next) => {
   try {
-    const parsed = CreateConversationSchema.safeParse(req.body);
+    const { userId } = (req as AuthedRequest).auth;
 
+    const parsed = CreateConversationSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: parsed.error.flatten() });
       return;
     }
 
-    const conversation = await createConversation(parsed.data);
+    const conversation = await createConversation({
+      ...parsed.data,
+      ownerId: userId,
+    });
+
     res.status(201).json(conversation);
   } catch (err) {
     next(err);
   }
 });
 
-// ── GET /api/conversations/:id/tree ───────────────
-// Get the full node tree for a conversation
+// ── GET /api/conversations/:id/tree ─────────────
 conversationRouter.get('/:id/tree', async (req, res, next) => {
   try {
     const tree = await getConversationTree(req.params.id);
-
     if (!tree) {
       res.status(404).json({ error: 'Conversation not found or has no nodes' });
       return;
     }
-
     res.json(tree);
   } catch (err) {
     next(err);
   }
 });
 
-// ── PATCH /api/conversations/:id/favorite ─────────
+// ── PATCH /api/conversations/:id/favorite ───────
 conversationRouter.patch('/:id/favorite', async (req, res, next) => {
   try {
     const { isFavorite } = req.body;
-
     if (typeof isFavorite !== 'boolean') {
       res.status(400).json({ error: 'isFavorite must be a boolean' });
       return;
     }
-
     const updated = await toggleFavorite(req.params.id, isFavorite);
     res.json(updated);
   } catch (err) {
@@ -91,7 +86,7 @@ conversationRouter.patch('/:id/favorite', async (req, res, next) => {
   }
 });
 
-// ── DELETE /api/conversations/:id ─────────────────
+// ── DELETE /api/conversations/:id ───────────────
 conversationRouter.delete('/:id', async (req, res, next) => {
   try {
     await deleteConversation(req.params.id);
