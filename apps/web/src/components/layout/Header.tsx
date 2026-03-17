@@ -1,11 +1,17 @@
-// src/components/layout/Header.tsx
-import React from 'react';
-import { Search, Bell, Settings, ChevronDown, Command } from 'lucide-react';
+// apps/web/src/components/layout/Header.tsx
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Search, Bell, Settings, ChevronDown, Command,
+  LogOut, User, CreditCard, HelpCircle, Moon,
+} from 'lucide-react';
+import { useClerk } from '@clerk/clerk-react';
 import { Button } from '../ui/Button';
+import { cn } from '../../lib/utils';
 
 interface HeaderUser {
-  name:   string;
+  name:    string;
   avatar?: string;
+  email?:  string;
 }
 
 interface HeaderProps {
@@ -19,8 +25,36 @@ export const Header: React.FC<HeaderProps> = ({
   branchCount,
   user,
 }) => {
-  // Default placeholder until auth is wired up
+  const { signOut } = useClerk();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef                     = useRef<HTMLDivElement>(null);
+
   const displayUser = user ?? { name: 'You' };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownOpen]);
+
+  // Close on Escape
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setDropdownOpen(false);
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleSignOut = async () => {
+    setDropdownOpen(false);
+    await signOut();
+  };
 
   return (
     <header className="h-16 border-b border-surface-200 bg-white/80 backdrop-blur-xl sticky top-0 z-40">
@@ -64,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Right — actions + user */}
+        {/* Right — actions + user dropdown */}
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" className="relative">
             <Bell className="w-4 h-4" />
@@ -77,25 +111,116 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="w-px h-6 bg-surface-200 mx-1" />
 
-          <button className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-surface-100 transition-colors">
-            {displayUser.avatar ? (
-              <img
-                src={displayUser.avatar}
-                alt={displayUser.name}
-                className="w-8 h-8 rounded-full bg-surface-200"
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-sm font-semibold">
-                {displayUser.name.charAt(0).toUpperCase()}
+          {/* User button + dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setDropdownOpen((o) => !o)}
+              className={cn(
+                'flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors',
+                dropdownOpen ? 'bg-surface-100' : 'hover:bg-surface-100'
+              )}
+            >
+              {displayUser.avatar ? (
+                <img
+                  src={displayUser.avatar}
+                  alt={displayUser.name}
+                  className="w-8 h-8 rounded-full object-cover bg-surface-200"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-sm font-semibold">
+                  {displayUser.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span className="text-sm font-medium text-surface-700 hidden sm:block max-w-[120px] truncate">
+                {displayUser.name}
+              </span>
+              <ChevronDown className={cn(
+                'w-4 h-4 text-surface-400 transition-transform duration-200',
+                dropdownOpen && 'rotate-180'
+              )} />
+            </button>
+
+            {/* Dropdown */}
+            {dropdownOpen && (
+              <div className={cn(
+                'absolute right-0 top-full mt-2 w-64',
+                'bg-white border border-surface-200 rounded-xl shadow-lg shadow-surface-900/10',
+                'py-1.5 z-50',
+                'animate-fade-in'
+              )}>
+
+                {/* User info */}
+                <div className="px-4 py-3 border-b border-surface-100">
+                  <div className="flex items-center gap-3">
+                    {displayUser.avatar ? (
+                      <img
+                        src={displayUser.avatar}
+                        alt={displayUser.name}
+                        className="w-10 h-10 rounded-full object-cover bg-surface-200 flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-semibold flex-shrink-0">
+                        {displayUser.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-surface-900 truncate">
+                        {displayUser.name}
+                      </p>
+                      {displayUser.email && (
+                        <p className="text-xs text-surface-500 truncate">
+                          {displayUser.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Menu items */}
+                <div className="py-1">
+                  <DropdownItem icon={<User className="w-4 h-4" />} label="Profile" onClick={() => setDropdownOpen(false)} />
+                  <DropdownItem icon={<CreditCard className="w-4 h-4" />} label="Billing" onClick={() => setDropdownOpen(false)} />
+                  <DropdownItem icon={<Settings className="w-4 h-4" />} label="Settings" onClick={() => setDropdownOpen(false)} />
+                  <DropdownItem icon={<Moon className="w-4 h-4" />} label="Dark mode" onClick={() => setDropdownOpen(false)} />
+                </div>
+
+                <div className="border-t border-surface-100 py-1">
+                  <DropdownItem icon={<HelpCircle className="w-4 h-4" />} label="Help & feedback" onClick={() => setDropdownOpen(false)} />
+                </div>
+
+                {/* Sign out */}
+                <div className="border-t border-surface-100 py-1">
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign out
+                  </button>
+                </div>
               </div>
             )}
-            <span className="text-sm font-medium text-surface-700 hidden sm:block">
-              {displayUser.name}
-            </span>
-            <ChevronDown className="w-4 h-4 text-surface-400" />
-          </button>
+          </div>
         </div>
       </div>
     </header>
   );
 };
+
+// ── Reusable dropdown item ───────────────────────
+
+interface DropdownItemProps {
+  icon:    React.ReactNode;
+  label:   string;
+  onClick: () => void;
+}
+
+const DropdownItem: React.FC<DropdownItemProps> = ({ icon, label, onClick }) => (
+  <button
+    onClick={onClick}
+    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors"
+  >
+    <span className="text-surface-400">{icon}</span>
+    {label}
+  </button>
+);
