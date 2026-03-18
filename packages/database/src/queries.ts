@@ -1,43 +1,37 @@
 // packages/database/src/queries.ts
-// All tree queries for BranchAI. Every function here maps to a product operation.
-
 import { prisma } from './client';
 import type { NodeType, Role, BlockType, CalloutType } from '../generated';
 
-// ─────────────────────────────────────────────
-// TYPES  (inputs — keep these lean)
-// ─────────────────────────────────────────────
-
 export interface CreateConversationInput {
-  title: string;
+  title:        string;
   description?: string;
-  ownerId: string;
+  ownerId:      string;
   workspaceId?: string;
-  tags?: string[];
+  tags?:        string[];
 }
 
 export interface CreateNodeInput {
   conversationId: string;
-  parentNodeId: string | null;
-  parentBlockId: string | null;  // null = general follow-up, string = inline branch
-  createdById: string;
-  type: NodeType;
-  role: Role;
-  content?: string;              // only for question nodes
+  parentNodeId:   string | null;
+  parentBlockId:  string | null;
+  createdById:    string;
+  type:           NodeType;
+  role:           Role;
+  content?:       string;
 }
 
 export interface CreateBlockInput {
-  nodeId: string;
-  type: BlockType;
-  content?: string;
-  position: number;
-  language?: string;
-  calloutType?: CalloutType;
-  items?: string[];              // for bullet_list / numbered_list
+  nodeId:        string;
+  type:          BlockType;
+  content?:      string;
+  position:      number;
+  language?:     string;
+  calloutType?:  CalloutType;
+  items?:        string[];
 }
 
 // ─────────────────────────────────────────────
-// CONVERSATION QUERIES
+// CONVERSATION
 // ─────────────────────────────────────────────
 
 export async function createConversation(input: CreateConversationInput) {
@@ -57,14 +51,8 @@ export async function getConversationsByOwner(ownerId: string) {
     where:   { ownerId },
     orderBy: { updatedAt: 'desc' },
     select: {
-      id:          true,
-      title:       true,
-      description: true,
-      tags:        true,
-      isFavorite:  true,
-      createdAt:   true,
-      updatedAt:   true,
-      // Count of root-level questions as a preview stat
+      id: true, title: true, description: true,
+      tags: true, isFavorite: true, createdAt: true, updatedAt: true,
       _count: { select: { nodes: true } },
     },
   });
@@ -72,44 +60,44 @@ export async function getConversationsByOwner(ownerId: string) {
 
 export async function getConversationById(id: string) {
   return prisma.conversation.findUnique({
-    where: { id },
-    include: {
-      owner: { select: { id: true, name: true, avatar: true } },
-    },
+    where:   { id },
+    include: { owner: { select: { id: true, name: true, avatar: true } } },
   });
 }
 
 export async function toggleFavorite(id: string, isFavorite: boolean) {
-  return prisma.conversation.update({
-    where: { id },
-    data:  { isFavorite },
-  });
+  return prisma.conversation.update({ where: { id }, data: { isFavorite } });
 }
 
 export async function deleteConversation(id: string) {
-  // Cascade deletes nodes → blocks → block_items via schema relations
   return prisma.conversation.delete({ where: { id } });
 }
 
 // ─────────────────────────────────────────────
-// NODE QUERIES
+// NODE
 // ─────────────────────────────────────────────
 
 export async function createNode(input: CreateNodeInput) {
-  // 1. Resolve parent to compute depth and path
-  let depth = 0;
-  let path  = '';  // filled after node creation with its own id
+  let depth    = 0;
+  let pathBase = '';
 
   if (input.parentNodeId) {
     const parent = await prisma.node.findUniqueOrThrow({
       where:  { id: input.parentNodeId },
       select: { depth: true, path: true },
     });
-    depth = parent.depth + 1;
-    path  = parent.path; // will append own id below
+    depth    = parent.depth + 1;
+    pathBase = parent.path;
   }
 
-  // 2. Create node — path is temporary, updated in step 3
+  // Position = number of existing siblings at this level
+  const siblingCount = await prisma.node.count({
+    where: {
+      conversationId: input.conversationId,
+      parentNodeId:   input.parentNodeId ?? null,
+    },
+  });
+
   const node = await prisma.node.create({
     data: {
       conversationId: input.conversationId,
@@ -120,61 +108,45 @@ export async function createNode(input: CreateNodeInput) {
       role:           input.role,
       content:        input.content,
       depth,
-      path:           'pending', // placeholder
+      path:           'pending',
+      position:       siblingCount,
     },
   });
 
-  // 3. Update path now that we have the id
-  // Root:    "nodeId"
-  // Child:   "parentPath.nodeId"
-  const finalPath = path ? `${path}.${node.id}` : node.id;
-
-  return prisma.node.update({
-    where: { id: node.id },
-    data:  { path: finalPath },
-  });
+  const finalPath = pathBase ? `${pathBase}.${node.id}` : node.id;
+  return prisma.node.update({ where: { id: node.id }, data: { path: finalPath } });
 }
 
 /**
  * getConversationTree
- * Returns all nodes for a conversation, flat list.
- * The frontend (or a helper) reconstructs the tree from parentNodeId.
- * This avoids recursive SQL and keeps the query simple and fast.
+ * Returns ALL nodes as a nested array of root threads.
+ * Roots are nodes with parentNodeId = null, ordered by position.
+ * Children at every level are ordered by position then createdAt.
+ *
+ * Returns: TreeNode[] — an array of root nodes, each with nested children.
  */
 export async function getConversationTree(conversationId: string) {
   const nodes = await prisma.node.findMany({
     where:   { conversationId },
-    orderBy: { createdAt: 'asc' },
+    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     include: {
       blocks: {
         orderBy: { position: 'asc' },
-        include: {
-          items: { orderBy: { position: 'asc' } },
-        },
+        include: { items: { orderBy: { position: 'asc' } } },
       },
     },
   });
 
-  return buildTree(nodes);
+  return buildForest(nodes);
 }
 
-/**
- * getNodePath
- * Returns all ancestor nodes from root to the given node.
- * Used by the context engine to build AI prompts.
- *
- * The path field stores "a.b.c" — split and fetch all ancestors in one query.
- */
 export async function getNodePath(nodeId: string) {
   const node = await prisma.node.findUniqueOrThrow({
     where:  { id: nodeId },
-    select: { path: true, conversationId: true },
+    select: { path: true },
   });
-
-  // path = "rootId.parentId.nodeId" — all ids are ancestors including self
   const ancestorIds = node.path.split('.');
-
-  const ancestors = await prisma.node.findMany({
+  return prisma.node.findMany({
     where:   { id: { in: ancestorIds } },
     orderBy: { depth: 'asc' },
     include: {
@@ -184,18 +156,12 @@ export async function getNodePath(nodeId: string) {
       },
     },
   });
-
-  return ancestors;
 }
 
-/**
- * getChildren
- * Direct children of a node. Used for lazy-loading branches.
- */
 export async function getChildren(parentNodeId: string) {
   return prisma.node.findMany({
     where:   { parentNodeId },
-    orderBy: { createdAt: 'asc' },
+    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     include: {
       blocks: {
         orderBy: { position: 'asc' },
@@ -206,21 +172,29 @@ export async function getChildren(parentNodeId: string) {
 }
 
 export async function toggleNodeCollapsed(nodeId: string, isCollapsed: boolean) {
-  return prisma.node.update({
-    where: { id: nodeId },
-    data:  { isCollapsed },
-  });
+  return prisma.node.update({ where: { id: nodeId }, data: { isCollapsed } });
+}
+
+export async function updateNodeContent(nodeId: string, content: string) {
+  return prisma.node.update({ where: { id: nodeId }, data: { content } });
+}
+
+export async function deleteNodeWithChildren(nodeId: string) {
+  return prisma.node.delete({ where: { id: nodeId } });
+}
+
+export async function reorderSiblings(orderedNodeIds: string[]) {
+  return prisma.$transaction(
+    orderedNodeIds.map((id, position) =>
+      prisma.node.update({ where: { id }, data: { position } })
+    )
+  );
 }
 
 // ─────────────────────────────────────────────
-// BLOCK QUERIES
+// BLOCK
 // ─────────────────────────────────────────────
 
-/**
- * createBlocks
- * Always create all blocks for a node in a single transaction.
- * Avoids partial writes if one block fails.
- */
 export async function createBlocks(blocks: CreateBlockInput[]) {
   return prisma.$transaction(
     blocks.map((b) =>
@@ -233,12 +207,7 @@ export async function createBlocks(blocks: CreateBlockInput[]) {
           language:    b.language,
           calloutType: b.calloutType,
           items: b.items?.length
-            ? {
-                create: b.items.map((text, i) => ({
-                  content:  text,
-                  position: i,
-                })),
-              }
+            ? { create: b.items.map((text, i) => ({ content: text, position: i })) }
             : undefined,
         },
         include: { items: { orderBy: { position: 'asc' } } },
@@ -247,37 +216,31 @@ export async function createBlocks(blocks: CreateBlockInput[]) {
   );
 }
 
+export async function deleteAnswerBlocks(nodeId: string) {
+  return prisma.block.deleteMany({ where: { nodeId } });
+}
+
 // ─────────────────────────────────────────────
-// AI REQUEST QUERIES
+// AI REQUEST
 // ─────────────────────────────────────────────
 
 export async function createAiRequest(data: {
   conversationId: string;
-  userId: string;
-  model: string;
+  userId:         string;
+  model:          string;
 }) {
   return prisma.aiRequest.create({ data });
 }
 
-export async function completeAiRequest(
-  id: string,
-  data: {
-    nodeId: string;
-    promptTokens: number;
-    outputTokens: number;
-    durationMs: number;
-  }
-) {
+export async function completeAiRequest(id: string, data: {
+  nodeId:       string;
+  promptTokens: number;
+  outputTokens: number;
+  durationMs:   number;
+}) {
   return prisma.aiRequest.update({
     where: { id },
-    data: {
-      status:       'completed',
-      nodeId:       data.nodeId,
-      promptTokens: data.promptTokens,
-      outputTokens: data.outputTokens,
-      durationMs:   data.durationMs,
-      completedAt:  new Date(),
-    },
+    data:  { status: 'completed', ...data, completedAt: new Date() },
   });
 }
 
@@ -289,42 +252,33 @@ export async function failAiRequest(id: string, error: string) {
 }
 
 // ─────────────────────────────────────────────
-// INTERNAL HELPERS
+// INTERNAL
 // ─────────────────────────────────────────────
 
 type NodeWithBlocks = Awaited<ReturnType<typeof getChildren>>[number];
-
-interface TreeNode extends NodeWithBlocks {
-  children: TreeNode[];
-}
+interface TreeNode extends NodeWithBlocks { children: TreeNode[] }
 
 /**
- * buildTree
- * Converts a flat array of nodes (from DB) into a nested tree.
- * O(n) — single pass with a map.
+ * buildForest
+ * Converts flat node array into an ordered array of root threads.
+ * O(n) — single pass using a Map.
  */
-function buildTree(nodes: NodeWithBlocks[]): TreeNode | null {
-  if (nodes.length === 0) return null;
+function buildForest(nodes: NodeWithBlocks[]): TreeNode[] {
+  if (!nodes.length) return [];
 
   const map = new Map<string, TreeNode>();
+  nodes.forEach((n) => map.set(n.id, { ...n, children: [] }));
 
-  // First pass — index all nodes
-  nodes.forEach((n) => {
-    map.set(n.id, { ...n, children: [] });
-  });
+  const roots: TreeNode[] = [];
 
-  let root: TreeNode | null = null;
-
-  // Second pass — attach children to parents
   nodes.forEach((n) => {
     const node = map.get(n.id)!;
-    if (n.parentNodeId === null) {
-      root = node;
+    if (!n.parentNodeId) {
+      roots.push(node);
     } else {
-      const parent = map.get(n.parentNodeId);
-      parent?.children.push(node);
+      map.get(n.parentNodeId)?.children.push(node);
     }
   });
 
-  return root;
+  return roots;
 }

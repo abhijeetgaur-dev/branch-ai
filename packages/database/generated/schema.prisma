@@ -1,4 +1,3 @@
-// BranchAI — Production PostgreSQL Schema
 // packages/database/prisma/schema.prisma
 
 generator client {
@@ -10,10 +9,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// ─────────────────────────────────────────────
-// ENUMS
-// ─────────────────────────────────────────────
 
 enum NodeType {
   question
@@ -56,10 +51,6 @@ enum AiRequestStatus {
   failed
 }
 
-// ─────────────────────────────────────────────
-// USER
-// ─────────────────────────────────────────────
-
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -68,7 +59,6 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relations
   workspaceMembers WorkspaceMember[]
   conversations    Conversation[]
   nodes            Node[]
@@ -77,10 +67,6 @@ model User {
   @@map("users")
 }
 
-// ─────────────────────────────────────────────
-// WORKSPACE
-// ─────────────────────────────────────────────
-
 model Workspace {
   id        String   @id @default(cuid())
   name      String
@@ -88,7 +74,6 @@ model Workspace {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relations
   members       WorkspaceMember[]
   conversations Conversation[]
 
@@ -102,7 +87,6 @@ model WorkspaceMember {
   role        WorkspaceMemberRole @default(member)
   joinedAt    DateTime            @default(now()) @map("joined_at")
 
-  // Relations
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -111,11 +95,6 @@ model WorkspaceMember {
   @@index([userId])
   @@map("workspace_members")
 }
-
-// ─────────────────────────────────────────────
-// CONVERSATION
-// A container for a full knowledge exploration session.
-// ─────────────────────────────────────────────
 
 model Conversation {
   id          String   @id @default(cuid())
@@ -128,7 +107,6 @@ model Conversation {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  // Relations
   owner      User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   workspace  Workspace?  @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   nodes      Node[]
@@ -140,34 +118,23 @@ model Conversation {
   @@map("conversations")
 }
 
-// ─────────────────────────────────────────────
-// NODE
-// Every user question or AI answer is a node in the tree.
-//
-// KEY FIELDS:
-//   parentNodeId  — direct parent (null = root)
-//   parentBlockId — which specific block this question branches from
-//   depth         — distance from root (root = 0)
-//   path          — dot-notation ancestry e.g. "1.2.3"
-//                   enables fast subtree queries without recursion
-// ─────────────────────────────────────────────
-
 model Node {
   id             String   @id @default(cuid())
   conversationId String   @map("conversation_id")
   parentNodeId   String?  @map("parent_node_id")
-  parentBlockId  String?  @map("parent_block_id") // null = general follow-up
+  parentBlockId  String?  @map("parent_block_id")
   createdById    String   @map("created_by_id")
   type           NodeType
   role           Role
-  content        String? // only populated for question nodes
+  content        String?
   depth          Int      @default(0)
-  path           String // e.g. "cuid1.cuid2.cuid3" — ancestry chain
+  path           String
+  // Position among siblings — used for drag reordering
+  position       Int      @default(0)
   isCollapsed    Boolean  @default(false) @map("is_collapsed")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  // Relations
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   parent       Node?        @relation("NodeChildren", fields: [parentNodeId], references: [id], onDelete: Cascade)
   children     Node[]       @relation("NodeChildren")
@@ -176,56 +143,41 @@ model Node {
   blocks       Block[]
   aiRequests   AiRequest[]
 
-  // Indexes for tree queries
-  @@index([conversationId]) // fetch all nodes in a conversation
-  @@index([parentNodeId]) // fetch direct children
-  @@index([parentBlockId]) // fetch branches from a specific block
-  @@index([conversationId, depth]) // fetch nodes at a specific depth
-  @@index([path]) // subtree queries: path LIKE 'root.%'
+  @@index([conversationId])
+  @@index([parentNodeId])
+  @@index([parentBlockId])
+  @@index([conversationId, depth])
+  @@index([path])
+  @@index([parentNodeId, position])
   @@index([conversationId, createdAt(sort: Desc)])
   @@map("nodes")
 }
-
-// ─────────────────────────────────────────────
-// BLOCK
-// AI answers are decomposed into structured blocks.
-// Each block is a discrete, branchable unit of content.
-// ─────────────────────────────────────────────
 
 model Block {
   id          String       @id @default(cuid())
   nodeId      String       @map("node_id")
   type        BlockType
-  content     String       @default("") // empty for list types (see BlockItem)
-  position    Int // display order within node
-  language    String? // for code blocks
-  calloutType CalloutType? @map("callout_type") // for callout blocks
+  content     String       @default("")
+  position    Int
+  language    String?
+  calloutType CalloutType? @map("callout_type")
   createdAt   DateTime     @default(now()) @map("created_at")
 
-  // Relations
   node     Node        @relation(fields: [nodeId], references: [id], onDelete: Cascade)
-  items    BlockItem[] // for bullet_list / numbered_list
-  branches Node[]      @relation("BlockBranches") // nodes branched from this block
+  items    BlockItem[]
+  branches Node[]      @relation("BlockBranches")
 
   @@index([nodeId])
-  @@index([nodeId, position]) // ordered block fetch
+  @@index([nodeId, position])
   @@map("blocks")
 }
-
-// ─────────────────────────────────────────────
-// BLOCK ITEM
-// List items for bullet_list and numbered_list blocks.
-// Stored separately to keep Block clean and allow
-// individual item operations if needed later.
-// ─────────────────────────────────────────────
 
 model BlockItem {
   id       String @id @default(cuid())
   blockId  String @map("block_id")
   content  String
-  position Int // display order within list
+  position Int
 
-  // Relations
   block Block @relation(fields: [blockId], references: [id], onDelete: Cascade)
 
   @@index([blockId])
@@ -233,35 +185,27 @@ model BlockItem {
   @@map("block_items")
 }
 
-// ─────────────────────────────────────────────
-// AI REQUEST
-// Audit log for every AI call.
-// Critical for: debugging, token tracking, rate limiting,
-// and eventual billing/usage features.
-// ─────────────────────────────────────────────
-
 model AiRequest {
   id             String          @id @default(cuid())
   conversationId String          @map("conversation_id")
-  nodeId         String?         @map("node_id") // the answer node this produced
+  nodeId         String?         @map("node_id")
   userId         String          @map("user_id")
   status         AiRequestStatus @default(pending)
-  model          String // e.g. "gpt-4o", "claude-3-5-sonnet"
+  model          String
   promptTokens   Int             @default(0) @map("prompt_tokens")
   outputTokens   Int             @default(0) @map("output_tokens")
   durationMs     Int?            @map("duration_ms")
-  error          String? // error message if failed
+  error          String?
   createdAt      DateTime        @default(now()) @map("created_at")
   completedAt    DateTime?       @map("completed_at")
 
-  // Relations
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   node         Node?        @relation(fields: [nodeId], references: [id], onDelete: SetNull)
   user         User         @relation(fields: [userId], references: [id])
 
   @@index([conversationId])
   @@index([userId])
-  @@index([userId, createdAt(sort: Desc)]) // usage dashboard queries
-  @@index([status]) // find stuck/pending requests
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status])
   @@map("ai_requests")
 }
