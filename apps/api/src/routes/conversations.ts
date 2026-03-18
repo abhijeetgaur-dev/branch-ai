@@ -8,12 +8,12 @@ import {
   toggleFavorite,
   deleteConversation,
 } from '@branch-ai/database';
+import { prisma }      from '@branch-ai/database';
 import { requireAuth } from '../middleware/auth';
 import type { AuthedRequest } from '../middleware/auth';
 
 export const conversationRouter = Router();
 
-// All conversation routes require auth
 conversationRouter.use(requireAuth);
 
 const CreateConversationSchema = z.object({
@@ -23,41 +23,33 @@ const CreateConversationSchema = z.object({
   tags:        z.array(z.string()).default([]),
 });
 
-// ── GET /api/conversations ───────────────────────
-// userId comes from the verified session — not the request
+const RenameSchema = z.object({
+  title: z.string().min(1).max(200),
+});
+
+// GET /api/conversations
 conversationRouter.get('/', async (req, res, next) => {
   try {
     const { userId } = (req as AuthedRequest).auth;
-    const conversations = await getConversationsByOwner(userId);
-    res.json(conversations);
-  } catch (err) {
-    next(err);
-  }
+    res.json(await getConversationsByOwner(userId));
+  } catch (err) { next(err); }
 });
 
-// ── POST /api/conversations ──────────────────────
+// POST /api/conversations
 conversationRouter.post('/', async (req, res, next) => {
   try {
     const { userId } = (req as AuthedRequest).auth;
-
     const parsed = CreateConversationSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: parsed.error.flatten() });
       return;
     }
-
-    const conversation = await createConversation({
-      ...parsed.data,
-      ownerId: userId,
-    });
-
+    const conversation = await createConversation({ ...parsed.data, ownerId: userId });
     res.status(201).json(conversation);
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 });
 
-// ── GET /api/conversations/:id/tree ─────────────
+// GET /api/conversations/:id/tree
 conversationRouter.get('/:id/tree', async (req, res, next) => {
   try {
     const tree = await getConversationTree(req.params.id);
@@ -66,12 +58,26 @@ conversationRouter.get('/:id/tree', async (req, res, next) => {
       return;
     }
     res.json(tree);
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 });
 
-// ── PATCH /api/conversations/:id/favorite ───────
+// PATCH /api/conversations/:id — rename
+conversationRouter.patch('/:id', async (req, res, next) => {
+  try {
+    const parsed = RenameSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.flatten() });
+      return;
+    }
+    const updated = await prisma.conversation.update({
+      where: { id: req.params.id },
+      data:  { title: parsed.data.title },
+    });
+    res.json(updated);
+  } catch (err) { next(err); }
+});
+
+// PATCH /api/conversations/:id/favorite
 conversationRouter.patch('/:id/favorite', async (req, res, next) => {
   try {
     const { isFavorite } = req.body;
@@ -79,19 +85,14 @@ conversationRouter.patch('/:id/favorite', async (req, res, next) => {
       res.status(400).json({ error: 'isFavorite must be a boolean' });
       return;
     }
-    const updated = await toggleFavorite(req.params.id, isFavorite);
-    res.json(updated);
-  } catch (err) {
-    next(err);
-  }
+    res.json(await toggleFavorite(req.params.id, isFavorite));
+  } catch (err) { next(err); }
 });
 
-// ── DELETE /api/conversations/:id ───────────────
+// DELETE /api/conversations/:id
 conversationRouter.delete('/:id', async (req, res, next) => {
   try {
     await deleteConversation(req.params.id);
     res.status(204).send();
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 });
