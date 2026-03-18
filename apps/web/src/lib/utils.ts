@@ -20,8 +20,7 @@ export function formatDate(date: Date | string): string {
   if (days <  7) return `${days}d ago`;
 
   return d.toLocaleDateString('en-US', {
-    month: 'short',
-    day:   'numeric',
+    month: 'short', day: 'numeric',
     year:  d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
   });
 }
@@ -31,40 +30,56 @@ export function truncate(str: string, length: number): string {
   return str.substring(0, length) + '…';
 }
 
-// Depth → filled dot color (for tree sidebar)
+// Depth → dot color in TreeSidebar
+// Warm palette: rose, amber, sage, terracotta, mauve, olive
 export function getDepthColor(depth: number): string {
   const colors = [
-    'bg-brand-500',
-    'bg-violet-500',
+    'bg-rose-400',
+    'bg-amber-400',
     'bg-emerald-500',
-    'bg-amber-500',
-    'bg-rose-500',
-    'bg-cyan-500',
+    'bg-orange-400',
+    'bg-purple-400',
+    'bg-yellow-500',
   ];
   return colors[depth % colors.length];
 }
 
-// Depth → left border accent color (for answer cards)
+// Depth → top border accent on answer cards
+// Inline style approach so we use exact hex values from the palette
+export function getDepthAccentStyle(depth: number): React.CSSProperties {
+  const colors = [
+    '#d4586f',  // dusty rose
+    '#c9914a',  // warm amber
+    '#6a9e78',  // muted sage
+    '#c07050',  // terracotta
+    '#9b7bb5',  // soft mauve
+    '#8a9e50',  // olive
+  ];
+  return { borderTopColor: colors[depth % colors.length] };
+}
+
+// Keep for backward compat — returns a Tailwind class string
 export function getDepthAccent(depth: number): string {
+  // These are overridden by getDepthAccentStyle in NodeRenderer
   const accents = [
-    'border-l-brand-400',
-    'border-l-violet-400',
-    'border-l-emerald-400',
-    'border-l-amber-400',
-    'border-l-rose-400',
-    'border-l-cyan-400',
+    'border-t-rose-400',
+    'border-t-amber-400',
+    'border-t-emerald-500',
+    'border-t-orange-400',
+    'border-t-purple-400',
+    'border-t-yellow-500',
   ];
   return accents[depth % accents.length];
 }
 
 export function getDepthBorderColor(depth: number): string {
   const colors = [
-    'border-brand-500',
-    'border-violet-500',
+    'border-rose-400',
+    'border-amber-400',
     'border-emerald-500',
-    'border-amber-500',
-    'border-rose-500',
-    'border-cyan-500',
+    'border-orange-400',
+    'border-purple-400',
+    'border-yellow-500',
   ];
   return colors[depth % colors.length];
 }

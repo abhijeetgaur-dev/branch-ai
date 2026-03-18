@@ -1,83 +1,374 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────
+   THEME — Wes Anderson palette
+   Inspired by Grand Budapest Hotel + The Royal Tenenbaums
+   Accent: dusty rose/mauve replaces blue entirely
+   ───────────────────────────────────────────────────── */
+
 @theme {
+  /* Brand — dusty rose/mauve */
+  --color-brand-50:  #fdf2f4;
+  --color-brand-100: #fce7eb;
+  --color-brand-200: #f9d0d8;
+  --color-brand-300: #f4aab8;
+  --color-brand-400: #ec7d93;
+  --color-brand-500: #d4586f;
+  --color-brand-600: #b5384f;
+  --color-brand-700: #962d41;
+  --color-brand-800: #7d273a;
+  --color-brand-900: #6b2435;
 
-  /* ── Neutral accent (soft graphite) ─────────── */
-  --color-brand-50:  #f7f7f8;
-  --color-brand-100: #efeff1;
-  --color-brand-200: #e4e4e7;
-  --color-brand-300: #d4d4d8;
-  --color-brand-400: #a1a1aa;
-  --color-brand-500: #71717a;
-  --color-brand-600: #52525b;
-  --color-brand-700: #3f3f46;
-  --color-brand-800: #27272a;
-  --color-brand-900: #18181b;
+  /* Surface — warm sand/parchment instead of cold slate */
+  --color-surface-50:  #faf8f4;
+  --color-surface-100: #f4f0e8;
+  --color-surface-200: #e8e0d0;
+  --color-surface-300: #d4c8b4;
+  --color-surface-400: #a8987e;
+  --color-surface-500: #7d6e55;
+  --color-surface-600: #5c5040;
+  --color-surface-700: #3d3428;
+  --color-surface-800: #261f16;
+  --color-surface-900: #1a1410;
 
-  /* ── Paper surfaces ─────────────────────────── */
-  --color-surface-50:  #ffffff;
-  --color-surface-100: #fafafa;
-  --color-surface-200: #f4f4f5;
-  --color-surface-300: #e4e4e7;
-  --color-surface-400: #d4d4d8;
-  --color-surface-500: #a1a1aa;
-  --color-surface-600: #71717a;
-  --color-surface-700: #52525b;
-  --color-surface-800: #3f3f46;
-  --color-surface-900: #27272a;
-
-  /* subtle animation */
-  --animate-fade-in: fade-in 0.12s ease-out;
+  /* Animations */
+  --animate-fade-in:    fade-in 0.2s ease-out;
+  --animate-slide-down: slide-down 0.2s ease-out;
 }
 
+/* ─────────────────────────────────────────────────────
+   SEMANTIC TOKENS — light mode
+   ───────────────────────────────────────────────────── */
+
+:root {
+  /* Backgrounds — warm cream, not cold white */
+  --ui-bg-page:     #faf8f4;
+  --ui-bg-base:     #fffef9;
+  --ui-bg-elevated: #fffef9;
+  --ui-bg-subtle:   #f4f0e8;
+  --ui-bg-input:    #faf8f4;
+
+  /* Text — warm charcoal, not cold black */
+  --ui-text-primary:   #1e1810;
+  --ui-text-secondary: #3d3428;
+  --ui-text-muted:     #7d6e55;
+  --ui-text-faint:     #a8987e;
+  --ui-text-inverted:  #fffef9;
+
+  /* Borders — warm parchment tones */
+  --ui-border:        #e8e0d0;
+  --ui-border-strong: #d4c8b4;
+  --ui-border-faint:  #f4f0e8;
+
+  /* Brand — dusty rose */
+  --ui-brand:         #b5384f;
+  --ui-brand-hover:   #962d41;
+  --ui-brand-subtle:  #fdf2f4;
+  --ui-brand-text:    #962d41;
+  --ui-brand-muted:   #d4586f;
+
+  /* Question node */
+  --ui-question-dot:        #fce7eb;
+  --ui-question-dot-border: #f4aab8;
+  --ui-question-text:       #1e1810;
+
+  /* Cards */
+  --ui-card-bg:     #fffef9;
+  --ui-card-border: #e8e0d0;
+  --ui-card-shadow: rgba(30,24,16,0.06);
+
+  /* Code blocks — warm dark */
+  --ui-code-header: #261f16;
+  --ui-code-body:   #1a1410;
+  --ui-code-text:   #e8e0d0;
+
+  /* Sidebar */
+  --ui-sidebar-bg:     #faf8f4;
+  --ui-sidebar-hover:  #f4f0e8;
+  --ui-sidebar-active: #fdf2f4;
+
+  /* Callouts — muted, warm versions */
+  --ui-callout-info-bg:     #f0f4f0;
+  --ui-callout-info-border: #c8d8c8;
+  --ui-callout-info-text:   #2d4a2d;
+  --ui-callout-warn-bg:     #fdf6e8;
+  --ui-callout-warn-border: #e8d098;
+  --ui-callout-warn-text:   #5c4010;
+  --ui-callout-ok-bg:       #f0f6f0;
+  --ui-callout-ok-border:   #b8d4b8;
+  --ui-callout-ok-text:     #2a4a2a;
+  --ui-callout-err-bg:      #fdf2f4;
+  --ui-callout-err-border:  #f4aab8;
+  --ui-callout-err-text:    #7d273a;
+
+  /* Scrollbar */
+  --ui-scrollbar:       #e8e0d0;
+  --ui-scrollbar-hover: #d4c8b4;
+
+  /* Bot icon gradient */
+  --ui-bot-from: #b5384f;
+  --ui-bot-to:   #7d273a;
+}
+
+/* ─────────────────────────────────────────────────────
+   DARK MODE — deep warm umber
+   Think: a well-lit reading room at night
+   bg-page: deep warm brown, not cold blue-black
+   text: aged parchment, not stark white
+   ───────────────────────────────────────────────────── */
+
+.dark {
+  color-scheme: dark;
+
+  --ui-bg-page:     #16120c;
+  --ui-bg-base:     #1e1810;
+  --ui-bg-elevated: #261f16;
+  --ui-bg-subtle:   #221b12;
+  --ui-bg-input:    #221b12;
+
+  /* Parchment text — warm, easy to read for long sessions */
+  --ui-text-primary:   #f0e8d8;
+  --ui-text-secondary: #c8b898;
+  --ui-text-muted:     #8c7a60;
+  --ui-text-faint:     #5c4e38;
+  --ui-text-inverted:  #16120c;
+
+  /* Warm transparent borders */
+  --ui-border:        rgba(240,232,216,0.1);
+  --ui-border-strong: rgba(240,232,216,0.18);
+  --ui-border-faint:  rgba(240,232,216,0.05);
+
+  /* Brand rose — slightly lighter in dark for legibility */
+  --ui-brand:         #d4586f;
+  --ui-brand-hover:   #ec7d93;
+  --ui-brand-subtle:  rgba(212,88,111,0.15);
+  --ui-brand-text:    #ec7d93;
+  --ui-brand-muted:   #d4586f;
+
+  --ui-question-dot:        rgba(212,88,111,0.2);
+  --ui-question-dot-border: rgba(212,88,111,0.45);
+  --ui-question-text:       #f0e8d8;
+
+  --ui-card-bg:     #261f16;
+  --ui-card-border: rgba(240,232,216,0.08);
+  --ui-card-shadow: rgba(0,0,0,0.4);
+
+  --ui-code-header: #16120c;
+  --ui-code-body:   #100d08;
+  --ui-code-text:   #d4c8b4;
+
+  --ui-sidebar-bg:     #1e1810;
+  --ui-sidebar-hover:  rgba(240,232,216,0.05);
+  --ui-sidebar-active: rgba(212,88,111,0.15);
+
+  --ui-callout-info-bg:     rgba(80,110,80,0.15);
+  --ui-callout-info-border: rgba(80,110,80,0.35);
+  --ui-callout-info-text:   #98c898;
+  --ui-callout-warn-bg:     rgba(160,120,40,0.15);
+  --ui-callout-warn-border: rgba(160,120,40,0.35);
+  --ui-callout-warn-text:   #d4a84a;
+  --ui-callout-ok-bg:       rgba(70,110,70,0.15);
+  --ui-callout-ok-border:   rgba(70,110,70,0.35);
+  --ui-callout-ok-text:     #88c488;
+  --ui-callout-err-bg:      rgba(180,50,70,0.15);
+  --ui-callout-err-border:  rgba(180,50,70,0.35);
+  --ui-callout-err-text:    #f4aab8;
+
+  --ui-scrollbar:       rgba(240,232,216,0.12);
+  --ui-scrollbar-hover: rgba(240,232,216,0.2);
+
+  --ui-bot-from: #d4586f;
+  --ui-bot-to:   #962d41;
+}
+
+/* ─────────────────────────────────────────────────────
+   GLOBAL BASE
+   ───────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%; margin: 0; padding: 0;
+}
+
+body {
+  background-color:       var(--ui-bg-page);
+  color:                  var(--ui-text-primary);
+  font-family:            ui-sans-serif, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition:             background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ─────────────────────────────────────────────────────
+   TAILWIND OVERRIDES — light mode base
+   Map raw Tailwind color classes to warm tokens
+   ───────────────────────────────────────────────────── */
+
+/* Page/layout backgrounds */
+.bg-surface-50  { background-color: var(--ui-bg-page)   !important; }
+.bg-surface-100 { background-color: var(--ui-bg-subtle) !important; }
+.bg-white       { background-color: var(--ui-bg-base)   !important; }
+
+/* Text */
+.text-surface-900,
+.text-surface-800 { color: var(--ui-text-primary)   !important; }
+.text-surface-700,
+.text-surface-600 { color: var(--ui-text-secondary) !important; }
+.text-surface-500 { color: var(--ui-text-muted)     !important; }
+.text-surface-400 { color: var(--ui-text-faint)     !important; }
+
+/* Borders */
+.border-surface-100 { border-color: var(--ui-border-faint)  !important; }
+.border-surface-200 { border-color: var(--ui-border)        !important; }
+.border-surface-300 { border-color: var(--ui-border-strong) !important; }
+
+/* Brand classes → dusty rose */
+.bg-brand-50        { background-color: var(--ui-brand-subtle) !important; }
+.bg-brand-100       { background-color: var(--ui-brand-subtle) !important; }
+.bg-brand-600       { background-color: var(--ui-brand)        !important; }
+.hover\:bg-brand-700:hover { background-color: var(--ui-brand-hover) !important; }
+.text-brand-600,
+.text-brand-500,
+.text-brand-700     { color: var(--ui-brand-text) !important; }
+.text-brand-400     { color: var(--ui-brand-muted) !important; }
+.border-brand-200   { border-color: rgba(212,88,111,0.25) !important; }
+.border-brand-300   { border-color: rgba(212,88,111,0.4)  !important; }
+.border-brand-400   { border-color: var(--ui-brand-muted) !important; }
+
+/* Answer card BotAI dot */
+.from-emerald-500 { --tw-gradient-from: var(--ui-bot-from) !important; }
+.to-teal-600      { --tw-gradient-to:   var(--ui-bot-to)   !important; }
+
+/* Sidebar hover/active */
+.hover\:bg-surface-100:hover { background-color: var(--ui-sidebar-hover)  !important; }
+.bg-brand-50                 { background-color: var(--ui-sidebar-active) !important; }
+
+/* Question chip */
+.bg-brand-100.border-brand-300,
+.bg-brand-100.border-2 {
+  background-color: var(--ui-question-dot)        !important;
+  border-color:     var(--ui-question-dot-border) !important;
+}
+
+/* Inputs */
+input, textarea {
+  background-color: var(--ui-bg-input) !important;
+  color:            var(--ui-text-primary) !important;
+  border-color:     var(--ui-border) !important;
+}
+input::placeholder, textarea::placeholder {
+  color: var(--ui-text-faint) !important;
+}
+input:focus, textarea:focus {
+  border-color: var(--ui-brand) !important;
+  box-shadow:   0 0 0 3px rgba(181,56,79,0.12) !important;
+  outline:      none !important;
+}
+
+/* Code blocks */
+.bg-surface-800  { background-color: var(--ui-code-header) !important; }
+.bg-surface-900  { background-color: var(--ui-code-body)   !important; }
+.text-surface-100 { color: var(--ui-code-text) !important; }
+.text-surface-300 { color: var(--ui-text-muted) !important; }
+
+/* Header backdrop */
+.bg-white\/80 {
+  background-color: color-mix(in srgb, var(--ui-bg-base) 85%, transparent) !important;
+}
+
+/* ─────────────────────────────────────────────────────
+   DARK MODE OVERRIDES
+   ───────────────────────────────────────────────────── */
+
+.dark .bg-surface-50  { background-color: var(--ui-bg-page)     !important; }
+.dark .bg-surface-100 { background-color: var(--ui-bg-subtle)   !important; }
+.dark .bg-white       { background-color: var(--ui-bg-base)     !important; }
+
+.dark .text-surface-900,
+.dark .text-surface-800 { color: var(--ui-text-primary)   !important; }
+.dark .text-surface-700,
+.dark .text-surface-600 { color: var(--ui-text-secondary) !important; }
+.dark .text-surface-500 { color: var(--ui-text-muted)     !important; }
+.dark .text-surface-400 { color: var(--ui-text-faint)     !important; }
+
+.dark .border-surface-100 { border-color: var(--ui-border-faint)  !important; }
+.dark .border-surface-200 { border-color: var(--ui-border)        !important; }
+.dark .border-surface-300 { border-color: var(--ui-border-strong) !important; }
+
+.dark .bg-brand-50,
+.dark .bg-brand-100       { background-color: var(--ui-brand-subtle) !important; }
+.dark .text-brand-600,
+.dark .text-brand-500,
+.dark .text-brand-700     { color: var(--ui-brand-text)  !important; }
+.dark .text-brand-400     { color: var(--ui-brand-muted) !important; }
+.dark .border-brand-200   { border-color: rgba(212,88,111,0.2)  !important; }
+.dark .border-brand-300   { border-color: rgba(212,88,111,0.35) !important; }
+
+.dark .hover\:bg-surface-100:hover { background-color: var(--ui-sidebar-hover) !important; }
+
+.dark input, .dark textarea {
+  background-color: var(--ui-bg-input)     !important;
+  color:            var(--ui-text-primary) !important;
+  border-color:     var(--ui-border)       !important;
+}
+.dark input::placeholder, .dark textarea::placeholder {
+  color: var(--ui-text-faint) !important;
+}
+
+/* Answer cards in dark */
+.dark .bg-white.rounded-xl,
+.dark .bg-white.rounded-2xl {
+  background-color: var(--ui-card-bg)     !important;
+  border-color:     var(--ui-card-border) !important;
+}
+
+.dark .bg-surface-800  { background-color: var(--ui-code-header) !important; }
+.dark .bg-surface-900  { background-color: var(--ui-code-body)   !important; }
+
+.dark .bg-white\/80 {
+  background-color: color-mix(in srgb, var(--ui-bg-base) 88%, transparent) !important;
+}
+
+/* Gradient bg pages */
+.dark .from-surface-50,
+.dark .from-brand-50\/30 { --tw-gradient-from: var(--ui-bg-page) !important; }
+.dark .to-brand-50\/30   { --tw-gradient-to:   var(--ui-bg-page) !important; }
+
+/* Shadows */
+.dark .shadow-sm  { box-shadow: 0 1px 4px rgba(0,0,0,0.5)  !important; }
+.dark .shadow-md  { box-shadow: 0 4px 16px rgba(0,0,0,0.6) !important; }
+.dark .hover\:shadow-md:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.6) !important; }
+
+/* ─────────────────────────────────────────────────────
+   SCROLLBARS
+   ───────────────────────────────────────────────────── */
+
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--ui-scrollbar); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ui-scrollbar-hover); }
+
+/* ─────────────────────────────────────────────────────
+   ANIMATIONS
+   ───────────────────────────────────────────────────── */
+
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(2px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slide-down {
   from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Depth indicator bar (left edge of nodes) ──── */
+/* ─────────────────────────────────────────────────────
+   DEPTH INDICATOR
+   ───────────────────────────────────────────────────── */
+
 .depth-indicator {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+  left: 0; top: 0; bottom: 0;
   width: 3px;
   border-radius: 0;
-}
-
-/* ── Global base ─────────────────────────────────  */
-* {
-  box-sizing: border-box;
-}
-
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── Scrollbar polish ────────────────────────────  */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-surface-200);
-  border-radius: 999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-surface-300);
 }

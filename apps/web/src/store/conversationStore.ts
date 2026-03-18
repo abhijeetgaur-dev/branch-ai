@@ -1,16 +1,18 @@
 // apps/web/src/store/conversationStore.ts
 import { create } from 'zustand';
 import { api }    from '../lib/api';
-import type { ConversationSummary, TreeNode, BranchPayload } from '../lib/api';
+import type { ConversationSummary, TreeNode, BranchPayload, ApiBlock } from '../lib/api';
 
 interface ConversationStore {
   conversations:        ConversationSummary[];
   activeConversationId: string | null;
-  activeTree:           TreeNode | null;
+  // Array of root threads — each is a depth-0 question node
+  activeTree:           TreeNode[] | null;
   activeNodeId:         string | null;
   isLoadingList:        boolean;
   isLoadingTree:        boolean;
   isBranching:          boolean;
+  isRegenerating:       boolean;
   error:                string | null;
 
   fetchConversations:  () => Promise<void>;
@@ -18,8 +20,12 @@ interface ConversationStore {
   setActiveNodeId:     (id: string | null) => void;
   createBranch:        (payload: BranchPayload) => Promise<void>;
   createConversation:  (title: string) => Promise<void>;
+  renameConversation:  (id: string, title: string) => Promise<void>;
   toggleFavorite:      (id: string) => Promise<void>;
   deleteConversation:  (id: string) => Promise<void>;
+  deleteNode:          (nodeId: string) => Promise<void>;
+  editQuestion:        (questionNodeId: string, answerNodeId: string, newContent: string) => Promise<void>;
+  reorderNodes:        (parentNodeId: string | null, orderedIds: string[]) => Promise<void>;
   clearError:          () => void;
 }
 
@@ -31,39 +37,31 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
   isLoadingList:        false,
   isLoadingTree:        false,
   isBranching:          false,
+  isRegenerating:       false,
   error:                null,
 
   fetchConversations: async () => {
     if (get().isLoadingList) return;
-    console.log('[store] fetchConversations — starting');
     set({ isLoadingList: true, error: null });
     try {
       const conversations = await api.conversations.list();
-      console.log('[store] fetchConversations — got', conversations.length);
       set({ conversations, isLoadingList: false });
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.error('[store] fetchConversations FAILED:', message);
-      set({ error: message, isLoadingList: false });
+      set({ error: err instanceof Error ? err.message : String(err), isLoadingList: false });
     }
   },
 
   selectConversation: async (id: string) => {
-    console.log('[store] selectConversation', id);
     set({ activeConversationId: id, isLoadingTree: true, activeTree: null, error: null });
     try {
       const tree = await api.conversations.getTree(id);
-      console.log('[store] selectConversation — got tree');
-      set({ activeTree: tree, isLoadingTree: false });
+      // tree is TreeNode[] — empty array means no threads yet
+      set({ activeTree: tree.length ? tree : [], isLoadingTree: false });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      // A 404 "no nodes" is not a real error — it just means
-      // the conversation is empty and the user needs to ask the first question.
-      if (message.includes('no nodes') || message.includes('not found') || message.includes('404')) {
-        console.log('[store] selectConversation — conversation is empty, ready for first question');
-        set({ activeTree: null, isLoadingTree: false, error: null });
+      if (message.includes('no nodes') || message.includes('not found')) {
+        set({ activeTree: [], isLoadingTree: false, error: null });
       } else {
-        console.error('[store] selectConversation FAILED:', message);
         set({ error: message, isLoadingTree: false });
       }
     }
@@ -72,55 +70,60 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
   setActiveNodeId: (id) => set({ activeNodeId: id }),
 
   createBranch: async (payload: BranchPayload) => {
-    console.log('[store] createBranch');
     set({ isBranching: true, error: null });
     try {
       const { questionNode, answerNode } = await api.ai.branch(payload);
+      const questionWithAnswer: TreeNode = {
+        ...questionNode,
+        children: [{ ...answerNode, children: [] }],
+      };
+
       set((state) => {
-        if (!state.activeTree) {
-          // First question in this conversation — the question node IS the root
+        const tree = state.activeTree ?? [];
+
+        // parentNodeId === null → new root thread, append to array
+        if (!payload.parentNodeId) {
           return {
-            activeTree: {
-              ...questionNode,
-              children: [{ ...answerNode, children: [] }],
-            },
+            activeTree:  [...tree, questionWithAnswer],
             isBranching: false,
           };
         }
+
+        // Otherwise insert into the existing tree
         return {
-          activeTree: insertNodes(
-            state.activeTree,
-            payload.parentNodeId,
-            questionNode,
-            answerNode
-          ),
+          activeTree:  insertIntoForest(tree, payload.parentNodeId, questionWithAnswer),
           isBranching: false,
         };
       });
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.error('[store] createBranch FAILED:', message);
-      set({ error: message, isBranching: false });
+      set({ error: err instanceof Error ? err.message : String(err), isBranching: false });
     }
   },
 
   createConversation: async (title: string) => {
-    console.log('[store] createConversation:', title);
     try {
       const conversation = await api.conversations.create({ title });
-      console.log('[store] createConversation — created:', conversation.id);
       set((state) => ({
         conversations:        [conversation, ...state.conversations],
         activeConversationId: conversation.id,
-        // Don't load the tree — it's empty, show the first-question UI instead
-        activeTree:           null,
+        activeTree:           [],  // empty — ready for first question
         isLoadingTree:        false,
         error:                null,
       }));
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.error('[store] createConversation FAILED:', message);
-      set({ error: message });
+      set({ error: err instanceof Error ? err.message : String(err) });
+    }
+  },
+
+  renameConversation: async (id: string, title: string) => {
+    set((state) => ({
+      conversations: state.conversations.map((c) => c.id === id ? { ...c, title } : c),
+    }));
+    try {
+      await api.conversations.rename(id, title);
+    } catch (err) {
+      const conversations = await api.conversations.list().catch(() => get().conversations);
+      set({ conversations, error: err instanceof Error ? err.message : String(err) });
     }
   },
 
@@ -157,26 +160,163 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
     }
   },
 
+  deleteNode: async (nodeId: string) => {
+    set((state) => ({
+      activeTree: state.activeTree
+        ? removeFromForest(state.activeTree, nodeId)
+        : null,
+    }));
+    try {
+      await api.nodes.delete(nodeId);
+    } catch (err) {
+      const id = get().activeConversationId;
+      if (id) {
+        const tree = await api.conversations.getTree(id).catch(() => null);
+        set({ activeTree: tree, error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+  },
+
+  editQuestion: async (questionNodeId: string, answerNodeId: string, newContent: string) => {
+    const conversationId = get().activeConversationId;
+    if (!conversationId) return;
+
+    set((state) => ({
+      activeTree:     state.activeTree
+        ? updateContentInForest(state.activeTree, questionNodeId, newContent)
+        : null,
+      isRegenerating: true,
+      error:          null,
+    }));
+
+    try {
+      const { blocks } = await api.nodes.updateContent(questionNodeId, {
+        content: newContent,
+        conversationId,
+        answerNodeId,
+      });
+      set((state) => ({
+        activeTree:     state.activeTree
+          ? replaceBlocksInForest(state.activeTree, answerNodeId, blocks)
+          : null,
+        isRegenerating: false,
+      }));
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : String(err), isRegenerating: false });
+    }
+  },
+
+  reorderNodes: async (parentNodeId: string | null, orderedIds: string[]) => {
+    set((state) => ({
+      activeTree: state.activeTree
+        ? reorderInForest(state.activeTree, parentNodeId, orderedIds)
+        : null,
+    }));
+    try {
+      await api.nodes.reorder(orderedIds);
+    } catch (err) {
+      const id = get().activeConversationId;
+      if (id) {
+        const tree = await api.conversations.getTree(id).catch(() => null);
+        set({ activeTree: tree, error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+  },
+
   clearError: () => set({ error: null }),
 }));
 
-function insertNodes(
-  tree:         TreeNode,
-  parentNodeId: string | null,
-  questionNode: TreeNode,
-  answerNode:   TreeNode
-): TreeNode {
-  const questionWithAnswer: TreeNode = {
-    ...questionNode,
-    children: [{ ...answerNode, children: [] }],
-  };
-  if (!parentNodeId || tree.id === parentNodeId) {
-    return { ...tree, children: [...(tree.children ?? []), questionWithAnswer] };
+// ─────────────────────────────────────────────
+// Forest mutation helpers
+// All operate on TreeNode[] (the forest)
+// ─────────────────────────────────────────────
+
+function insertIntoForest(
+  forest:      TreeNode[],
+  parentNodeId: string,
+  newNode:     TreeNode
+): TreeNode[] {
+  return forest.map((root) => insertIntoNode(root, parentNodeId, newNode));
+}
+
+function insertIntoNode(node: TreeNode, parentNodeId: string, newNode: TreeNode): TreeNode {
+  if (node.id === parentNodeId) {
+    return { ...node, children: [...(node.children ?? []), newNode] };
   }
   return {
-    ...tree,
-    children: (tree.children ?? []).map((child) =>
-      insertNodes(child, parentNodeId, questionNode, answerNode)
-    ),
+    ...node,
+    children: (node.children ?? []).map((c) => insertIntoNode(c, parentNodeId, newNode)),
+  };
+}
+
+function removeFromForest(forest: TreeNode[], nodeId: string): TreeNode[] {
+  return forest
+    .filter((root) => root.id !== nodeId)
+    .map((root) => removeFromNode(root, nodeId));
+}
+
+function removeFromNode(node: TreeNode, nodeId: string): TreeNode {
+  return {
+    ...node,
+    children: (node.children ?? [])
+      .filter((c) => c.id !== nodeId)
+      .map((c) => removeFromNode(c, nodeId)),
+  };
+}
+
+function updateContentInForest(forest: TreeNode[], nodeId: string, content: string): TreeNode[] {
+  return forest.map((root) => updateContentInNode(root, nodeId, content));
+}
+
+function updateContentInNode(node: TreeNode, nodeId: string, content: string): TreeNode {
+  if (node.id === nodeId) return { ...node, content };
+  return {
+    ...node,
+    children: (node.children ?? []).map((c) => updateContentInNode(c, nodeId, content)),
+  };
+}
+
+function replaceBlocksInForest(forest: TreeNode[], nodeId: string, blocks: ApiBlock[]): TreeNode[] {
+  return forest.map((root) => replaceBlocksInNode(root, nodeId, blocks));
+}
+
+function replaceBlocksInNode(node: TreeNode, nodeId: string, blocks: ApiBlock[]): TreeNode {
+  if (node.id === nodeId) return { ...node, blocks };
+  return {
+    ...node,
+    children: (node.children ?? []).map((c) => replaceBlocksInNode(c, nodeId, blocks)),
+  };
+}
+
+function reorderInForest(
+  forest:       TreeNode[],
+  parentNodeId: string | null,
+  orderedIds:   string[]
+): TreeNode[] {
+  // null = reorder roots themselves
+  if (!parentNodeId) {
+    return orderedIds
+      .map((id) => forest.find((n) => n.id === id))
+      .filter((n): n is TreeNode => !!n)
+      .map((n, i) => ({ ...n, position: i }));
+  }
+  return forest.map((root) => reorderInNode(root, parentNodeId, orderedIds));
+}
+
+function reorderInNode(
+  node:         TreeNode,
+  parentNodeId: string,
+  orderedIds:   string[]
+): TreeNode {
+  if (node.id === parentNodeId) {
+    const sorted = orderedIds
+      .map((id) => node.children?.find((c) => c.id === id))
+      .filter((c): c is TreeNode => !!c)
+      .map((c, i) => ({ ...c, position: i }));
+    return { ...node, children: sorted };
+  }
+  return {
+    ...node,
+    children: (node.children ?? []).map((c) => reorderInNode(c, parentNodeId, orderedIds)),
   };
 }

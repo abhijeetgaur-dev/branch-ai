@@ -1,25 +1,13 @@
 // src/types/index.ts
-// These types mirror the API response shapes exactly.
-// Source of truth is apps/web/src/lib/api.ts — keep in sync.
 
 export type BlockType =
-  | 'heading'
-  | 'paragraph'
-  | 'code'
-  | 'bullet_list'
-  | 'numbered_list'
-  | 'quote'
-  | 'callout';
+  | 'heading' | 'paragraph' | 'code'
+  | 'bullet_list' | 'numbered_list' | 'quote' | 'callout';
 
 export type NodeType    = 'question' | 'answer';
 export type Role        = 'user' | 'assistant';
 export type CalloutType = 'info' | 'warning' | 'success' | 'error';
 
-// ─────────────────────────────────────────────
-// Block item — list entries from the API
-// Previously was string[] in dummy data.
-// API returns BlockItem[] with {id, content, position}.
-// ─────────────────────────────────────────────
 export interface BlockItem {
   id:       string;
   content:  string;
@@ -30,11 +18,11 @@ export interface Block {
   id:          string;
   nodeId:      string;
   type:        BlockType;
-  content:     string;          // empty string for list types
+  content:     string;
   position:    number;
   language:    string | null;
   calloutType: CalloutType | null;
-  items:       BlockItem[];     // populated for bullet_list / numbered_list
+  items:       BlockItem[];
 }
 
 export interface Node {
@@ -44,11 +32,12 @@ export interface Node {
   parentBlockId:  string | null;
   type:           NodeType;
   role:           Role;
-  content:        string | null;  // only for question nodes
+  content:        string | null;
   depth:          number;
   path:           string;
+  position:       number;
   isCollapsed:    boolean;
-  createdAt:      string;         // ISO string from API (not Date object)
+  createdAt:      string;
   blocks:         Block[];
   children:       Node[];
 }
@@ -64,24 +53,21 @@ export interface ConversationSummary {
   _count:      { nodes: number };
 }
 
-// Full conversation with tree — used in ConversationView
+// Conversation now holds an array of root threads
 export interface Conversation extends ConversationSummary {
   ownerId:     string;
   workspaceId: string | null;
-  rootNode:    Node;
+  rootNodes:   Node[];   // was rootNode: Node
 }
 
-// ─────────────────────────────────────────────
-// Tree sidebar item
-// ─────────────────────────────────────────────
 export interface TreeItem {
-  id:         string;
-  label:      string;
-  depth:      number;
-  type:       NodeType;
+  id:          string;
+  label:       string;
+  depth:       number;
+  type:        NodeType;
   hasChildren: boolean;
-  isExpanded: boolean;
-  path:       string;
+  isExpanded:  boolean;
+  path:        string;
 }
 
 export interface User {
@@ -92,7 +78,7 @@ export interface User {
 }
 
 export interface Workspace {
-  id:   string;
-  name: string;
+  id:            string;
+  name:          string;
   conversations: ConversationSummary[];
 }

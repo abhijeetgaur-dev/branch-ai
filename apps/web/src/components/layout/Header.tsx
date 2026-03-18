@@ -2,9 +2,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Search, Bell, Settings, ChevronDown, Command,
-  LogOut, User, CreditCard, HelpCircle, Moon,
+  LogOut, User, CreditCard, HelpCircle, Moon, Sun,
 } from 'lucide-react';
 import { useClerk } from '@clerk/clerk-react';
+import { useThemeStore } from '../../store/themeStore';
 import { Button } from '../ui/Button';
 import { cn } from '../../lib/utils';
 
@@ -25,7 +26,8 @@ export const Header: React.FC<HeaderProps> = ({
   branchCount,
   user,
 }) => {
-  const { signOut } = useClerk();
+  const { signOut }      = useClerk();
+  const { isDark, toggle } = useThemeStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef                     = useRef<HTMLDivElement>(null);
 
@@ -181,7 +183,18 @@ export const Header: React.FC<HeaderProps> = ({
                   <DropdownItem icon={<User className="w-4 h-4" />} label="Profile" onClick={() => setDropdownOpen(false)} />
                   <DropdownItem icon={<CreditCard className="w-4 h-4" />} label="Billing" onClick={() => setDropdownOpen(false)} />
                   <DropdownItem icon={<Settings className="w-4 h-4" />} label="Settings" onClick={() => setDropdownOpen(false)} />
-                  <DropdownItem icon={<Moon className="w-4 h-4" />} label="Dark mode" onClick={() => setDropdownOpen(false)} />
+                  <button
+                    onClick={() => { toggle(); setDropdownOpen(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors"
+                  >
+                    <span className="text-surface-400">
+                      {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                    </span>
+                    {isDark ? 'Light mode' : 'Dark mode'}
+                    <span className="ml-auto text-xs text-surface-400 bg-surface-100 px-1.5 py-0.5 rounded">
+                      {isDark ? '☀' : '☾'}
+                    </span>
+                  </button>
                 </div>
 
                 <div className="border-t border-surface-100 py-1">

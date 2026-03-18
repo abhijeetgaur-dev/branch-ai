@@ -8,29 +8,22 @@ import { Sidebar }              from './components/layout/Sidebar';
 import { Header }               from './components/layout/Header';
 import { TreeSidebar }          from './components/tree/TreeSidebar';
 import { ConversationView }     from './components/conversation/ConversationView';
+import { NewConversationModal } from './components/conversation/NewConversationModal';
 import { useConversationStore } from './store/conversationStore';
 import { setTokenGetter }       from './lib/api';
 import type { Node }            from './types';
-import {
-  GitBranch, ArrowRight, Sparkles,
-  Layers, Zap, Loader2, Send,
-} from 'lucide-react';
-
-function countQuestions(node: Node): number {
-  let n = node.type === 'question' ? 1 : 0;
-  node.children?.forEach((c) => { n += countQuestions(c); });
-  return n;
-}
+import { GitBranch, ArrowRight, Sparkles, Layers, Zap, Loader2 } from 'lucide-react';
 
 function AuthenticatedApp() {
-  const { user }                       = useUser();
+  const { user }                           = useUser();
   const { getToken, isLoaded, isSignedIn } = useAuth();
-  const initialized                    = useRef(false);
+  const initialized                        = useRef(false);
+  const [showNewModal, setShowNewModal]    = useState(false);
 
   const {
     conversations,
     activeConversationId,
-    activeTree,
+    activeTree,         // now TreeNode[] | null
     activeNodeId,
     isLoadingList,
     isLoadingTree,
@@ -39,35 +32,34 @@ function AuthenticatedApp() {
     selectConversation,
     setActiveNodeId,
     toggleFavorite,
+    deleteConversation,
+    renameConversation,
     clearError,
   } = useConversationStore();
 
   useEffect(() => {
-    console.log('[App] auth state — isLoaded:', isLoaded, 'isSignedIn:', isSignedIn);
     if (!isLoaded || !isSignedIn) return;
     if (initialized.current) return;
     initialized.current = true;
 
-    console.log('[App] Clerk ready — setting token getter and fetching conversations');
-    setTokenGetter(async () => {
-      const token = await getToken();
-      console.log('[App] getToken called — has token:', !!token);
-      return token;
-    });
-
+    setTokenGetter(() => getToken());
     useConversationStore.getState().fetchConversations();
   }, [isLoaded, isSignedIn, getToken]);
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
-  const branchCount = activeTree ? Math.max(0, countQuestions(activeTree) - 1) : 0;
 
-  const handleNewConversation = () => {
-    const title = window.prompt('Conversation title:');
-    if (title?.trim()) {
-      useConversationStore.getState().createConversation(title.trim());
-    }
+  // Count branches across all root threads
+  const branchCount = activeTree
+    ? activeTree.reduce((sum, root) => sum + countQuestions(root) - 1, 0)
+    : 0;
+
+  const handleNewConversation = () => setShowNewModal(true);
+
+  const handleCreateConversation = (title: string) => {
+    useConversationStore.getState().createConversation(title);
   };
 
+  // Inline branch buttons on answer cards
   const handleBranchCreate = (
     parentNodeId: string,
     blockId: string | null,
@@ -82,74 +74,18 @@ function AuthenticatedApp() {
     });
   };
 
-  // First question handler for empty conversations
-  const handleFirstQuestion = (question: string) => {
-    if (!activeConversationId || !question.trim()) return;
+  // Bottom bar — always creates a new root thread (parentNodeId: null)
+  const handleBottomBarSubmit = (question: string) => {
+    if (!activeConversationId) return;
     useConversationStore.getState().createBranch({
       conversationId: activeConversationId,
-      parentNodeId:   null,  // no parent — this is the root
+      parentNodeId:   null,  // ← new root thread, depth 0
       parentBlockId:  null,
-      question:       question.trim(),
+      question,
     });
   };
 
-  // ── Empty conversation — ask first question ──
-  const FirstQuestionScreen = () => {
-    const [q, setQ] = useState('');
-    const conv = conversations.find((c) => c.id === activeConversationId);
-
-    return (
-      <div className="flex-1 flex flex-col min-h-0 bg-surface-50">
-        <div className="flex-1 flex items-center justify-center px-8">
-          <div className="w-full max-w-2xl text-center">
-            <div className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-brand-500 to-violet-600 flex items-center justify-center">
-              <GitBranch className="w-7 h-7 text-white" />
-            </div>
-            <h2 className="text-xl font-semibold text-surface-900 mb-2">
-              {conv?.title ?? 'New Conversation'}
-            </h2>
-            <p className="text-surface-500 text-sm mb-8">
-              Ask your first question to start building the knowledge tree.
-            </p>
-
-            <div className="flex items-center gap-3 bg-white border border-surface-200 rounded-xl px-4 py-3 shadow-sm focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-500/20 transition-all">
-              <Sparkles className="w-4 h-4 text-brand-400 flex-shrink-0" />
-              <input
-                autoFocus
-                type="text"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey && q.trim()) {
-                    e.preventDefault();
-                    handleFirstQuestion(q);
-                  }
-                }}
-                disabled={isBranching}
-                placeholder="What do you want to explore?"
-                className="flex-1 bg-transparent text-sm text-surface-800 placeholder:text-surface-400 focus:outline-none disabled:cursor-not-allowed"
-              />
-              <button
-                onClick={() => handleFirstQuestion(q)}
-                disabled={!q.trim() || isBranching}
-                className="p-1.5 rounded-lg bg-brand-600 text-white hover:bg-brand-700 disabled:bg-surface-200 disabled:text-surface-400 transition-colors flex-shrink-0"
-              >
-                {isBranching
-                  ? <Loader2 className="w-4 h-4 animate-spin" />
-                  : <Send    className="w-4 h-4" />}
-              </button>
-            </div>
-
-            <p className="text-xs text-surface-400 mt-3">
-              Press Enter to ask · Your answer will be structured into explorable sections
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ── No conversation selected ─────────────────
+  // ── Empty state (no conversation selected) ────
   const EmptyState = () => (
     <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-surface-50 to-brand-50/30">
       <div className="text-center max-w-md px-8">
@@ -187,7 +123,6 @@ function AuthenticatedApp() {
     </div>
   );
 
-  // Decide what to show in the main area
   const renderMain = () => {
     if (isLoadingTree) {
       return (
@@ -200,24 +135,20 @@ function AuthenticatedApp() {
       );
     }
 
-    // Conversation selected but no tree yet — show first question input
-    if (activeConversationId && !activeTree) {
-      return <FirstQuestionScreen />;
-    }
-
-    // Conversation with tree — show full view
-    if (activeTree && activeConversation) {
+    // activeTree is TreeNode[] — null means not selected, [] means selected but empty
+    if (activeTree !== null && activeConversation) {
       return (
         <>
           <TreeSidebar
-            rootNode={activeTree}
+            rootNodes={activeTree}
             activeNodeId={activeNodeId}
             onNodeSelect={setActiveNodeId}
           />
           <ConversationView
-            conversation={{ ...activeConversation, rootNode: activeTree }}
+            conversation={{ ...activeConversation, rootNodes: activeTree }}
             isBranching={isBranching}
             onBranchCreate={handleBranchCreate}
+            onBottomBarSubmit={handleBottomBarSubmit}
             onToggleFavorite={toggleFavorite}
           />
         </>
@@ -236,12 +167,22 @@ function AuthenticatedApp() {
         </div>
       )}
 
+      {showNewModal && (
+        <NewConversationModal
+          onConfirm={handleCreateConversation}
+          onClose={() => setShowNewModal(false)}
+        />
+      )}
+
       <Sidebar
         conversations={conversations}
         activeConversationId={activeConversationId}
         isLoading={isLoadingList}
         onSelectConversation={selectConversation}
         onNewConversation={handleNewConversation}
+        onDeleteConversation={deleteConversation}
+        onRenameConversation={renameConversation}
+        onToggleFavorite={toggleFavorite}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -260,6 +201,12 @@ function AuthenticatedApp() {
       </div>
     </div>
   );
+}
+
+function countQuestions(node: Node): number {
+  let n = node.type === 'question' ? 1 : 0;
+  node.children?.forEach((c) => { n += countQuestions(c); });
+  return n;
 }
 
 export default function App() {

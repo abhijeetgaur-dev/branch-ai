@@ -8,19 +8,19 @@ import { cn, getDepthColor, truncate } from '../../lib/utils';
 import type { Node } from '../../types/index';
 
 interface TreeSidebarProps {
-  rootNode:     Node;
+  rootNodes:    Node[];        // array of root threads
   activeNodeId: string | null;
   onNodeSelect: (nodeId: string) => void;
 }
 
-interface TreeNodeProps {
+interface TreeNodeItemProps {
   node:         Node;
   activeNodeId: string | null;
   onNodeSelect: (nodeId: string) => void;
   level?:       number;
 }
 
-const TreeNodeItem: React.FC<TreeNodeProps> = ({
+const TreeNodeItem: React.FC<TreeNodeItemProps> = ({
   node, activeNodeId, onNodeSelect, level = 0,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -28,16 +28,24 @@ const TreeNodeItem: React.FC<TreeNodeProps> = ({
   const isActive    = activeNodeId === node.id;
 
   const getNodeLabel = (): string => {
-    if (node.type === 'question') {
-      return truncate(node.content ?? 'Question', 32);
-    }
+    if (node.type === 'question') return truncate(node.content ?? 'Question', 32);
     const firstHeading = node.blocks?.find((b) => b.type === 'heading');
     return firstHeading ? truncate(firstHeading.content, 32) : 'AI Response';
   };
 
+  const handleClick = () => {
+    onNodeSelect(node.id);
+    const el = document.getElementById(`node-${node.id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.style.transition  = 'box-shadow 0.15s ease';
+      el.style.boxShadow   = '0 0 0 2px #3b82f6, 0 0 0 4px #bfdbfe';
+      setTimeout(() => { el.style.boxShadow = ''; }, 1200);
+    }
+  };
+
   return (
     <div className="relative">
-      {/* Vertical connection line */}
       {level > 0 && (
         <div
           className="absolute top-0 bottom-0 w-px bg-surface-200"
@@ -46,15 +54,14 @@ const TreeNodeItem: React.FC<TreeNodeProps> = ({
       )}
 
       <button
-        onClick={() => onNodeSelect(node.id)}
+        onClick={handleClick}
         className={cn(
-          'w-full flex items-center gap-2 py-1.5 px-2 rounded-md text-left text-sm transition-all duration-150',
+          'w-full flex items-center gap-2 py-1.5 px-2 rounded-md text-left transition-all duration-150',
           'hover:bg-surface-100',
           isActive && 'bg-brand-50 text-brand-700'
         )}
         style={{ paddingLeft: `${level * 16 + 8}px` }}
       >
-        {/* Expand/collapse toggle */}
         {hasChildren ? (
           <button
             onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
@@ -69,18 +76,11 @@ const TreeNodeItem: React.FC<TreeNodeProps> = ({
           <div className="w-4 flex-shrink-0" />
         )}
 
-        {/* Depth dot */}
-        <div className={cn(
-          'w-1.5 h-1.5 rounded-full flex-shrink-0',
-          getDepthColor(node.depth)
-        )} />
+        <div className={cn('w-1.5 h-1.5 rounded-full flex-shrink-0', getDepthColor(node.depth))} />
 
-        {/* Type icon */}
-        {node.type === 'question' ? (
-          <MessageSquare className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" />
-        ) : (
-          <Bot className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-        )}
+        {node.type === 'question'
+          ? <MessageSquare className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" />
+          : <Bot           className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />}
 
         <span className={cn(
           'truncate text-xs',
@@ -91,7 +91,7 @@ const TreeNodeItem: React.FC<TreeNodeProps> = ({
       </button>
 
       {hasChildren && isExpanded && (
-        <div className="relative">
+        <div>
           {node.children!.map((child) => (
             <TreeNodeItem
               key={child.id}
@@ -107,23 +107,20 @@ const TreeNodeItem: React.FC<TreeNodeProps> = ({
   );
 };
 
-// ── Count helpers ──────────────────────────────────
-
-function countByType(node: Node, type: 'question' | 'answer'): number {
-  let count = node.type === type ? 1 : 0;
-  node.children?.forEach((child) => { count += countByType(child, type); });
-  return count;
+function countByType(nodes: Node[], type: 'question' | 'answer'): number {
+  return nodes.reduce((sum, n) => {
+    let count = n.type === type ? 1 : 0;
+    if (n.children?.length) count += countByType(n.children, type);
+    return sum + count;
+  }, 0);
 }
 
-// ── Sidebar ────────────────────────────────────────
-
 export const TreeSidebar: React.FC<TreeSidebarProps> = ({
-  rootNode, activeNodeId, onNodeSelect,
+  rootNodes, activeNodeId, onNodeSelect,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const questionCount = countByType(rootNode, 'question');
-  const answerCount   = countByType(rootNode, 'answer');
+  const questionCount = countByType(rootNodes, 'question');
+  const answerCount   = countByType(rootNodes, 'answer');
 
   if (isCollapsed) {
     return (
@@ -131,7 +128,7 @@ export const TreeSidebar: React.FC<TreeSidebarProps> = ({
         <button
           onClick={() => setIsCollapsed(false)}
           className="p-2 rounded-lg hover:bg-surface-100 transition-colors"
-          title="Show branch navigator"
+          title="Show navigator"
         >
           <GitBranch className="w-5 h-5 text-surface-500" />
         </button>
@@ -140,46 +137,48 @@ export const TreeSidebar: React.FC<TreeSidebarProps> = ({
   }
 
   return (
-    <div className="w-64 bg-surface-50 border-r border-surface-200 flex flex-col">
-
-      {/* Header */}
+    <div className="w-60 bg-surface-50 border-r border-surface-200 flex flex-col">
       <div className="p-4 border-b border-surface-200">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <GitBranch className="w-4 h-4 text-brand-500" />
-            <h3 className="text-sm font-semibold text-surface-900">Branch Navigator</h3>
+            <h3 className="text-sm font-semibold text-surface-900">Navigator</h3>
           </div>
           <button
             onClick={() => setIsCollapsed(true)}
             className="p-1 rounded hover:bg-surface-200 transition-colors"
-            title="Collapse navigator"
           >
             <EyeOff className="w-4 h-4 text-surface-400" />
           </button>
         </div>
-
         <div className="flex items-center gap-3 text-xs text-surface-500">
           <span className="flex items-center gap-1">
-            <MessageSquare className="w-3 h-3" />
-            {questionCount} {questionCount === 1 ? 'question' : 'questions'}
+            <MessageSquare className="w-3 h-3" />{questionCount}
           </span>
           <span className="flex items-center gap-1">
-            <Bot className="w-3 h-3" />
-            {answerCount} {answerCount === 1 ? 'answer' : 'answers'}
+            <Bot className="w-3 h-3" />{answerCount}
+          </span>
+          <span className="flex items-center gap-1">
+            <GitBranch className="w-3 h-3" />{rootNodes.length} threads
           </span>
         </div>
       </div>
 
-      {/* Tree */}
       <div className="flex-1 overflow-y-auto p-2">
-        <TreeNodeItem
-          node={rootNode}
-          activeNodeId={activeNodeId}
-          onNodeSelect={onNodeSelect}
-        />
+        {rootNodes.length === 0 ? (
+          <p className="text-xs text-surface-400 text-center py-4">No threads yet</p>
+        ) : (
+          rootNodes.map((root) => (
+            <TreeNodeItem
+              key={root.id}
+              node={root}
+              activeNodeId={activeNodeId}
+              onNodeSelect={onNodeSelect}
+            />
+          ))
+        )}
       </div>
 
-      {/* Footer */}
       <div className="p-3 border-t border-surface-200">
         <button className="w-full flex items-center justify-center gap-2 py-2 px-3 text-xs text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-lg transition-colors">
           <Maximize2 className="w-3 h-3" />
