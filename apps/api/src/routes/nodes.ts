@@ -41,7 +41,7 @@ nodeRouter.post('/', async (req, res, next) => {
   try {
     const parsed = CreateNodeSchema.safeParse(req.body);
     if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
-    const { userId } = (req as AuthedRequest).auth;
+    const { userId } = (req as unknown as AuthedRequest).auth;
     const node = await createNode({ ...parsed.data, createdById: userId });
     res.status(201).json(node);
   } catch (err) { next(err); }
@@ -83,7 +83,7 @@ nodeRouter.delete('/:id', async (req, res, next) => {
 // Updates question text and regenerates the answer
 nodeRouter.patch('/:id/content', async (req, res, next) => {
   try {
-    const { userId } = (req as AuthedRequest).auth;
+    const { userId } = (req as unknown as AuthedRequest).auth;
     const parsed = UpdateContentSchema.safeParse(req.body);
     if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
 

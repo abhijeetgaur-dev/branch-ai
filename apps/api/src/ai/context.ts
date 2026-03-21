@@ -39,11 +39,13 @@ const BUDGET = {
 // ─────────────────────────────────────────────
 
 type StoredBlock = {
-  type:        string;
-  content:     string;
-  language?:   string | null;
+  id?:          string;
+  type:         string;
+  content:      string;
+  position:     number;
+  language?:    string | null;
   calloutType?: string | null;
-  items:       { content: string; position: number }[];
+  items:        { content: string; position: number }[];
 };
 
 function blockToText(block: StoredBlock): string {
