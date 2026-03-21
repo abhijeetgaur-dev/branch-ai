@@ -372,3 +372,86 @@ input:focus, textarea:focus {
   width: 3px;
   border-radius: 0;
 }
+
+/* ─────────────────────────────────────────────────────
+   MOBILE / TOUCH OVERRIDES
+   ───────────────────────────────────────────────────── */
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Safe area insets for iOS notch / home indicator */
+.h-screen {
+  height: 100dvh;  /* dynamic viewport height — accounts for browser chrome on mobile */
+}
+
+/* Bottom input bar — sit above iOS home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-input-bar {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Larger tap targets on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  button, a {
+    min-height: 44px;
+    min-width:  44px;
+  }
+
+  /* But let small inline buttons be smaller */
+  .tap-sm {
+    min-height: unset;
+    min-width:  unset;
+  }
+}
+
+/* Smooth scrolling on iOS */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─────────────────────────────────────────────────────
+   MOBILE — drawer animations + touch overrides
+   ───────────────────────────────────────────────────── */
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.animate-slide-in-left  { animation: slide-in-left  0.22s cubic-bezier(0.32,0.72,0,1); }
+.animate-slide-in-right { animation: slide-in-right 0.22s cubic-bezier(0.32,0.72,0,1); }
+
+/* Prevent overscroll bounce on iOS */
+html { overflow: hidden; height: 100%; }
+body { overflow: hidden; height: 100%; overscroll-behavior: none; }
+
+/* Larger tap targets on mobile */
+@media (max-width: 768px) {
+  button { min-height: 36px; }
+
+  /* Make question text bigger on mobile */
+  .node-question-text { font-size: 0.9375rem; }
+
+  /* Code blocks scroll nicely on mobile */
+  pre { -webkit-overflow-scrolling: touch; }
+
+  /* Prevent double-tap zoom on buttons */
+  button, a { touch-action: manipulation; }
+}
+
+/* Safe area insets for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-bar-safe {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+}

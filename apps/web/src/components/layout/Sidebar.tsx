@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   GitBranch, Plus, Star, Clock, Archive,
   ChevronRight, MoreHorizontal, Loader2,
-  Trash2, Edit3, StarOff, PanelLeftClose, PanelLeftOpen,
+  Trash2, Edit3, StarOff, PanelLeftClose, PanelLeftOpen, X,
 } from 'lucide-react';
 import { cn, formatDate, truncate } from '../../lib/utils';
 import { Button } from '../ui/Button';
@@ -18,6 +18,7 @@ interface SidebarProps {
   onDeleteConversation?: (id: string) => void;
   onRenameConversation?: (id: string, newTitle: string) => void;
   onToggleFavorite?:    (id: string) => void;
+  onClose?:             () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -29,6 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteConversation,
   onRenameConversation,
   onToggleFavorite,
+  onClose,
 }) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     favorites: true,
@@ -212,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // ── Collapsed view ────────────────────────────
   if (isCollapsed) {
     return (
-      <aside className="w-14 h-screen bg-white border-r border-surface-200 flex flex-col items-center py-4 gap-4 flex-shrink-0">
+      <aside className="w-14 h-full bg-white border-r border-surface-200 flex flex-col items-center py-4 gap-4 flex-shrink-0">
         <button
           onClick={() => setIsCollapsed(false)}
           className="p-2 rounded-lg hover:bg-surface-100 text-surface-500 hover:text-surface-700 transition-colors"
@@ -251,7 +253,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }
 
   return (
-    <aside className="w-72 h-screen bg-white border-r border-surface-200 flex flex-col flex-shrink-0">
+    <aside className="w-72 h-full bg-white border-r border-surface-200 flex flex-col flex-shrink-0">
       <div className="h-16 px-5 flex items-center border-b border-surface-200">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center">
@@ -259,13 +261,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <span className="text-lg font-bold text-surface-900">BranchAI</span>
         </div>
-        <button
-          onClick={() => setIsCollapsed(true)}
-          className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-400 hover:text-surface-600 transition-colors"
-          title="Collapse sidebar"
-        >
-          <PanelLeftClose className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setIsCollapsed(true)}
+            className="hidden md:flex p-1.5 rounded-lg hover:bg-surface-100 text-surface-400 hover:text-surface-600 transition-colors"
+            title="Collapse sidebar"
+          >
+            <PanelLeftClose className="w-4 h-4" />
+          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="md:hidden p-1.5 rounded-lg hover:bg-surface-100 text-surface-400 hover:text-surface-600 transition-colors"
+              title="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="p-4">

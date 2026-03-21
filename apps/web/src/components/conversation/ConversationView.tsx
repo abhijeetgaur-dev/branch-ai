@@ -61,7 +61,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
     <div className="flex-1 flex flex-col min-h-0 bg-surface-50">
 
       {/* Header */}
-      <div className="bg-white border-b border-surface-200 px-6 py-4">
+      <div className="bg-white border-b border-surface-200 px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5 mb-1">
@@ -99,7 +99,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
 
       {/* Thread list */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-6 py-8">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 md:py-8">
 
           {rootNodes.length === 0 && !isBranching ? (
             // Empty state — no threads yet
@@ -144,10 +144,10 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
       </div>
 
       {/* Bottom bar — always creates a NEW ROOT THREAD (depth 0) */}
-      <div className="bg-white border-t border-surface-200 px-6 py-3">
-        <div className="max-w-3xl mx-auto">
+      <div className="bg-white border-t border-surface-200 px-3 md:px-6 py-2 md:py-3 bottom-bar-safe">
+        <div className="max-w-4xl mx-auto">
           <div className={cn(
-            'flex items-center gap-3 bg-surface-50 border rounded-xl px-4 py-2.5 transition-all',
+            'flex items-center gap-3 bg-surface-50 border rounded-xl px-3 md:px-4 py-3 md:py-2.5 transition-all',
             isDisabled
               ? 'border-surface-200 opacity-60'
               : 'border-surface-200 focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-500/20'

@@ -16,8 +16,8 @@ interface NodeRendererProps {
   node:             Node;
   onBranchCreate?:  (parentNodeId: string, blockId: string | null, question: string) => void;
   isRoot?:          boolean;
-  hasSiblings?:     boolean;  // tells this node it's draggable
-  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
+  hasSiblings?:     boolean;
+  forceCollapsed?:  boolean;  // true when an ancestor is collapsed — propagates down
 }
 
 // ─────────────────────────────────────────────
@@ -26,13 +26,14 @@ interface NodeRendererProps {
 // ─────────────────────────────────────────────
 
 interface SiblingGroupProps {
-  nodes:           Node[];
-  parentNodeId:    string | null;
-  onBranchCreate?: (parentNodeId: string, blockId: string | null, question: string) => void;
+  nodes:            Node[];
+  parentNodeId:     string | null;
+  onBranchCreate?:  (parentNodeId: string, blockId: string | null, question: string) => void;
+  forceCollapsed?:  boolean;
 }
 
 export const SiblingGroup: React.FC<SiblingGroupProps> = ({
-  nodes, parentNodeId, onBranchCreate,
+  nodes, parentNodeId, onBranchCreate, forceCollapsed = false,
 }) => {
   const { reorderNodes }                = useConversationStore();
   const [dragOverId, setDragOverId]    = useState<string | null>(null);
@@ -88,6 +89,7 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
             node={node}
             onBranchCreate={onBranchCreate}
             hasSiblings={hasSiblings}
+            forceCollapsed={forceCollapsed}
           />
         </div>
       ))}
@@ -102,10 +104,12 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
 export const NodeRenderer: React.FC<NodeRendererProps> = ({
   node,
   onBranchCreate,
-  isRoot       = false,
-  hasSiblings  = false,
+  isRoot          = false,
+  hasSiblings     = false,
+  forceCollapsed  = false,
 }) => {
-  const [isCollapsed, setIsCollapsed]         = useState(false);
+  const [localCollapsed, setLocalCollapsed]    = useState(false);
+  const isCollapsed = localCollapsed || forceCollapsed;
   const [showBranchInput, setShowBranchInput] = useState(false);
   const [isEditing, setIsEditing]             = useState(false);
   const [editValue, setEditValue]             = useState(node.content ?? '');
@@ -141,7 +145,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
     return (
       <div id={`node-${node.id}`} ref={nodeRef} className="animate-fade-in">
         <div
-          className="group flex items-start gap-2"
+          className="group flex items-start gap-2 py-1"
           onMouseEnter={() => setShowActions(true)}
           onMouseLeave={() => setShowActions(false)}
         >
@@ -231,7 +235,12 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
         {node.children && node.children.length > 0 && (
           <div className="mt-3 ml-3 pl-4 border-l border-surface-200">
             {node.children.map((child) => (
-              <NodeRenderer key={child.id} node={child} onBranchCreate={onBranchCreate} />
+              <NodeRenderer
+                key={child.id}
+                node={child}
+                onBranchCreate={onBranchCreate}
+                forceCollapsed={forceCollapsed}
+              />
             ))}
           </div>
         )}
@@ -285,7 +294,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
           )}>
             {/* Collapse toggle — always available, collapses the whole card body */}
             <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onClick={() => setLocalCollapsed(!localCollapsed)}
               className="flex items-center gap-1 px-2 py-1 text-xs text-surface-500 hover:text-surface-700 hover:bg-surface-50 rounded-lg transition-colors"
               title={isCollapsed ? 'Expand' : 'Collapse'}
             >
@@ -326,6 +335,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
                           nodes={blockBranches}
                           parentNodeId={node.id}
                           onBranchCreate={onBranchCreate}
+                          forceCollapsed={isCollapsed}
                         />
                       </div>
                     )}
@@ -366,12 +376,13 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
       </div>
 
       {/* General follow-up branches — also hidden when collapsed */}
-      {!isCollapsed && generalFollowups.length > 0 && (
+      {!localCollapsed && !forceCollapsed && generalFollowups.length > 0 && (
         <div className="mt-5 pl-4 border-l border-surface-200 space-y-5">
           <SiblingGroup
             nodes={generalFollowups}
             parentNodeId={node.id}
             onBranchCreate={onBranchCreate}
+            forceCollapsed={false}
           />
         </div>
       )}

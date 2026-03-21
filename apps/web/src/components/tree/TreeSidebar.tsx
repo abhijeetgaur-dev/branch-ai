@@ -124,7 +124,7 @@ export const TreeSidebar: React.FC<TreeSidebarProps> = ({
 
   if (isCollapsed) {
     return (
-      <div className="w-12 bg-surface-50 border-r border-surface-200 flex flex-col items-center py-4">
+      <div className="w-12 h-full bg-surface-50 border-r border-surface-200 flex flex-col items-center py-4">
         <button
           onClick={() => setIsCollapsed(false)}
           className="p-2 rounded-lg hover:bg-surface-100 transition-colors"
@@ -137,7 +137,7 @@ export const TreeSidebar: React.FC<TreeSidebarProps> = ({
   }
 
   return (
-    <div className="w-60 bg-surface-50 border-r border-surface-200 flex flex-col">
+    <div className="w-60 md:w-60 h-full bg-surface-50 border-r border-surface-200 flex flex-col">
       <div className="p-4 border-b border-surface-200">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
