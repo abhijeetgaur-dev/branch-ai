@@ -1,1 +1,14 @@
-node_modules
+# Env files
+.env
+.env.*
+*.env
+
+# Allow safe templates
+!.env.example
+!.env.sample
+
+# Node / pnpm
+node_modules/
+.pnpm-store/
+
+docs/
