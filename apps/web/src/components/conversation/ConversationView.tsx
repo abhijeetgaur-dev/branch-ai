@@ -58,7 +58,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-surface-50">
+    <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-surface-50">
 
       {/* Header */}
       <div className="bg-white border-b border-surface-200 px-4 md:px-6 py-3 md:py-4">

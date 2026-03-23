@@ -431,9 +431,8 @@ html {
 .animate-slide-in-left  { animation: slide-in-left  0.22s cubic-bezier(0.32,0.72,0,1); }
 .animate-slide-in-right { animation: slide-in-right 0.22s cubic-bezier(0.32,0.72,0,1); }
 
-/* iOS overscroll — only prevent on the root, not on scroll containers */
-html { height: 100%; }
-body { height: 100%; overscroll-behavior-y: none; }
+/* Lock page scroll — only internal containers scroll */
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
 
 /* Larger tap targets on mobile */
 @media (max-width: 768px) {

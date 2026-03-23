@@ -216,7 +216,7 @@ function AuthenticatedApp() {
           showTreeButton={!!(activeTree && activeTree.length > 0)}
         />
 
-        <div className="flex-1 flex min-h-0 overflow-hidden">
+        <div className="flex-1 flex min-h-0 overflow-hidden min-w-0">
           {/* ── Desktop tree sidebar (static) ── */}
           {activeTree && activeTree.length > 0 && (
             <div className="hidden md:block flex-shrink-0">
@@ -246,7 +246,7 @@ function AuthenticatedApp() {
           )}
 
           {/* ── Conversation area ── */}
-          <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="flex-1 min-w-0 flex flex-col min-h-0">
             {renderMain()}
           </div>
         </div>
