@@ -11,6 +11,7 @@
   },
 
   "scripts": {
+    "dev": "tsc --watch",
     "build": "tsc",
     "db:generate": "prisma generate --schema=./prisma/schema.prisma",
     "db:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
