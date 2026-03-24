@@ -9,12 +9,13 @@ import { Header }               from './components/layout/Header';
 import { TreeSidebar }          from './components/tree/TreeSidebar';
 import { ConversationView }     from './components/conversation/ConversationView';
 import { NewConversationModal } from './components/conversation/NewConversationModal';
+import { DocumentManagerModal } from './components/documents/DocumentManagerModal';
 import { useConversationStore } from './store/conversationStore';
 import { setTokenGetter }       from './lib/api';
-import type { Node }            from './types';
+import type { TreeNode }        from './lib/api';
 import { GitBranch, ArrowRight, Sparkles, Layers, Zap, Loader2 } from 'lucide-react';
 
-function countQuestions(node: Node): number {
+function countQuestions(node: TreeNode): number {
   let n = node.type === 'question' ? 1 : 0;
   node.children?.forEach((c) => { n += countQuestions(c); });
   return n;
@@ -25,6 +26,7 @@ function AuthenticatedApp() {
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const initialized                        = useRef(false);
   const [showNewModal, setShowNewModal]    = useState(false);
+  const [showDocumentManager, setShowDocumentManager] = useState(false);
 
   // Mobile drawer states
   const [sidebarOpen, setSidebarOpen]   = useState(false);
@@ -134,7 +136,7 @@ function AuthenticatedApp() {
     if (activeTree !== null && activeConversation) {
       return (
         <ConversationView
-          conversation={{ ...activeConversation, rootNodes: activeTree }}
+          conversation={{ ...activeConversation, ownerId: '', workspaceId: '', rootNodes: activeTree as any }}
           isBranching={isBranching}
           onBranchCreate={handleBranchCreate}
           onBottomBarSubmit={handleBottomBarSubmit}
@@ -162,6 +164,12 @@ function AuthenticatedApp() {
         />
       )}
 
+      {showDocumentManager && (
+        <DocumentManagerModal
+          onClose={() => setShowDocumentManager(false)}
+        />
+      )}
+
       {/* ── Desktop sidebar (static) ── */}
       <div className="hidden md:block flex-shrink-0">
         <Sidebar
@@ -173,6 +181,7 @@ function AuthenticatedApp() {
           onDeleteConversation={deleteConversation}
           onRenameConversation={renameConversation}
           onToggleFavorite={toggleFavorite}
+          onOpenKnowledgeBase={() => setShowDocumentManager(true)}
         />
       </div>
 
@@ -195,6 +204,7 @@ function AuthenticatedApp() {
               onDeleteConversation={deleteConversation}
               onRenameConversation={renameConversation}
               onToggleFavorite={toggleFavorite}
+              onOpenKnowledgeBase={() => setShowDocumentManager(true)}
               onClose={() => setSidebarOpen(false)}
             />
           </div>
@@ -221,7 +231,7 @@ function AuthenticatedApp() {
           {activeTree && activeTree.length > 0 && (
             <div className="hidden md:block flex-shrink-0">
               <TreeSidebar
-                rootNodes={activeTree}
+                rootNodes={activeTree as any}
                 activeNodeId={activeNodeId}
                 onNodeSelect={setActiveNodeId}
               />
@@ -237,7 +247,7 @@ function AuthenticatedApp() {
               />
               <div className="relative w-72 max-w-[85vw] h-full z-10 animate-slide-in-right">
                 <TreeSidebar
-                  rootNodes={activeTree}
+                  rootNodes={activeTree as any}
                   activeNodeId={activeNodeId}
                   onNodeSelect={(id) => { setActiveNodeId(id); setTreeOpen(false); }}
                 />
