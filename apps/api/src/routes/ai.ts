@@ -10,6 +10,8 @@ import { buildPromptMessages }               from '../ai/prompt';
 import { parseAiResponse, fallbackResponse } from '../ai/parser';
 import { requireAuth }                       from '../middleware/auth';
 import type { AuthedRequest }                from '../middleware/auth';
+import { prisma }                            from '@branch-ai/database';
+import { generateEmbeddings, cosineSimilarity } from '../services/embeddings';
 
 export const aiRouter = Router();
 
@@ -47,7 +49,55 @@ aiRouter.post('/branch', async (req, res, next) => {
 
     const aiRequest = await createAiRequest({ conversationId, userId, model: getModel() });
 
-    const context = await buildPromptMessages({ parentNodeId, parentBlockId, question });
+    let ragContextString: string | null = null;
+    let targetWorkspaceId = null;
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+      select: { workspaceId: true }
+    });
+    
+    if (conversation?.workspaceId) {
+       targetWorkspaceId = conversation.workspaceId;
+    } else {
+       const member = await prisma.workspaceMember.findFirst({ where: { userId } });
+       if (member) targetWorkspaceId = member.workspaceId;
+    }
+
+    if (targetWorkspaceId) {
+      try {
+        const questionEmbedding = await generateEmbeddings(question);
+        
+        // Fetch chunks for the workspace
+        const chunks = await prisma.documentChunk.findMany({
+          where: { document: { workspaceId: targetWorkspaceId } }
+        });
+
+        if (chunks.length > 0) {
+          // Calculate similarity
+          const scored = chunks.map(chunk => ({
+            content: chunk.content,
+            score: cosineSimilarity(questionEmbedding, chunk.embedding)
+          }));
+          
+          // Deduplicate and take top 3
+          scored.sort((a,b) => b.score - a.score);
+          const topChunks = scored.slice(0, 3);
+          
+          // Only include if reasonably relevant (Xenova threshold can be typically around 0.15 - 0.25)
+          if (topChunks[0].score > 0.1) {
+             ragContextString = topChunks.map(c => c.content).join('\n\n');
+             console.log(`[RAG] Found context with max score ${topChunks[0].score.toFixed(3)}`);
+          }
+        }
+      } catch (err) {
+         console.error('[RAG] Error retrieving context:', err);
+      }
+    }
+
+    const context = await buildPromptMessages(
+      { parentNodeId, parentBlockId, question },
+      ragContextString
+    );
 
     if (process.env.NODE_ENV === 'development') {
       console.log(

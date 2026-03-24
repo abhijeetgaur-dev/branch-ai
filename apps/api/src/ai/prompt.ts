@@ -11,6 +11,8 @@ import type { BuildContextOptions, BuiltContext } from './context';
 
 export const SYSTEM_PROMPT = `You are BranchAI, a structured knowledge assistant designed for deep exploration.
 
+{{RAG_CONTEXT_PLACEHOLDER}}
+
 CRITICAL: Respond ONLY with valid JSON. No markdown fences, no preamble, no text outside the JSON object.
 
 Response format:
@@ -48,7 +50,15 @@ Quality rules:
 // ─────────────────────────────────────────────
 
 export async function buildPromptMessages(
-  options: BuildContextOptions
+  options: BuildContextOptions,
+  ragContext?: string | null
 ): Promise<BuiltContext> {
-  return buildContext(options, SYSTEM_PROMPT);
+  let prompt = SYSTEM_PROMPT;
+  if (ragContext) {
+    const ragString = `Here is some verified knowledge base context you can use to answer questions:\n\n---\n${ragContext}\n---\n\nBase your answer on this context if it is relevant.`;
+    prompt = prompt.replace('{{RAG_CONTEXT_PLACEHOLDER}}', ragString);
+  } else {
+    prompt = prompt.replace('{{RAG_CONTEXT_PLACEHOLDER}}', '');
+  }
+  return buildContext(options, prompt);
 }
