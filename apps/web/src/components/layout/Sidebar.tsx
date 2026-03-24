@@ -18,6 +18,7 @@ interface SidebarProps {
   onDeleteConversation?: (id: string) => void;
   onRenameConversation?: (id: string, newTitle: string) => void;
   onToggleFavorite?:    (id: string) => void;
+  onOpenKnowledgeBase?: () => void;
   onClose?:             () => void;
 }
 
@@ -30,6 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteConversation,
   onRenameConversation,
   onToggleFavorite,
+  onOpenKnowledgeBase,
   onClose,
 }) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -229,6 +231,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <Plus className="w-4 h-4" />
         </button>
+        <button
+          onClick={onOpenKnowledgeBase}
+          className="p-2 rounded-lg bg-surface-100 text-surface-600 hover:bg-surface-200 transition-colors"
+          title="Knowledge Base"
+        >
+          <Archive className="w-4 h-4" />
+        </button>
         <div className="flex-1" />
         <div className="flex flex-col items-center gap-1">
           {conversations.slice(0, 6).map((c) => (
@@ -281,10 +290,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 flex flex-col gap-2">
         <Button variant="primary" size="md" className="w-full shadow-md shadow-brand-500/20" onClick={onNewConversation}>
           <Plus className="w-4 h-4" />
           New Conversation
+        </Button>
+        <Button variant="secondary" size="md" className="w-full bg-surface-100 hover:bg-surface-200 text-surface-700" onClick={onOpenKnowledgeBase}>
+          <Archive className="w-4 h-4" />
+          Knowledge Base (RAG)
         </Button>
       </div>
 

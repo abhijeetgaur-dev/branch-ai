@@ -5,6 +5,7 @@ let _getToken: (() => Promise<string | null>) | null = null;
 
 export function setTokenGetter(fn: () => Promise<string | null>) {
   _getToken = fn;
+  (api as any)._hackyGetToken = fn;
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -78,6 +79,29 @@ export const api = {
     branch: (data: BranchPayload) =>
       request<BranchResponse>('/api/ai/branch', { method: 'POST', body: JSON.stringify(data) }),
   },
+
+  documents: {
+    list:   () => request<DocumentSummary[]>('/api/documents'),
+    delete: (id: string) => request<null>(`/api/documents/${id}`, { method: 'DELETE' }),
+    upload: async (file: File) => {
+      // Create custom logic for File since `request` wrapper enforces JSON and content type manually.
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const headers: Record<string, string> = {};
+      const token = await (api as any)._hackyGetToken?.();
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${BASE_URL}/api/documents`, {
+        method: 'POST',
+        headers,
+        body: formData
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      return res.json();
+    }
+  }
 };
 
 // ─────────────────────────────────────────────
@@ -137,4 +161,11 @@ export interface TreeNode {
   createdAt:      string;
   blocks:         ApiBlock[];
   children:       TreeNode[];
+}
+
+export interface DocumentSummary {
+  id: string;
+  title: string;
+  url: string | null;
+  createdAt: string;
 }
