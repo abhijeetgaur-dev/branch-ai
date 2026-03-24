@@ -1,8 +1,9 @@
 // packages/database/prisma/schema.prisma
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated"
+  provider        = "prisma-client-js"
+  output          = "../generated"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -76,6 +77,7 @@ model Workspace {
 
   members       WorkspaceMember[]
   conversations Conversation[]
+  documents     Document[]
 
   @@map("workspaces")
 }
@@ -208,4 +210,31 @@ model AiRequest {
   @@index([userId, createdAt(sort: Desc)])
   @@index([status])
   @@map("ai_requests")
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  workspaceId String   @map("workspace_id")
+  title       String
+  url         String? // Could be literal URL or just a local file path
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  chunks    DocumentChunk[]
+
+  @@index([workspaceId])
+  @@map("documents")
+}
+
+model DocumentChunk {
+  id         String  @id @default(cuid())
+  documentId String  @map("document_id")
+  content    String
+  embedding  Float[]
+  position   Int     @default(0)
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("document_chunks")
 }
