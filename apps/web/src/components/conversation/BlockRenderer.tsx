@@ -11,6 +11,7 @@ import { BranchInput } from './BranchInput';
 interface BlockRendererProps {
   block:          Block;
   depth:          number;
+  conversationId: string;
   childBranches?: Node[];
   onAskFollowup?: (blockId: string, question: string) => void;
 }
@@ -18,6 +19,7 @@ interface BlockRendererProps {
 export const BlockRenderer: React.FC<BlockRendererProps> = ({
   block,
   depth,
+  conversationId,
   childBranches = [],
   onAskFollowup,
 }) => {
@@ -91,6 +93,7 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
             {showBranchInput && (
               <div className="mt-2 animate-slide-down">
                 <BranchInput
+                  conversationId={conversationId}
                   onSubmit={handleBranchSubmit}
                   onCancel={() => setShowBranchInput(false)}
                   placeholder={`Explore "${block.content}" deeper...`}

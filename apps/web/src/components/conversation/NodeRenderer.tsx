@@ -14,6 +14,7 @@ import { useConversationStore } from '../../store/conversationStore';
 
 interface NodeRendererProps {
   node:             Node;
+  conversationId:   string;
   onBranchCreate?:  (parentNodeId: string, blockId: string | null, question: string) => void;
   isRoot?:          boolean;
   hasSiblings?:     boolean;
@@ -27,13 +28,14 @@ interface NodeRendererProps {
 
 interface SiblingGroupProps {
   nodes:            Node[];
+  conversationId:   string;
   parentNodeId:     string | null;
   onBranchCreate?:  (parentNodeId: string, blockId: string | null, question: string) => void;
   forceCollapsed?:  boolean;
 }
 
 export const SiblingGroup: React.FC<SiblingGroupProps> = ({
-  nodes, parentNodeId, onBranchCreate, forceCollapsed = false,
+  nodes, conversationId, parentNodeId, onBranchCreate, forceCollapsed = false,
 }) => {
   const { reorderNodes }                = useConversationStore();
   const [dragOverId, setDragOverId]    = useState<string | null>(null);
@@ -87,6 +89,7 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
         >
           <NodeRenderer
             node={node}
+            conversationId={conversationId}
             onBranchCreate={onBranchCreate}
             hasSiblings={hasSiblings}
             forceCollapsed={forceCollapsed}
@@ -103,6 +106,7 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
 
 export const NodeRenderer: React.FC<NodeRendererProps> = ({
   node,
+  conversationId,
   onBranchCreate,
   isRoot          = false,
   hasSiblings     = false,
@@ -238,6 +242,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
               <NodeRenderer
                 key={child.id}
                 node={child}
+                conversationId={conversationId}
                 onBranchCreate={onBranchCreate}
                 forceCollapsed={forceCollapsed}
               />
@@ -326,6 +331,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
                     <BlockRenderer
                       block={block}
                       depth={node.depth}
+                      conversationId={conversationId}
                       childBranches={blockBranches}
                       onAskFollowup={(blockId, question) => onBranchCreate?.(node.id, blockId, question)}
                     />
@@ -333,6 +339,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
                       <div className="mt-4 pl-4 border-l-2 border-brand-200 space-y-5">
                         <SiblingGroup
                           nodes={blockBranches}
+                          conversationId={conversationId}
                           parentNodeId={node.id}
                           onBranchCreate={onBranchCreate}
                           forceCollapsed={isCollapsed}
@@ -356,6 +363,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
                 </button>
               ) : (
                 <BranchInput
+                  conversationId={conversationId}
                   onSubmit={(q) => { onBranchCreate?.(node.parentNodeId ?? node.id, null, q); setShowBranchInput(false); }}
                   onCancel={() => setShowBranchInput(false)}
                   placeholder="Ask anything about this response..."
@@ -380,6 +388,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
         <div className="mt-5 pl-4 border-l border-surface-200 space-y-5">
           <SiblingGroup
             nodes={generalFollowups}
+            conversationId={conversationId}
             parentNodeId={node.id}
             onBranchCreate={onBranchCreate}
             forceCollapsed={false}

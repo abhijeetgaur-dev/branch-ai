@@ -1,13 +1,15 @@
 // src/components/conversation/ConversationView.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Send, Loader2, Sparkles, GitBranch,
   Layers, Clock, Star, StarOff, MoreHorizontal,
+  Paperclip, FileText,
 } from 'lucide-react';
 import { cn, formatDate } from '../../lib/utils';
 import type { Conversation, Node } from '../../types';
 import { NodeRenderer, SiblingGroup } from './NodeRenderer';
 import { useConversationStore } from '../../store/conversationStore';
+import { useDocumentStore } from '../../store/documentStore';
 
 interface ConversationViewProps {
   conversation:       Conversation;
@@ -43,7 +45,20 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
   onToggleFavorite,
 }) => {
   const [newQuestion, setNewQuestion] = useState('');
+  const fileInputRef                  = useRef<HTMLInputElement>(null);
   const { isRegenerating }            = useConversationStore();
+  const { documents, fetchDocuments, uploadDocument, isUploading } = useDocumentStore();
+
+  useEffect(() => {
+    fetchDocuments(conversation.id);
+  }, [conversation.id]);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    await uploadDocument(file, conversation.id);
+  };
 
   const rootNodes  = conversation.rootNodes ?? [];
   const totalNodes = countAllNodes(rootNodes);
@@ -114,6 +129,7 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
             // Root threads — wrapped in SiblingGroup for drag reorder
             <SiblingGroup
               nodes={rootNodes}
+              conversationId={conversation.id}
               parentNodeId={null}
               onBranchCreate={onBranchCreate}
             />
@@ -144,8 +160,20 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
       </div>
 
       {/* Bottom bar — always creates a NEW ROOT THREAD (depth 0) */}
-      <div className="bg-white border-t border-surface-200 px-3 md:px-6 py-2 md:py-3 bottom-bar-safe">
-        <div className="max-w-4xl mx-auto">
+      <div className="bg-white border-t border-surface-200 px-3 md:px-6 py-2 md:py-3 bottom-bar-safe flex flex-col items-center">
+        <div className="max-w-4xl w-full">
+          
+          {documents && documents.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2 px-1">
+              {documents.map(doc => (
+                <div key={doc.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-50 border border-surface-200 rounded-md text-xs text-surface-700 shadow-sm animate-fade-in">
+                  <FileText className="w-3 h-3 text-brand-500" />
+                  <span className="truncate max-w-[200px]">{doc.title}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className={cn(
             'flex items-center gap-3 bg-surface-50 border rounded-xl px-3 md:px-4 py-3 md:py-2.5 transition-all',
             isDisabled
@@ -168,6 +196,21 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
               }
               className="flex-1 bg-transparent text-sm text-surface-800 placeholder:text-surface-400 focus:outline-none disabled:cursor-not-allowed"
             />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept=".pdf,.txt,.md,.csv"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="p-1.5 rounded-lg text-surface-400 hover:text-surface-600 hover:bg-surface-100 transition-colors disabled:opacity-50 flex-shrink-0"
+              title="Attach a document"
+            >
+              {isUploading ? <Loader2 className="w-4 h-4 animate-spin text-brand-500" /> : <Paperclip className="w-4 h-4" />}
+            </button>
             <button
               onClick={handleSubmit}
               disabled={!newQuestion.trim() || isDisabled}

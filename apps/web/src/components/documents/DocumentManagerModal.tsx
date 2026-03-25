@@ -4,15 +4,16 @@ import { useDocumentStore } from '../../store/documentStore';
 
 interface DocumentManagerModalProps {
   onClose: () => void;
+  conversationId?: string; // Optional: If provided, this is a conversation's knowledge base. If not, it's global.
 }
 
-export function DocumentManagerModal({ onClose }: DocumentManagerModalProps) {
+export function DocumentManagerModal({ onClose, conversationId }: DocumentManagerModalProps) {
   const { documents, fetchDocuments, uploadDocument, deleteDocument, isUploading, isLoading, error, clearError } = useDocumentStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetchDocuments();
-  }, []);
+    fetchDocuments(conversationId);
+  }, [conversationId]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -21,7 +22,7 @@ export function DocumentManagerModal({ onClose }: DocumentManagerModalProps) {
     // reset input
     if (fileInputRef.current) fileInputRef.current.value = '';
     
-    await uploadDocument(file);
+    await uploadDocument(file, conversationId);
   };
 
   return (
@@ -39,8 +40,14 @@ export function DocumentManagerModal({ onClose }: DocumentManagerModalProps) {
                 <Database className="w-5 h-5" />
              </div>
              <div>
-               <h2 className="text-lg font-semibold text-primary">Knowledge Base</h2>
-               <p className="text-xs text-muted">Upload documents to use as context for AI chats.</p>
+               <h2 className="text-lg font-semibold text-primary">
+                 {conversationId ? 'Conversation Knowledge Base' : 'Global Knowledge Base'}
+               </h2>
+               <p className="text-xs text-muted">
+                 {conversationId 
+                   ? 'Upload documents specific to this conversation.' 
+                   : 'Upload documents to use as context for all chats.'}
+               </p>
              </div>
           </div>
           <button

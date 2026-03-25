@@ -7,8 +7,8 @@ interface DocumentStore {
   isUploading: boolean;
   error: string | null;
 
-  fetchDocuments: () => Promise<void>;
-  uploadDocument: (file: File) => Promise<void>;
+  fetchDocuments: (conversationId?: string) => Promise<void>;
+  uploadDocument: (file: File, conversationId?: string) => Promise<void>;
   deleteDocument: (id: string) => Promise<void>;
   clearError: () => void;
 }
@@ -19,23 +19,23 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   isUploading: false,
   error: null,
 
-  fetchDocuments: async () => {
+  fetchDocuments: async (conversationId?: string) => {
     if (get().isLoading) return;
     set({ isLoading: true, error: null });
     try {
-      const documents = await api.documents.list();
+      const documents = await api.documents.list(conversationId);
       set({ documents, isLoading: false });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), isLoading: false });
     }
   },
 
-  uploadDocument: async (file: File) => {
+  uploadDocument: async (file: File, conversationId?: string) => {
     set({ isUploading: true, error: null });
     try {
-      await api.documents.upload(file);
+      await api.documents.upload(file, conversationId);
       // Refresh the list after successful upload
-      const documents = await api.documents.list();
+      const documents = await api.documents.list(conversationId);
       set({ documents, isUploading: false });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), isUploading: false });

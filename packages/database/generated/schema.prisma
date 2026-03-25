@@ -113,6 +113,7 @@ model Conversation {
   workspace  Workspace?  @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   nodes      Node[]
   aiRequests AiRequest[]
+  documents  Document[]
 
   @@index([ownerId])
   @@index([workspaceId])
@@ -213,16 +214,19 @@ model AiRequest {
 }
 
 model Document {
-  id          String   @id @default(cuid())
-  workspaceId String   @map("workspace_id")
-  title       String
-  url         String? // Could be literal URL or just a local file path
-  createdAt   DateTime @default(now()) @map("created_at")
+  id             String   @id @default(cuid())
+  workspaceId    String?  @map("workspace_id")
+  conversationId String?  @map("conversation_id")
+  title          String
+  url            String? // Could be literal URL or just a local file path
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  chunks    DocumentChunk[]
+  workspace    Workspace?      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  conversation Conversation?   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  chunks       DocumentChunk[]
 
   @@index([workspaceId])
+  @@index([conversationId])
   @@map("documents")
 }
 

@@ -81,13 +81,17 @@ export const api = {
   },
 
   documents: {
-    list:   () => request<DocumentSummary[]>('/api/documents'),
+    list:   (conversationId?: string) => {
+      const query = conversationId ? `?conversationId=${encodeURIComponent(conversationId)}` : '';
+      return request<DocumentSummary[]>(`/api/documents${query}`);
+    },
     delete: (id: string) => request<null>(`/api/documents/${id}`, { method: 'DELETE' }),
-    upload: async (file: File) => {
+    upload: async (file: File, conversationId?: string) => {
       // Create custom logic for File since `request` wrapper enforces JSON and content type manually.
       
       const formData = new FormData();
       formData.append('file', file);
+      if (conversationId) formData.append('conversationId', conversationId);
       
       const headers: Record<string, string> = {};
       const token = await (api as any)._hackyGetToken?.();
