@@ -141,6 +141,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </button>
 
+        {/* Direct edit button */}
+        {!isRenaming && (
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => { e.stopPropagation(); setRenamingId(conversation.id); setRenameValue(conversation.title); }}
+              className="p-1 rounded transition-colors hover:bg-surface-200 text-surface-400 hover:text-brand-600"
+              title="Edit conversation name"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
         {/* Context menu trigger */}
         {!isRenaming && (
           <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -172,13 +185,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {conversation.isFavorite
                 ? <><StarOff className="w-4 h-4 text-surface-400" />Remove from favorites</>
                 : <><Star    className="w-4 h-4 text-amber-400" />Add to favorites</>}
-            </button>
-            <button
-              onClick={(e) => handleMenuAction(e, 'rename', conversation)}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors"
-            >
-              <Edit3 className="w-4 h-4 text-surface-400" />
-              Rename
             </button>
             <div className="border-t border-surface-100 my-1" />
             <button

@@ -8,7 +8,6 @@ import { Sidebar }              from './components/layout/Sidebar';
 import { Header }               from './components/layout/Header';
 import { TreeSidebar }          from './components/tree/TreeSidebar';
 import { ConversationView }     from './components/conversation/ConversationView';
-import { NewConversationModal } from './components/conversation/NewConversationModal';
 import { DocumentManagerModal } from './components/documents/DocumentManagerModal';
 import { useConversationStore } from './store/conversationStore';
 import { setTokenGetter }       from './lib/api';
@@ -25,7 +24,6 @@ function AuthenticatedApp() {
   const { user }                           = useUser();
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const initialized                        = useRef(false);
-  const [showNewModal, setShowNewModal]    = useState(false);
   const [showDocumentManager, setShowDocumentManager] = useState(false);
 
   // Mobile drawer states
@@ -61,12 +59,9 @@ function AuthenticatedApp() {
     : 0;
 
   const handleNewConversation = () => {
-    setShowNewModal(true);
-    setSidebarOpen(false);
-  };
-
-  const handleCreateConversation = (title: string) => {
-    useConversationStore.getState().createConversation(title);
+    useConversationStore.getState().createConversation('New Chat').then(() => {
+      setSidebarOpen(false);
+    });
   };
 
   const handleBranchCreate = (parentNodeId: string, blockId: string | null, question: string) => {
@@ -79,6 +74,14 @@ function AuthenticatedApp() {
 
   const handleBottomBarSubmit = (question: string) => {
     if (!activeConversationId) return;
+
+    if (branchCount === 0 || !activeTree || activeTree.length === 0) {
+      // First message in the conversation - auto rename
+      let newTitle = question.trim().split(/\s+/).slice(0, 5).join(' ');
+      if (newTitle.length > 35) newTitle = newTitle.slice(0, 35) + '...';
+      renameConversation(activeConversationId, newTitle);
+    }
+
     useConversationStore.getState().createBranch({
       conversationId: activeConversationId,
       parentNodeId: null, parentBlockId: null, question,
@@ -155,13 +158,6 @@ function AuthenticatedApp() {
           <span className="flex-1">{error}</span>
           <button onClick={clearError} className="text-white/80 hover:text-white font-bold flex-shrink-0">✕</button>
         </div>
-      )}
-
-      {showNewModal && (
-        <NewConversationModal
-          onConfirm={handleCreateConversation}
-          onClose={() => setShowNewModal(false)}
-        />
       )}
 
       {showDocumentManager && (
