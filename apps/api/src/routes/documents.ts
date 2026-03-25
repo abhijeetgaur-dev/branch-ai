@@ -28,7 +28,10 @@ router.post('/', requireAuth, upload.single('file'), async (req, res, next) => {
     });
     let workspaceId = workspaceMember?.workspaceId;
     
-    if (!workspaceId) {
+    // Check if conversationId was provided in the body
+    const conversationId = req.body.conversationId as string | undefined;
+
+    if (!conversationId && !workspaceId) {
       const newWs = await prisma.workspace.create({
          data: {
            name: 'Personal Workspace',
@@ -60,7 +63,9 @@ router.post('/', requireAuth, upload.single('file'), async (req, res, next) => {
     // 1. Create Document record
     const document = await prisma.document.create({
       data: {
-        workspaceId,
+        // If uploading to a conversation, don't link to workspace
+        workspaceId: conversationId ? undefined : workspaceId,
+        conversationId: conversationId || undefined,
         title: file.originalname,
         url: file.originalname, // For MVP storing filename
       }
@@ -93,10 +98,22 @@ router.post('/', requireAuth, upload.single('file'), async (req, res, next) => {
   }
 });
 
-// List documents for a user's default workspace
+// List documents for a user's default workspace or specific conversation
 router.get('/', requireAuth, async (req, res, next) => {
   try {
     const { userId } = (req as AuthedRequest).auth;
+    const conversationId = req.query.conversationId as string | undefined;
+
+    if (conversationId) {
+      // Return documents specific to this conversation
+      const docs = await prisma.document.findMany({
+        where: { conversationId },
+        orderBy: { createdAt: 'desc' }
+      });
+      res.json(docs);
+      return;
+    }
+
     const member = await prisma.workspaceMember.findFirst({ where: { userId } });
     if (!member) {
       res.json([]);

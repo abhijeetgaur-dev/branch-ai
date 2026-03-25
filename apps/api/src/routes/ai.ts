@@ -67,9 +67,16 @@ aiRouter.post('/branch', async (req, res, next) => {
       try {
         const questionEmbedding = await generateEmbeddings(question);
         
-        // Fetch chunks for the workspace
+        // Fetch chunks for the workspace AND the conversation
         const chunks = await prisma.documentChunk.findMany({
-          where: { document: { workspaceId: targetWorkspaceId } }
+          where: { 
+            document: {
+              OR: [
+                { workspaceId: targetWorkspaceId },
+                { conversationId: conversationId }
+              ]
+            }
+          }
         });
 
         if (chunks.length > 0) {
