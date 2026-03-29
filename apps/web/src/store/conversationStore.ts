@@ -16,6 +16,8 @@ interface ConversationStore {
   error:                string | null;
   /** Suggestions for each answer node: { nodeId: string[] } */
   nodeSuggestions:      Record<string, string[]>;
+  /** IDs of answer nodes that are currently collapsed in the UI */
+  collapsedNodeIds:     Set<string>;
 
   fetchConversations:  () => Promise<void>;
   selectConversation:  (id: string) => Promise<void>;
@@ -28,6 +30,7 @@ interface ConversationStore {
   deleteNode:          (nodeId: string) => Promise<void>;
   editQuestion:        (questionNodeId: string, answerNodeId: string, newContent: string) => Promise<void>;
   reorderNodes:        (parentNodeId: string | null, orderedIds: string[]) => Promise<void>;
+  toggleNodeCollapse:  (nodeId: string) => void;
   clearError:          () => void;
 }
 
@@ -42,6 +45,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
   isRegenerating:       false,
   error:                null,
   nodeSuggestions:      {},
+  collapsedNodeIds:     new Set(),
 
   fetchConversations: async () => {
     if (get().isLoadingList) return;
@@ -230,6 +234,15 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
         set({ activeTree: tree, error: err instanceof Error ? err.message : String(err) });
       }
     }
+  },
+
+  toggleNodeCollapse: (nodeId: string) => {
+    set((state) => {
+      const next = new Set(state.collapsedNodeIds);
+      if (next.has(nodeId)) next.delete(nodeId);
+      else next.add(nodeId);
+      return { collapsedNodeIds: next };
+    });
   },
 
   clearError: () => set({ error: null }),

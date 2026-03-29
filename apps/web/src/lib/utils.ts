@@ -44,6 +44,18 @@ export function getDepthColor(depth: number): string {
   return colors[depth % colors.length];
 }
 
+export function getDepthTextColor(depth: number): string {
+  const colors = [
+    'text-rose-500',
+    'text-amber-600',
+    'text-emerald-600',
+    'text-orange-500',
+    'text-purple-500',
+    'text-yellow-600',
+  ];
+  return colors[depth % colors.length];
+}
+
 // Depth → top border accent on answer cards
 // Inline style approach so we use exact hex values from the palette
 export function getDepthAccentStyle(depth: number): React.CSSProperties {

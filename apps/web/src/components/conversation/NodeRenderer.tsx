@@ -114,15 +114,22 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
   hasSiblings     = false,
   forceCollapsed  = false,
 }) => {
-  const [localCollapsed, setLocalCollapsed]    = useState(false);
-  const isCollapsed = localCollapsed || forceCollapsed;
+  const { 
+    deleteNode, 
+    editQuestion, 
+    isRegenerating, 
+    selectConversation, 
+    nodeSuggestions, 
+    collapsedNodeIds, 
+    toggleNodeCollapse 
+  } = useConversationStore();
+
+  const isCollapsed = collapsedNodeIds.has(node.id) || forceCollapsed;
   const [showBranchInput, setShowBranchInput] = useState(false);
   const [isEditing, setIsEditing]             = useState(false);
   const [editValue, setEditValue]             = useState(node.content ?? '');
   const [showActions, setShowActions]         = useState(false);
   const nodeRef                               = useRef<HTMLDivElement>(null);
-
-  const { deleteNode, editQuestion, isRegenerating, selectConversation, nodeSuggestions } = useConversationStore();
 
   const getBranchesForBlock = (blockId: string): Node[] =>
     node.children?.filter((c) => c.type === 'question' && c.parentBlockId === blockId) ?? [];
@@ -237,17 +244,28 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
           </div>
         )}
 
-        {/* Answer children */}
+        {/* Answer children (Answer card + subsequent branches) */}
         {node.children && node.children.length > 0 && (
-          <div className="mt-3 ml-3 pl-4 border-l border-surface-200">
+          <div className="mt-3 last:mb-0">
             {node.children.map((child) => (
-              <NodeRenderer
-                key={child.id}
-                node={child}
-                conversationId={conversationId}
-                onBranchCreate={onBranchCreate}
-                forceCollapsed={forceCollapsed}
-              />
+              <div key={child.id} className="relative">
+                {/* 
+                   Connecting line: 
+                   - Answer nodes don't get a side line if they follow a question directly 
+                   - Other nodes (follow-up questions) get the line
+                */}
+                {child.type !== 'answer' && (
+                  <div className="absolute left-[10px] top-0 bottom-0 w-[0.5px] bg-brand-200/40" />
+                )}
+                <div className={cn(child.type !== 'answer' && "ml-3 pl-4")}>
+                  <NodeRenderer
+                    node={child}
+                    conversationId={conversationId}
+                    onBranchCreate={onBranchCreate}
+                    forceCollapsed={forceCollapsed}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         )}
@@ -301,7 +319,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
           )}>
             {/* Collapse toggle — always available, collapses the whole card body */}
             <button
-              onClick={() => setLocalCollapsed(!localCollapsed)}
+              onClick={() => toggleNodeCollapse(node.id)}
               className="flex items-center gap-1 px-2 py-1 text-xs text-surface-500 hover:text-surface-700 hover:bg-surface-50 rounded-lg transition-colors"
               title={isCollapsed ? 'Expand' : 'Collapse'}
             >
@@ -338,14 +356,18 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
                       onAskFollowup={(blockId, question) => onBranchCreate?.(node.id, blockId, question)}
                     />
                     {blockBranches.length > 0 && (
-                      <div className="mt-4 pl-4 border-l-2 border-brand-200 space-y-5">
-                        <SiblingGroup
-                          nodes={blockBranches}
-                          conversationId={conversationId}
-                          parentNodeId={node.id}
-                          onBranchCreate={onBranchCreate}
-                          forceCollapsed={isCollapsed}
-                        />
+                      <div className="mt-4 relative">
+                        {/* More vibrant connecting line for block branches */}
+                        <div className="absolute left-[9px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-400/40 to-brand-400/5 rounded-full" />
+                        <div className="pl-6 space-y-5">
+                          <SiblingGroup
+                            nodes={blockBranches}
+                            conversationId={conversationId}
+                            parentNodeId={node.id}
+                            onBranchCreate={onBranchCreate}
+                            forceCollapsed={isCollapsed}
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
@@ -402,15 +424,19 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
       </div>
 
       {/* General follow-up branches — also hidden when collapsed */}
-      {!localCollapsed && !forceCollapsed && generalFollowups.length > 0 && (
-        <div className="mt-5 pl-4 border-l border-surface-200 space-y-5">
-          <SiblingGroup
-            nodes={generalFollowups}
-            conversationId={conversationId}
-            parentNodeId={node.id}
-            onBranchCreate={onBranchCreate}
-            forceCollapsed={false}
-          />
+      {!isCollapsed && generalFollowups.length > 0 && (
+        <div className="mt-5 relative">
+          {/* Subtle connecting line for general follow-ups */}
+          <div className="absolute left-[9px] top-0 bottom-0 w-[1px] bg-brand-200/50" />
+          <div className="pl-6 space-y-5">
+            <SiblingGroup
+              nodes={generalFollowups}
+              conversationId={conversationId}
+              parentNodeId={node.id}
+              onBranchCreate={onBranchCreate}
+              forceCollapsed={false}
+            />
+          </div>
         </div>
       )}
     </div>
