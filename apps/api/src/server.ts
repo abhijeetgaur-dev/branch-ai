@@ -9,6 +9,7 @@ import { nodeRouter }         from './routes/nodes';
 import { aiRouter }           from './routes/ai';
 import { webhookRouter }      from './routes/webhooks';
 import { documentRouter }     from './routes/documents';
+import { intelligenceRouter } from './routes/intelligence';
 
 const app  = express();
 const PORT = process.env.PORT ?? 4000;
@@ -62,6 +63,7 @@ app.use('/api/conversations', conversationRouter);
 app.use('/api/nodes',         nodeRouter);
 app.use('/api/ai',            aiRouter);
 app.use('/api/documents',     documentRouter);
+app.use('/api/intelligence',  intelligenceRouter);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('[server] unhandled error:', err.message);

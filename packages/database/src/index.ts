@@ -5,9 +5,11 @@ export {
   createConversation, getConversationsByOwner, getConversationById,
   toggleFavorite, deleteConversation,
   createNode, getConversationTree, getNodePath, getChildren,
-  toggleNodeCollapsed, updateNodeContent, deleteNodeWithChildren, reorderSiblings,
+  toggleNodeCollapsed, updateNodeContent, updateNodeEmbedding,
+  deleteNodeWithChildren, reorderSiblings,
   createBlocks, deleteAnswerBlocks,
   createAiRequest, completeAiRequest, failAiRequest,
+  findSimilarNodes,
 } from './queries';
 
 export type {

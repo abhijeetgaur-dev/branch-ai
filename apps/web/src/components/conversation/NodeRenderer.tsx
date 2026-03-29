@@ -6,10 +6,11 @@ import {
   Pencil, Trash2, ChevronDown, ChevronRight,
   GripVertical, Check, X, Loader2,
 } from 'lucide-react';
-import { cn, formatDate, getDepthAccent, getDepthAccentStyle } from '../../lib/utils';
+import { cn, formatDate, getDepthAccentStyle } from '../../lib/utils';
 import type { Node } from '../../types';
 import { BlockRenderer } from './BlockRenderer';
 import { BranchInput } from './BranchInput';
+import { RelatedPanel } from './RelatedPanel';
 import { useConversationStore } from '../../store/conversationStore';
 
 interface NodeRendererProps {
@@ -120,7 +121,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
   const [showActions, setShowActions]         = useState(false);
   const nodeRef                               = useRef<HTMLDivElement>(null);
 
-  const { deleteNode, editQuestion, isRegenerating } = useConversationStore();
+  const { deleteNode, editQuestion, isRegenerating, selectConversation } = useConversationStore();
 
   const getBranchesForBlock = (blockId: string): Node[] =>
     node.children?.filter((c) => c.type === 'question' && c.parentBlockId === blockId) ?? [];
@@ -349,6 +350,14 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
                   </div>
                 );
               })}
+            </div>
+
+            {/* Knowledge Graph — Related Branches */}
+            <div className="px-4">
+              <RelatedPanel
+                nodeId={node.id}
+                onNavigate={(convId) => selectConversation(convId)}
+              />
             </div>
 
             {/* Follow-up button */}

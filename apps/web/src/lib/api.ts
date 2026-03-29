@@ -105,7 +105,12 @@ export const api = {
       if (!res.ok) throw new Error('Upload failed');
       return res.json();
     }
-  }
+  },
+
+  intelligence: {
+    getRelated: (nodeId: string) =>
+      request<{ related: RelatedNode[] }>(`/api/intelligence/related?nodeId=${encodeURIComponent(nodeId)}`),
+  },
 };
 
 // ─────────────────────────────────────────────
@@ -173,3 +178,12 @@ export interface DocumentSummary {
   url: string | null;
   createdAt: string;
 }
+
+export interface RelatedNode {
+  nodeId:            string;
+  similarity:        number;
+  questionContent:   string | null;
+  questionNodeId:    string | null;
+  conversationId:    string;
+  conversationTitle: string;
+}

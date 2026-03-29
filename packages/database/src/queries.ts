@@ -179,6 +179,80 @@ export async function updateNodeContent(nodeId: string, content: string) {
   return prisma.node.update({ where: { id: nodeId }, data: { content } });
 }
 
+export async function updateNodeEmbedding(nodeId: string, embedding: number[]) {
+  return prisma.node.update({ where: { id: nodeId }, data: { embedding } });
+}
+
+/**
+ * findSimilarNodes
+ * Finds the top-N answer nodes similar to a given embedding vector,
+ * scoped to a specific user. Excludes the source node itself.
+ *
+ * Returns nodes (with their parent question and conversation title)
+ * sorted by cosine similarity descending.
+ */
+export async function findSimilarNodes(
+  userId:        string,
+  embedding:     number[],
+  excludeNodeId: string,
+  limit:         number = 5,
+) {
+  // Load all answer nodes that have embeddings, for this user
+  const candidates = await prisma.node.findMany({
+    where: {
+      type:            'answer',
+      id:              { not: excludeNodeId },
+      conversation:    { ownerId: userId },
+      // Only nodes that have been embedded (non-empty array)
+      NOT: { embedding: { isEmpty: true } },
+    },
+    select: {
+      id:       true,
+      embedding: true,
+      depth:    true,
+      parent: {
+        select: {
+          id:      true,
+          content: true,
+        },
+      },
+      conversation: {
+        select: {
+          id:    true,
+          title: true,
+        },
+      },
+    },
+  });
+
+  if (!candidates.length) return [];
+
+  // Compute cosine similarity in JS (same pattern as RAG)
+  function cosineSim(a: number[], b: number[]): number {
+    let dot = 0, na = 0, nb = 0;
+    for (let i = 0; i < a.length; i++) {
+      dot += a[i] * b[i];
+      na  += a[i] * a[i];
+      nb  += b[i] * b[i];
+    }
+    return na === 0 || nb === 0 ? 0 : dot / (Math.sqrt(na) * Math.sqrt(nb));
+  }
+
+  return candidates
+    .map((n) => ({
+      nodeId:            n.id,
+      similarity:        cosineSim(embedding, n.embedding),
+      questionContent:   n.parent?.content ?? null,
+      questionNodeId:    n.parent?.id ?? null,
+      conversationId:    n.conversation.id,
+      conversationTitle: n.conversation.title,
+    }))
+    .sort((a, b) => b.similarity - a.similarity)
+    .slice(0, limit)
+    .filter((n) => n.similarity > 0.3); // only return meaningfully related results
+}
+
+
 export async function deleteNodeWithChildren(nodeId: string) {
   return prisma.node.delete({ where: { id: nodeId } });
 }

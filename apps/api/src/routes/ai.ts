@@ -8,6 +8,7 @@ import {
 import { getProvider, getModel }             from '../ai/providers/index';
 import { buildPromptMessages }               from '../ai/prompt';
 import { parseAiResponse, fallbackResponse } from '../ai/parser';
+import { embedAnswerNode }                   from '../ai/intelligence';
 import { requireAuth }                       from '../middleware/auth';
 import type { AuthedRequest }                from '../middleware/auth';
 import { prisma }                            from '@branch-ai/database';
@@ -157,6 +158,9 @@ aiRouter.post('/branch', async (req, res, next) => {
       outputTokens: aiResponse.outputTokens,
       durationMs:   aiResponse.durationMs,
     });
+
+    // Fire-and-forget: embed the answer node for knowledge graph
+    void embedAnswerNode(answerNode.id, structured.blocks as any);
 
     res.status(201).json({
       questionNode,
