@@ -11,6 +11,7 @@ import type { Node } from '../../types';
 import { BlockRenderer } from './BlockRenderer';
 import { BranchInput } from './BranchInput';
 import { RelatedPanel } from './RelatedPanel';
+import { SuggestionChips } from './SuggestionChips';
 import { useConversationStore } from '../../store/conversationStore';
 
 interface NodeRendererProps {
@@ -121,7 +122,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
   const [showActions, setShowActions]         = useState(false);
   const nodeRef                               = useRef<HTMLDivElement>(null);
 
-  const { deleteNode, editQuestion, isRegenerating, selectConversation } = useConversationStore();
+  const { deleteNode, editQuestion, isRegenerating, selectConversation, nodeSuggestions } = useConversationStore();
 
   const getBranchesForBlock = (blockId: string): Node[] =>
     node.children?.filter((c) => c.type === 'question' && c.parentBlockId === blockId) ?? [];
@@ -357,6 +358,14 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
               <RelatedPanel
                 nodeId={node.id}
                 onNavigate={(convId) => selectConversation(convId)}
+              />
+            </div>
+
+            {/* AI Suggestions */}
+            <div className="px-4">
+              <SuggestionChips 
+                suggestions={nodeSuggestions[node.id] ?? []}
+                onSelect={(q) => onBranchCreate?.(node.id, null, q)}
               />
             </div>
 

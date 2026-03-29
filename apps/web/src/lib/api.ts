@@ -134,6 +134,7 @@ export interface BranchPayload {
 export interface BranchResponse {
   questionNode: TreeNode;
   answerNode:   TreeNode;
+  suggestions?: string[];
 }
 
 export interface ConversationSummary {

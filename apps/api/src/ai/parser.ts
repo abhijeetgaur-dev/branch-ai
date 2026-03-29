@@ -43,7 +43,8 @@ const AiBlockSchema = z.discriminatedUnion('type', [
 ]);
 
 const AiResponseSchema = z.object({
-  blocks: z.array(AiBlockSchema).min(1),
+  blocks:      z.array(AiBlockSchema).min(1),
+  suggestions: z.array(z.string()).min(1),
 });
 
 // ─────────────────────────────────────────────
@@ -102,5 +103,10 @@ export function fallbackResponse(error: string): AiStructuredResponse {
         calloutType: 'error',
       },
     ],
+    suggestions: [
+      'Try rephrasing the question',
+      'Check if the concept is within my knowledge base',
+      'Try asking a simpler follow-up'
+    ]
   };
 }

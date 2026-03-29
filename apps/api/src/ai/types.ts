@@ -51,5 +51,6 @@ export interface AiBlock {
 }
 
 export interface AiStructuredResponse {
-  blocks: AiBlock[];
+  blocks:      AiBlock[];
+  suggestions: string[];
 }

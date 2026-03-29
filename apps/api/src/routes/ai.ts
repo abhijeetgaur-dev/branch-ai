@@ -8,7 +8,7 @@ import {
 import { getProvider, getModel }             from '../ai/providers/index';
 import { buildPromptMessages }               from '../ai/prompt';
 import { parseAiResponse, fallbackResponse } from '../ai/parser';
-import { embedAnswerNode }                   from '../ai/intelligence';
+import { embedAnswerNode, summarizeLineage } from '../ai/intelligence';
 import { requireAuth }                       from '../middleware/auth';
 import type { AuthedRequest }                from '../middleware/auth';
 import { prisma }                            from '@branch-ai/database';
@@ -162,9 +162,15 @@ aiRouter.post('/branch', async (req, res, next) => {
     // Fire-and-forget: embed the answer node for knowledge graph
     void embedAnswerNode(answerNode.id, structured.blocks as any);
 
+    // Fire-and-forget: summarize the branch if it just crossed a depth threshold
+    if (answerNode.depth > 0 && answerNode.depth % 8 === 0) {
+      void summarizeLineage(answerNode.id, conversationId, userId, context.pathNodes);
+    }
+
     res.status(201).json({
       questionNode,
       answerNode: { ...answerNode, blocks },
+      suggestions: structured.suggestions,
       _meta: {
         estimatedTokens: context.estimatedTokens,
         wasTruncated:    context.wasTruncated,

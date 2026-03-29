@@ -14,6 +14,8 @@ interface ConversationStore {
   isBranching:          boolean;
   isRegenerating:       boolean;
   error:                string | null;
+  /** Suggestions for each answer node: { nodeId: string[] } */
+  nodeSuggestions:      Record<string, string[]>;
 
   fetchConversations:  () => Promise<void>;
   selectConversation:  (id: string) => Promise<void>;
@@ -39,6 +41,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
   isBranching:          false,
   isRegenerating:       false,
   error:                null,
+  nodeSuggestions:      {},
 
   fetchConversations: async () => {
     if (get().isLoadingList) return;
@@ -72,7 +75,13 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
   createBranch: async (payload: BranchPayload) => {
     set({ isBranching: true, error: null });
     try {
-      const { questionNode, answerNode } = await api.ai.branch(payload);
+      const { questionNode, answerNode, suggestions } = await api.ai.branch(payload);
+      
+      if (suggestions?.length) {
+        set((state) => ({
+          nodeSuggestions: { ...state.nodeSuggestions, [answerNode.id]: suggestions }
+        }));
+      }
       const questionWithAnswer: TreeNode = {
         ...questionNode,
         children: [{ ...answerNode, children: [] }],

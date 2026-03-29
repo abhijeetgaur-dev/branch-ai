@@ -8,8 +8,8 @@
 // Rule: never send the full conversation tree.
 // Send only: root question + path to current node + selected block highlight.
 
-import { getNodePath } from '@branch-ai/database';
-import type { AiMessage } from './types';
+import { getNodePath, findPathSummary } from '@branch-ai/database';
+import type { AiMessage }           from './types';
 
 // ─────────────────────────────────────────────
 // Token estimation
@@ -100,6 +100,7 @@ interface ContextNode {
   role:         'user' | 'assistant';
   content:      string | null;
   depth:        number;
+  path:         string;
   parentBlockId?: string | null;
   blocks:       StoredBlock[];
 }
@@ -119,6 +120,7 @@ export interface BuiltContext {
   estimatedTokens:   number;
   ancestorCount:     number;
   wasTruncated:      boolean;
+  pathNodes:         ContextNode[];
 }
 
 export async function buildContext(
@@ -138,11 +140,27 @@ export async function buildContext(
       estimatedTokens: estimateTokens(systemPrompt) + estimateTokens(question),
       ancestorCount:   0,
       wasTruncated:    false,
+      pathNodes:       [],
     };
   }
 
   // ── Load ancestry ────────────────────────────
   const pathNodes = await getNodePath(parentNodeId) as ContextNode[];
+
+  // ── Load summary if available ────────────────
+  const lastNode = pathNodes[pathNodes.length - 1];
+  const summary  = await findPathSummary(lastNode.path);
+  let summaryTurn: TurnWithTokens | null = null;
+  
+  if (summary?.content) {
+    const content = `[CONVERSATION SUMMARY]\n\n${summary.content}`;
+    summaryTurn = {
+      message: { role: 'assistant', content },
+      tokens:  estimateTokens(content),
+      depth:   -1, // special depth for summary
+      isRoot:  false,
+    };
+  }
 
   // Find the target block if this is an inline branch
   let targetBlockContent: string | null = null;
@@ -212,8 +230,13 @@ export async function buildContext(
   // ── Build final message array ─────────────────
   const messages: AiMessage[] = [
     { role: 'system', content: systemPrompt },
-    ...selectedTurns.map((t) => t.message),
   ];
+
+  if (summaryTurn) {
+    messages.push(summaryTurn.message);
+  }
+
+  messages.push(...selectedTurns.map((t) => t.message));
 
   // ── Inject block context for inline branches ──
   // Replace or augment the final user message to highlight the target block
@@ -226,6 +249,7 @@ export async function buildContext(
 
   const totalTokens =
     systemTokens +
+    (summaryTurn?.tokens ?? 0) +
     selectedTurns.reduce((s, t) => s + t.tokens, 0) +
     questionTokens;
 
@@ -234,5 +258,6 @@ export async function buildContext(
     estimatedTokens: totalTokens,
     ancestorCount:   pathNodes.length,
     wasTruncated,
+    pathNodes,
   };
 }

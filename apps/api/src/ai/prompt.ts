@@ -25,6 +25,11 @@ Response format:
     { "type": "numbered_list", "items": ["step 1", "step 2"] },
     { "type": "callout", "content": "Important note", "calloutType": "info" },
     { "type": "quote", "content": "A relevant quote or key insight" }
+  ],
+  "suggestions": [
+    "A relevant follow-up question 1",
+    "A relevant follow-up question 2",
+    "A relevant follow-up question 3"
   ]
 }
 
@@ -43,7 +48,8 @@ Quality rules:
 - Each heading should name a concept that could itself be explored further.
 - Be precise and technically accurate.
 - When given a specific section to focus on (marked with ---), answer about THAT section specifically.
-- Build on the conversation history — do not repeat what was already explained.`;
+- Build on the conversation history — do not repeat what was already explained.
+- Always include exactly 3 "suggestions" for follow-up questions. They should be diverse, specific, and encourage deeper technical exploration of the concepts just mentioned.`;
 
 // ─────────────────────────────────────────────
 // Public API
