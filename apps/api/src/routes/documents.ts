@@ -5,6 +5,7 @@ import multer              from 'multer';
 import { prisma }          from '@branch-ai/database';
 import { chunkText }       from '../services/chunking';
 import { generateEmbeddings } from '../services/embeddings';
+import { uploadFile }       from '../services/storage';
 
 const pdfParse = require('pdf-parse');
 const router = Router();
@@ -60,6 +61,10 @@ router.post('/', requireAuth, upload.single('file'), async (req, res, next) => {
       return;
     }
 
+    // 0. Upload to Storage (S3 or Local)
+    // We do this first so we get the permanent URL
+    const fileUrl = await uploadFile(file.buffer, file.originalname, file.mimetype);
+
     // 1. Create Document record
     const document = await prisma.document.create({
       data: {
@@ -67,7 +72,7 @@ router.post('/', requireAuth, upload.single('file'), async (req, res, next) => {
         workspaceId: conversationId ? undefined : workspaceId,
         conversationId: conversationId || undefined,
         title: file.originalname,
-        url: file.originalname, // For MVP storing filename
+        url: fileUrl, // The permanent URL (S3 or Local path)
       }
     });
 

@@ -2,6 +2,7 @@
 import 'dotenv/config';
 import express       from 'express';
 import cors          from 'cors';
+import path          from 'path';
 import { clerkAuth } from './middleware/auth';
 
 import { conversationRouter } from './routes/conversations';
@@ -58,6 +59,9 @@ app.get('/health', (_req, res) => {
     },
   });
 });
+
+// Static serving for local uploads (development)
+app.use('/api/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use('/api/conversations', conversationRouter);
 app.use('/api/nodes',         nodeRouter);

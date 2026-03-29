@@ -1,16 +1,18 @@
 import { pipeline, env } from '@xenova/transformers';
 
-// Optionally disable local models caching if it causes issues, but usually fine
-// env.allowLocalModels = false;
+// Configure local models caching for persistence on EC2
+env.cacheDir = './.models';
 
 let extractor: any = null;
 
 export async function getEmbeddingExtractor() {
   if (!extractor) {
+    console.log('[AI] Loading embedding model (all-MiniLM-L6-v2)...');
     // all-MiniLM-L6-v2 outputs a 384-dimensional vector
     extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
       quantized: true, // run faster with quantized model
     });
+    console.log('[AI] Embedding model loaded successfully.');
   }
   return extractor;
 }
