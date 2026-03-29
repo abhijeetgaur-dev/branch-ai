@@ -53,6 +53,16 @@ export type BlockItem = $Result.DefaultSelection<Prisma.$BlockItemPayload>
  * 
  */
 export type AiRequest = $Result.DefaultSelection<Prisma.$AiRequestPayload>
+/**
+ * Model Document
+ * 
+ */
+export type Document = $Result.DefaultSelection<Prisma.$DocumentPayload>
+/**
+ * Model DocumentChunk
+ * 
+ */
+export type DocumentChunk = $Result.DefaultSelection<Prisma.$DocumentChunkPayload>
 
 /**
  * Enums
@@ -70,7 +80,8 @@ export type WorkspaceMemberRole = (typeof WorkspaceMemberRole)[keyof typeof Work
 
 export const NodeType: {
   question: 'question',
-  answer: 'answer'
+  answer: 'answer',
+  summary: 'summary'
 };
 
 export type NodeType = (typeof NodeType)[keyof typeof NodeType]
@@ -344,6 +355,26 @@ export class PrismaClient<
     * ```
     */
   get aiRequest(): Prisma.AiRequestDelegate<ExtArgs>;
+
+  /**
+   * `prisma.document`: Exposes CRUD operations for the **Document** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Documents
+    * const documents = await prisma.document.findMany()
+    * ```
+    */
+  get document(): Prisma.DocumentDelegate<ExtArgs>;
+
+  /**
+   * `prisma.documentChunk`: Exposes CRUD operations for the **DocumentChunk** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DocumentChunks
+    * const documentChunks = await prisma.documentChunk.findMany()
+    * ```
+    */
+  get documentChunk(): Prisma.DocumentChunkDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -792,7 +823,9 @@ export namespace Prisma {
     Node: 'Node',
     Block: 'Block',
     BlockItem: 'BlockItem',
-    AiRequest: 'AiRequest'
+    AiRequest: 'AiRequest',
+    Document: 'Document',
+    DocumentChunk: 'DocumentChunk'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -808,7 +841,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "workspace" | "workspaceMember" | "conversation" | "node" | "block" | "blockItem" | "aiRequest"
+      modelProps: "user" | "workspace" | "workspaceMember" | "conversation" | "node" | "block" | "blockItem" | "aiRequest" | "document" | "documentChunk"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1372,6 +1405,146 @@ export namespace Prisma {
           }
         }
       }
+      Document: {
+        payload: Prisma.$DocumentPayload<ExtArgs>
+        fields: Prisma.DocumentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocumentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocumentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload>
+          }
+          findFirst: {
+            args: Prisma.DocumentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocumentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload>
+          }
+          findMany: {
+            args: Prisma.DocumentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload>[]
+          }
+          create: {
+            args: Prisma.DocumentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload>
+          }
+          createMany: {
+            args: Prisma.DocumentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocumentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload>[]
+          }
+          delete: {
+            args: Prisma.DocumentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload>
+          }
+          update: {
+            args: Prisma.DocumentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload>
+          }
+          deleteMany: {
+            args: Prisma.DocumentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocumentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DocumentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPayload>
+          }
+          aggregate: {
+            args: Prisma.DocumentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocument>
+          }
+          groupBy: {
+            args: Prisma.DocumentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocumentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocumentCountArgs<ExtArgs>
+            result: $Utils.Optional<DocumentCountAggregateOutputType> | number
+          }
+        }
+      }
+      DocumentChunk: {
+        payload: Prisma.$DocumentChunkPayload<ExtArgs>
+        fields: Prisma.DocumentChunkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocumentChunkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocumentChunkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload>
+          }
+          findFirst: {
+            args: Prisma.DocumentChunkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocumentChunkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload>
+          }
+          findMany: {
+            args: Prisma.DocumentChunkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload>[]
+          }
+          create: {
+            args: Prisma.DocumentChunkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload>
+          }
+          createMany: {
+            args: Prisma.DocumentChunkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocumentChunkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload>[]
+          }
+          delete: {
+            args: Prisma.DocumentChunkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload>
+          }
+          update: {
+            args: Prisma.DocumentChunkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload>
+          }
+          deleteMany: {
+            args: Prisma.DocumentChunkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocumentChunkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DocumentChunkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentChunkPayload>
+          }
+          aggregate: {
+            args: Prisma.DocumentChunkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocumentChunk>
+          }
+          groupBy: {
+            args: Prisma.DocumentChunkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocumentChunkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocumentChunkCountArgs<ExtArgs>
+            result: $Utils.Optional<DocumentChunkCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1593,11 +1766,13 @@ export namespace Prisma {
   export type WorkspaceCountOutputType = {
     members: number
     conversations: number
+    documents: number
   }
 
   export type WorkspaceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | WorkspaceCountOutputTypeCountMembersArgs
     conversations?: boolean | WorkspaceCountOutputTypeCountConversationsArgs
+    documents?: boolean | WorkspaceCountOutputTypeCountDocumentsArgs
   }
 
   // Custom InputTypes
@@ -1625,6 +1800,13 @@ export namespace Prisma {
     where?: ConversationWhereInput
   }
 
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentWhereInput
+  }
+
 
   /**
    * Count Type ConversationCountOutputType
@@ -1633,11 +1815,13 @@ export namespace Prisma {
   export type ConversationCountOutputType = {
     nodes: number
     aiRequests: number
+    documents: number
   }
 
   export type ConversationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     nodes?: boolean | ConversationCountOutputTypeCountNodesArgs
     aiRequests?: boolean | ConversationCountOutputTypeCountAiRequestsArgs
+    documents?: boolean | ConversationCountOutputTypeCountDocumentsArgs
   }
 
   // Custom InputTypes
@@ -1663,6 +1847,13 @@ export namespace Prisma {
    */
   export type ConversationCountOutputTypeCountAiRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AiRequestWhereInput
+  }
+
+  /**
+   * ConversationCountOutputType without action
+   */
+  export type ConversationCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentWhereInput
   }
 
 
@@ -1752,6 +1943,37 @@ export namespace Prisma {
    */
   export type BlockCountOutputTypeCountBranchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: NodeWhereInput
+  }
+
+
+  /**
+   * Count Type DocumentCountOutputType
+   */
+
+  export type DocumentCountOutputType = {
+    chunks: number
+  }
+
+  export type DocumentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    chunks?: boolean | DocumentCountOutputTypeCountChunksArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DocumentCountOutputType without action
+   */
+  export type DocumentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCountOutputType
+     */
+    select?: DocumentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DocumentCountOutputType without action
+   */
+  export type DocumentCountOutputTypeCountChunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentChunkWhereInput
   }
 
 
@@ -2957,6 +3179,7 @@ export namespace Prisma {
     updatedAt?: boolean
     members?: boolean | Workspace$membersArgs<ExtArgs>
     conversations?: boolean | Workspace$conversationsArgs<ExtArgs>
+    documents?: boolean | Workspace$documentsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workspace"]>
 
@@ -2979,6 +3202,7 @@ export namespace Prisma {
   export type WorkspaceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | Workspace$membersArgs<ExtArgs>
     conversations?: boolean | Workspace$conversationsArgs<ExtArgs>
+    documents?: boolean | Workspace$documentsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2988,6 +3212,7 @@ export namespace Prisma {
     objects: {
       members: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
+      documents: Prisma.$DocumentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3361,6 +3586,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     members<T extends Workspace$membersArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany"> | Null>
     conversations<T extends Workspace$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany"> | Null>
+    documents<T extends Workspace$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3746,6 +3972,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ConversationScalarFieldEnum | ConversationScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.documents
+   */
+  export type Workspace$documentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    where?: DocumentWhereInput
+    orderBy?: DocumentOrderByWithRelationInput | DocumentOrderByWithRelationInput[]
+    cursor?: DocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocumentScalarFieldEnum | DocumentScalarFieldEnum[]
   }
 
   /**
@@ -4898,6 +5144,7 @@ export namespace Prisma {
     workspace?: boolean | Conversation$workspaceArgs<ExtArgs>
     nodes?: boolean | Conversation$nodesArgs<ExtArgs>
     aiRequests?: boolean | Conversation$aiRequestsArgs<ExtArgs>
+    documents?: boolean | Conversation$documentsArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
@@ -4932,6 +5179,7 @@ export namespace Prisma {
     workspace?: boolean | Conversation$workspaceArgs<ExtArgs>
     nodes?: boolean | Conversation$nodesArgs<ExtArgs>
     aiRequests?: boolean | Conversation$aiRequestsArgs<ExtArgs>
+    documents?: boolean | Conversation$documentsArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConversationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4946,6 +5194,7 @@ export namespace Prisma {
       workspace: Prisma.$WorkspacePayload<ExtArgs> | null
       nodes: Prisma.$NodePayload<ExtArgs>[]
       aiRequests: Prisma.$AiRequestPayload<ExtArgs>[]
+      documents: Prisma.$DocumentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5325,6 +5574,7 @@ export namespace Prisma {
     workspace<T extends Conversation$workspaceArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$workspaceArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     nodes<T extends Conversation$nodesArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$nodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NodePayload<ExtArgs>, T, "findMany"> | Null>
     aiRequests<T extends Conversation$aiRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$aiRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiRequestPayload<ExtArgs>, T, "findMany"> | Null>
+    documents<T extends Conversation$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5736,6 +5986,26 @@ export namespace Prisma {
   }
 
   /**
+   * Conversation.documents
+   */
+  export type Conversation$documentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    where?: DocumentWhereInput
+    orderBy?: DocumentOrderByWithRelationInput | DocumentOrderByWithRelationInput[]
+    cursor?: DocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocumentScalarFieldEnum | DocumentScalarFieldEnum[]
+  }
+
+  /**
    * Conversation without action
    */
   export type ConversationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5764,10 +6034,14 @@ export namespace Prisma {
 
   export type NodeAvgAggregateOutputType = {
     depth: number | null
+    position: number | null
+    embedding: number | null
   }
 
   export type NodeSumAggregateOutputType = {
     depth: number | null
+    position: number | null
+    embedding: number[]
   }
 
   export type NodeMinAggregateOutputType = {
@@ -5781,6 +6055,7 @@ export namespace Prisma {
     content: string | null
     depth: number | null
     path: string | null
+    position: number | null
     isCollapsed: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5797,6 +6072,7 @@ export namespace Prisma {
     content: string | null
     depth: number | null
     path: string | null
+    position: number | null
     isCollapsed: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5813,7 +6089,9 @@ export namespace Prisma {
     content: number
     depth: number
     path: number
+    position: number
     isCollapsed: number
+    embedding: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5822,10 +6100,14 @@ export namespace Prisma {
 
   export type NodeAvgAggregateInputType = {
     depth?: true
+    position?: true
+    embedding?: true
   }
 
   export type NodeSumAggregateInputType = {
     depth?: true
+    position?: true
+    embedding?: true
   }
 
   export type NodeMinAggregateInputType = {
@@ -5839,6 +6121,7 @@ export namespace Prisma {
     content?: true
     depth?: true
     path?: true
+    position?: true
     isCollapsed?: true
     createdAt?: true
     updatedAt?: true
@@ -5855,6 +6138,7 @@ export namespace Prisma {
     content?: true
     depth?: true
     path?: true
+    position?: true
     isCollapsed?: true
     createdAt?: true
     updatedAt?: true
@@ -5871,7 +6155,9 @@ export namespace Prisma {
     content?: true
     depth?: true
     path?: true
+    position?: true
     isCollapsed?: true
+    embedding?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5974,7 +6260,9 @@ export namespace Prisma {
     content: string | null
     depth: number
     path: string
+    position: number
     isCollapsed: boolean
+    embedding: number[]
     createdAt: Date
     updatedAt: Date
     _count: NodeCountAggregateOutputType | null
@@ -6009,7 +6297,9 @@ export namespace Prisma {
     content?: boolean
     depth?: boolean
     path?: boolean
+    position?: boolean
     isCollapsed?: boolean
+    embedding?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -6033,7 +6323,9 @@ export namespace Prisma {
     content?: boolean
     depth?: boolean
     path?: boolean
+    position?: boolean
     isCollapsed?: boolean
+    embedding?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -6053,7 +6345,9 @@ export namespace Prisma {
     content?: boolean
     depth?: boolean
     path?: boolean
+    position?: boolean
     isCollapsed?: boolean
+    embedding?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -6097,7 +6391,9 @@ export namespace Prisma {
       content: string | null
       depth: number
       path: string
+      position: number
       isCollapsed: boolean
+      embedding: number[]
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["node"]>
@@ -6510,7 +6806,9 @@ export namespace Prisma {
     readonly content: FieldRef<"Node", 'String'>
     readonly depth: FieldRef<"Node", 'Int'>
     readonly path: FieldRef<"Node", 'String'>
+    readonly position: FieldRef<"Node", 'Int'>
     readonly isCollapsed: FieldRef<"Node", 'Boolean'>
+    readonly embedding: FieldRef<"Node", 'Float[]'>
     readonly createdAt: FieldRef<"Node", 'DateTime'>
     readonly updatedAt: FieldRef<"Node", 'DateTime'>
   }
@@ -10030,6 +10328,1980 @@ export namespace Prisma {
 
 
   /**
+   * Model Document
+   */
+
+  export type AggregateDocument = {
+    _count: DocumentCountAggregateOutputType | null
+    _min: DocumentMinAggregateOutputType | null
+    _max: DocumentMaxAggregateOutputType | null
+  }
+
+  export type DocumentMinAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    conversationId: string | null
+    title: string | null
+    url: string | null
+    createdAt: Date | null
+  }
+
+  export type DocumentMaxAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    conversationId: string | null
+    title: string | null
+    url: string | null
+    createdAt: Date | null
+  }
+
+  export type DocumentCountAggregateOutputType = {
+    id: number
+    workspaceId: number
+    conversationId: number
+    title: number
+    url: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type DocumentMinAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    conversationId?: true
+    title?: true
+    url?: true
+    createdAt?: true
+  }
+
+  export type DocumentMaxAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    conversationId?: true
+    title?: true
+    url?: true
+    createdAt?: true
+  }
+
+  export type DocumentCountAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    conversationId?: true
+    title?: true
+    url?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type DocumentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Document to aggregate.
+     */
+    where?: DocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Documents to fetch.
+     */
+    orderBy?: DocumentOrderByWithRelationInput | DocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Documents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Documents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Documents
+    **/
+    _count?: true | DocumentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocumentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocumentMaxAggregateInputType
+  }
+
+  export type GetDocumentAggregateType<T extends DocumentAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocument]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocument[P]>
+      : GetScalarType<T[P], AggregateDocument[P]>
+  }
+
+
+
+
+  export type DocumentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentWhereInput
+    orderBy?: DocumentOrderByWithAggregationInput | DocumentOrderByWithAggregationInput[]
+    by: DocumentScalarFieldEnum[] | DocumentScalarFieldEnum
+    having?: DocumentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocumentCountAggregateInputType | true
+    _min?: DocumentMinAggregateInputType
+    _max?: DocumentMaxAggregateInputType
+  }
+
+  export type DocumentGroupByOutputType = {
+    id: string
+    workspaceId: string | null
+    conversationId: string | null
+    title: string
+    url: string | null
+    createdAt: Date
+    _count: DocumentCountAggregateOutputType | null
+    _min: DocumentMinAggregateOutputType | null
+    _max: DocumentMaxAggregateOutputType | null
+  }
+
+  type GetDocumentGroupByPayload<T extends DocumentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocumentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocumentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocumentGroupByOutputType[P]>
+            : GetScalarType<T[P], DocumentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocumentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    conversationId?: boolean
+    title?: boolean
+    url?: boolean
+    createdAt?: boolean
+    workspace?: boolean | Document$workspaceArgs<ExtArgs>
+    conversation?: boolean | Document$conversationArgs<ExtArgs>
+    chunks?: boolean | Document$chunksArgs<ExtArgs>
+    _count?: boolean | DocumentCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["document"]>
+
+  export type DocumentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    conversationId?: boolean
+    title?: boolean
+    url?: boolean
+    createdAt?: boolean
+    workspace?: boolean | Document$workspaceArgs<ExtArgs>
+    conversation?: boolean | Document$conversationArgs<ExtArgs>
+  }, ExtArgs["result"]["document"]>
+
+  export type DocumentSelectScalar = {
+    id?: boolean
+    workspaceId?: boolean
+    conversationId?: boolean
+    title?: boolean
+    url?: boolean
+    createdAt?: boolean
+  }
+
+  export type DocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | Document$workspaceArgs<ExtArgs>
+    conversation?: boolean | Document$conversationArgs<ExtArgs>
+    chunks?: boolean | Document$chunksArgs<ExtArgs>
+    _count?: boolean | DocumentCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type DocumentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | Document$workspaceArgs<ExtArgs>
+    conversation?: boolean | Document$conversationArgs<ExtArgs>
+  }
+
+  export type $DocumentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Document"
+    objects: {
+      workspace: Prisma.$WorkspacePayload<ExtArgs> | null
+      conversation: Prisma.$ConversationPayload<ExtArgs> | null
+      chunks: Prisma.$DocumentChunkPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      workspaceId: string | null
+      conversationId: string | null
+      title: string
+      url: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["document"]>
+    composites: {}
+  }
+
+  type DocumentGetPayload<S extends boolean | null | undefined | DocumentDefaultArgs> = $Result.GetResult<Prisma.$DocumentPayload, S>
+
+  type DocumentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DocumentFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DocumentCountAggregateInputType | true
+    }
+
+  export interface DocumentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Document'], meta: { name: 'Document' } }
+    /**
+     * Find zero or one Document that matches the filter.
+     * @param {DocumentFindUniqueArgs} args - Arguments to find a Document
+     * @example
+     * // Get one Document
+     * const document = await prisma.document.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocumentFindUniqueArgs>(args: SelectSubset<T, DocumentFindUniqueArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Document that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DocumentFindUniqueOrThrowArgs} args - Arguments to find a Document
+     * @example
+     * // Get one Document
+     * const document = await prisma.document.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocumentFindUniqueOrThrowArgs>(args: SelectSubset<T, DocumentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Document that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentFindFirstArgs} args - Arguments to find a Document
+     * @example
+     * // Get one Document
+     * const document = await prisma.document.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocumentFindFirstArgs>(args?: SelectSubset<T, DocumentFindFirstArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Document that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentFindFirstOrThrowArgs} args - Arguments to find a Document
+     * @example
+     * // Get one Document
+     * const document = await prisma.document.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocumentFindFirstOrThrowArgs>(args?: SelectSubset<T, DocumentFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Documents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Documents
+     * const documents = await prisma.document.findMany()
+     * 
+     * // Get first 10 Documents
+     * const documents = await prisma.document.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const documentWithIdOnly = await prisma.document.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocumentFindManyArgs>(args?: SelectSubset<T, DocumentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Document.
+     * @param {DocumentCreateArgs} args - Arguments to create a Document.
+     * @example
+     * // Create one Document
+     * const Document = await prisma.document.create({
+     *   data: {
+     *     // ... data to create a Document
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocumentCreateArgs>(args: SelectSubset<T, DocumentCreateArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Documents.
+     * @param {DocumentCreateManyArgs} args - Arguments to create many Documents.
+     * @example
+     * // Create many Documents
+     * const document = await prisma.document.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocumentCreateManyArgs>(args?: SelectSubset<T, DocumentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Documents and returns the data saved in the database.
+     * @param {DocumentCreateManyAndReturnArgs} args - Arguments to create many Documents.
+     * @example
+     * // Create many Documents
+     * const document = await prisma.document.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Documents and only return the `id`
+     * const documentWithIdOnly = await prisma.document.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocumentCreateManyAndReturnArgs>(args?: SelectSubset<T, DocumentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Document.
+     * @param {DocumentDeleteArgs} args - Arguments to delete one Document.
+     * @example
+     * // Delete one Document
+     * const Document = await prisma.document.delete({
+     *   where: {
+     *     // ... filter to delete one Document
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocumentDeleteArgs>(args: SelectSubset<T, DocumentDeleteArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Document.
+     * @param {DocumentUpdateArgs} args - Arguments to update one Document.
+     * @example
+     * // Update one Document
+     * const document = await prisma.document.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocumentUpdateArgs>(args: SelectSubset<T, DocumentUpdateArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Documents.
+     * @param {DocumentDeleteManyArgs} args - Arguments to filter Documents to delete.
+     * @example
+     * // Delete a few Documents
+     * const { count } = await prisma.document.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocumentDeleteManyArgs>(args?: SelectSubset<T, DocumentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Documents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Documents
+     * const document = await prisma.document.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocumentUpdateManyArgs>(args: SelectSubset<T, DocumentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Document.
+     * @param {DocumentUpsertArgs} args - Arguments to update or create a Document.
+     * @example
+     * // Update or create a Document
+     * const document = await prisma.document.upsert({
+     *   create: {
+     *     // ... data to create a Document
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Document we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocumentUpsertArgs>(args: SelectSubset<T, DocumentUpsertArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Documents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentCountArgs} args - Arguments to filter Documents to count.
+     * @example
+     * // Count the number of Documents
+     * const count = await prisma.document.count({
+     *   where: {
+     *     // ... the filter for the Documents we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocumentCountArgs>(
+      args?: Subset<T, DocumentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocumentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Document.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocumentAggregateArgs>(args: Subset<T, DocumentAggregateArgs>): Prisma.PrismaPromise<GetDocumentAggregateType<T>>
+
+    /**
+     * Group by Document.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocumentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocumentGroupByArgs['orderBy'] }
+        : { orderBy?: DocumentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocumentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocumentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Document model
+   */
+  readonly fields: DocumentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Document.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    workspace<T extends Document$workspaceArgs<ExtArgs> = {}>(args?: Subset<T, Document$workspaceArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    conversation<T extends Document$conversationArgs<ExtArgs> = {}>(args?: Subset<T, Document$conversationArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    chunks<T extends Document$chunksArgs<ExtArgs> = {}>(args?: Subset<T, Document$chunksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Document model
+   */ 
+  interface DocumentFieldRefs {
+    readonly id: FieldRef<"Document", 'String'>
+    readonly workspaceId: FieldRef<"Document", 'String'>
+    readonly conversationId: FieldRef<"Document", 'String'>
+    readonly title: FieldRef<"Document", 'String'>
+    readonly url: FieldRef<"Document", 'String'>
+    readonly createdAt: FieldRef<"Document", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Document findUnique
+   */
+  export type DocumentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which Document to fetch.
+     */
+    where: DocumentWhereUniqueInput
+  }
+
+  /**
+   * Document findUniqueOrThrow
+   */
+  export type DocumentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which Document to fetch.
+     */
+    where: DocumentWhereUniqueInput
+  }
+
+  /**
+   * Document findFirst
+   */
+  export type DocumentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which Document to fetch.
+     */
+    where?: DocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Documents to fetch.
+     */
+    orderBy?: DocumentOrderByWithRelationInput | DocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Documents.
+     */
+    cursor?: DocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Documents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Documents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Documents.
+     */
+    distinct?: DocumentScalarFieldEnum | DocumentScalarFieldEnum[]
+  }
+
+  /**
+   * Document findFirstOrThrow
+   */
+  export type DocumentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which Document to fetch.
+     */
+    where?: DocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Documents to fetch.
+     */
+    orderBy?: DocumentOrderByWithRelationInput | DocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Documents.
+     */
+    cursor?: DocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Documents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Documents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Documents.
+     */
+    distinct?: DocumentScalarFieldEnum | DocumentScalarFieldEnum[]
+  }
+
+  /**
+   * Document findMany
+   */
+  export type DocumentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which Documents to fetch.
+     */
+    where?: DocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Documents to fetch.
+     */
+    orderBy?: DocumentOrderByWithRelationInput | DocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Documents.
+     */
+    cursor?: DocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Documents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Documents.
+     */
+    skip?: number
+    distinct?: DocumentScalarFieldEnum | DocumentScalarFieldEnum[]
+  }
+
+  /**
+   * Document create
+   */
+  export type DocumentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Document.
+     */
+    data: XOR<DocumentCreateInput, DocumentUncheckedCreateInput>
+  }
+
+  /**
+   * Document createMany
+   */
+  export type DocumentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Documents.
+     */
+    data: DocumentCreateManyInput | DocumentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Document createManyAndReturn
+   */
+  export type DocumentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Documents.
+     */
+    data: DocumentCreateManyInput | DocumentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Document update
+   */
+  export type DocumentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Document.
+     */
+    data: XOR<DocumentUpdateInput, DocumentUncheckedUpdateInput>
+    /**
+     * Choose, which Document to update.
+     */
+    where: DocumentWhereUniqueInput
+  }
+
+  /**
+   * Document updateMany
+   */
+  export type DocumentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Documents.
+     */
+    data: XOR<DocumentUpdateManyMutationInput, DocumentUncheckedUpdateManyInput>
+    /**
+     * Filter which Documents to update
+     */
+    where?: DocumentWhereInput
+  }
+
+  /**
+   * Document upsert
+   */
+  export type DocumentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Document to update in case it exists.
+     */
+    where: DocumentWhereUniqueInput
+    /**
+     * In case the Document found by the `where` argument doesn't exist, create a new Document with this data.
+     */
+    create: XOR<DocumentCreateInput, DocumentUncheckedCreateInput>
+    /**
+     * In case the Document was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocumentUpdateInput, DocumentUncheckedUpdateInput>
+  }
+
+  /**
+   * Document delete
+   */
+  export type DocumentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    /**
+     * Filter which Document to delete.
+     */
+    where: DocumentWhereUniqueInput
+  }
+
+  /**
+   * Document deleteMany
+   */
+  export type DocumentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Documents to delete
+     */
+    where?: DocumentWhereInput
+  }
+
+  /**
+   * Document.workspace
+   */
+  export type Document$workspaceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    where?: WorkspaceWhereInput
+  }
+
+  /**
+   * Document.conversation
+   */
+  export type Document$conversationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conversation
+     */
+    select?: ConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationInclude<ExtArgs> | null
+    where?: ConversationWhereInput
+  }
+
+  /**
+   * Document.chunks
+   */
+  export type Document$chunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    where?: DocumentChunkWhereInput
+    orderBy?: DocumentChunkOrderByWithRelationInput | DocumentChunkOrderByWithRelationInput[]
+    cursor?: DocumentChunkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocumentChunkScalarFieldEnum | DocumentChunkScalarFieldEnum[]
+  }
+
+  /**
+   * Document without action
+   */
+  export type DocumentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DocumentChunk
+   */
+
+  export type AggregateDocumentChunk = {
+    _count: DocumentChunkCountAggregateOutputType | null
+    _avg: DocumentChunkAvgAggregateOutputType | null
+    _sum: DocumentChunkSumAggregateOutputType | null
+    _min: DocumentChunkMinAggregateOutputType | null
+    _max: DocumentChunkMaxAggregateOutputType | null
+  }
+
+  export type DocumentChunkAvgAggregateOutputType = {
+    embedding: number | null
+    position: number | null
+  }
+
+  export type DocumentChunkSumAggregateOutputType = {
+    embedding: number[]
+    position: number | null
+  }
+
+  export type DocumentChunkMinAggregateOutputType = {
+    id: string | null
+    documentId: string | null
+    content: string | null
+    position: number | null
+  }
+
+  export type DocumentChunkMaxAggregateOutputType = {
+    id: string | null
+    documentId: string | null
+    content: string | null
+    position: number | null
+  }
+
+  export type DocumentChunkCountAggregateOutputType = {
+    id: number
+    documentId: number
+    content: number
+    embedding: number
+    position: number
+    _all: number
+  }
+
+
+  export type DocumentChunkAvgAggregateInputType = {
+    embedding?: true
+    position?: true
+  }
+
+  export type DocumentChunkSumAggregateInputType = {
+    embedding?: true
+    position?: true
+  }
+
+  export type DocumentChunkMinAggregateInputType = {
+    id?: true
+    documentId?: true
+    content?: true
+    position?: true
+  }
+
+  export type DocumentChunkMaxAggregateInputType = {
+    id?: true
+    documentId?: true
+    content?: true
+    position?: true
+  }
+
+  export type DocumentChunkCountAggregateInputType = {
+    id?: true
+    documentId?: true
+    content?: true
+    embedding?: true
+    position?: true
+    _all?: true
+  }
+
+  export type DocumentChunkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentChunk to aggregate.
+     */
+    where?: DocumentChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentChunks to fetch.
+     */
+    orderBy?: DocumentChunkOrderByWithRelationInput | DocumentChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocumentChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DocumentChunks
+    **/
+    _count?: true | DocumentChunkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DocumentChunkAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DocumentChunkSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocumentChunkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocumentChunkMaxAggregateInputType
+  }
+
+  export type GetDocumentChunkAggregateType<T extends DocumentChunkAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocumentChunk]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocumentChunk[P]>
+      : GetScalarType<T[P], AggregateDocumentChunk[P]>
+  }
+
+
+
+
+  export type DocumentChunkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentChunkWhereInput
+    orderBy?: DocumentChunkOrderByWithAggregationInput | DocumentChunkOrderByWithAggregationInput[]
+    by: DocumentChunkScalarFieldEnum[] | DocumentChunkScalarFieldEnum
+    having?: DocumentChunkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocumentChunkCountAggregateInputType | true
+    _avg?: DocumentChunkAvgAggregateInputType
+    _sum?: DocumentChunkSumAggregateInputType
+    _min?: DocumentChunkMinAggregateInputType
+    _max?: DocumentChunkMaxAggregateInputType
+  }
+
+  export type DocumentChunkGroupByOutputType = {
+    id: string
+    documentId: string
+    content: string
+    embedding: number[]
+    position: number
+    _count: DocumentChunkCountAggregateOutputType | null
+    _avg: DocumentChunkAvgAggregateOutputType | null
+    _sum: DocumentChunkSumAggregateOutputType | null
+    _min: DocumentChunkMinAggregateOutputType | null
+    _max: DocumentChunkMaxAggregateOutputType | null
+  }
+
+  type GetDocumentChunkGroupByPayload<T extends DocumentChunkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocumentChunkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocumentChunkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocumentChunkGroupByOutputType[P]>
+            : GetScalarType<T[P], DocumentChunkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocumentChunkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    documentId?: boolean
+    content?: boolean
+    embedding?: boolean
+    position?: boolean
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentChunk"]>
+
+  export type DocumentChunkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    documentId?: boolean
+    content?: boolean
+    embedding?: boolean
+    position?: boolean
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentChunk"]>
+
+  export type DocumentChunkSelectScalar = {
+    id?: boolean
+    documentId?: boolean
+    content?: boolean
+    embedding?: boolean
+    position?: boolean
+  }
+
+  export type DocumentChunkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+  }
+  export type DocumentChunkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+  }
+
+  export type $DocumentChunkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DocumentChunk"
+    objects: {
+      document: Prisma.$DocumentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      documentId: string
+      content: string
+      embedding: number[]
+      position: number
+    }, ExtArgs["result"]["documentChunk"]>
+    composites: {}
+  }
+
+  type DocumentChunkGetPayload<S extends boolean | null | undefined | DocumentChunkDefaultArgs> = $Result.GetResult<Prisma.$DocumentChunkPayload, S>
+
+  type DocumentChunkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DocumentChunkFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DocumentChunkCountAggregateInputType | true
+    }
+
+  export interface DocumentChunkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DocumentChunk'], meta: { name: 'DocumentChunk' } }
+    /**
+     * Find zero or one DocumentChunk that matches the filter.
+     * @param {DocumentChunkFindUniqueArgs} args - Arguments to find a DocumentChunk
+     * @example
+     * // Get one DocumentChunk
+     * const documentChunk = await prisma.documentChunk.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocumentChunkFindUniqueArgs>(args: SelectSubset<T, DocumentChunkFindUniqueArgs<ExtArgs>>): Prisma__DocumentChunkClient<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DocumentChunk that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DocumentChunkFindUniqueOrThrowArgs} args - Arguments to find a DocumentChunk
+     * @example
+     * // Get one DocumentChunk
+     * const documentChunk = await prisma.documentChunk.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocumentChunkFindUniqueOrThrowArgs>(args: SelectSubset<T, DocumentChunkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocumentChunkClient<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DocumentChunk that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentChunkFindFirstArgs} args - Arguments to find a DocumentChunk
+     * @example
+     * // Get one DocumentChunk
+     * const documentChunk = await prisma.documentChunk.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocumentChunkFindFirstArgs>(args?: SelectSubset<T, DocumentChunkFindFirstArgs<ExtArgs>>): Prisma__DocumentChunkClient<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DocumentChunk that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentChunkFindFirstOrThrowArgs} args - Arguments to find a DocumentChunk
+     * @example
+     * // Get one DocumentChunk
+     * const documentChunk = await prisma.documentChunk.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocumentChunkFindFirstOrThrowArgs>(args?: SelectSubset<T, DocumentChunkFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocumentChunkClient<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DocumentChunks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentChunkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DocumentChunks
+     * const documentChunks = await prisma.documentChunk.findMany()
+     * 
+     * // Get first 10 DocumentChunks
+     * const documentChunks = await prisma.documentChunk.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const documentChunkWithIdOnly = await prisma.documentChunk.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocumentChunkFindManyArgs>(args?: SelectSubset<T, DocumentChunkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DocumentChunk.
+     * @param {DocumentChunkCreateArgs} args - Arguments to create a DocumentChunk.
+     * @example
+     * // Create one DocumentChunk
+     * const DocumentChunk = await prisma.documentChunk.create({
+     *   data: {
+     *     // ... data to create a DocumentChunk
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocumentChunkCreateArgs>(args: SelectSubset<T, DocumentChunkCreateArgs<ExtArgs>>): Prisma__DocumentChunkClient<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DocumentChunks.
+     * @param {DocumentChunkCreateManyArgs} args - Arguments to create many DocumentChunks.
+     * @example
+     * // Create many DocumentChunks
+     * const documentChunk = await prisma.documentChunk.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocumentChunkCreateManyArgs>(args?: SelectSubset<T, DocumentChunkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DocumentChunks and returns the data saved in the database.
+     * @param {DocumentChunkCreateManyAndReturnArgs} args - Arguments to create many DocumentChunks.
+     * @example
+     * // Create many DocumentChunks
+     * const documentChunk = await prisma.documentChunk.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DocumentChunks and only return the `id`
+     * const documentChunkWithIdOnly = await prisma.documentChunk.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocumentChunkCreateManyAndReturnArgs>(args?: SelectSubset<T, DocumentChunkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DocumentChunk.
+     * @param {DocumentChunkDeleteArgs} args - Arguments to delete one DocumentChunk.
+     * @example
+     * // Delete one DocumentChunk
+     * const DocumentChunk = await prisma.documentChunk.delete({
+     *   where: {
+     *     // ... filter to delete one DocumentChunk
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocumentChunkDeleteArgs>(args: SelectSubset<T, DocumentChunkDeleteArgs<ExtArgs>>): Prisma__DocumentChunkClient<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DocumentChunk.
+     * @param {DocumentChunkUpdateArgs} args - Arguments to update one DocumentChunk.
+     * @example
+     * // Update one DocumentChunk
+     * const documentChunk = await prisma.documentChunk.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocumentChunkUpdateArgs>(args: SelectSubset<T, DocumentChunkUpdateArgs<ExtArgs>>): Prisma__DocumentChunkClient<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DocumentChunks.
+     * @param {DocumentChunkDeleteManyArgs} args - Arguments to filter DocumentChunks to delete.
+     * @example
+     * // Delete a few DocumentChunks
+     * const { count } = await prisma.documentChunk.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocumentChunkDeleteManyArgs>(args?: SelectSubset<T, DocumentChunkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocumentChunks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentChunkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DocumentChunks
+     * const documentChunk = await prisma.documentChunk.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocumentChunkUpdateManyArgs>(args: SelectSubset<T, DocumentChunkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DocumentChunk.
+     * @param {DocumentChunkUpsertArgs} args - Arguments to update or create a DocumentChunk.
+     * @example
+     * // Update or create a DocumentChunk
+     * const documentChunk = await prisma.documentChunk.upsert({
+     *   create: {
+     *     // ... data to create a DocumentChunk
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DocumentChunk we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocumentChunkUpsertArgs>(args: SelectSubset<T, DocumentChunkUpsertArgs<ExtArgs>>): Prisma__DocumentChunkClient<$Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DocumentChunks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentChunkCountArgs} args - Arguments to filter DocumentChunks to count.
+     * @example
+     * // Count the number of DocumentChunks
+     * const count = await prisma.documentChunk.count({
+     *   where: {
+     *     // ... the filter for the DocumentChunks we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocumentChunkCountArgs>(
+      args?: Subset<T, DocumentChunkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocumentChunkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DocumentChunk.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentChunkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocumentChunkAggregateArgs>(args: Subset<T, DocumentChunkAggregateArgs>): Prisma.PrismaPromise<GetDocumentChunkAggregateType<T>>
+
+    /**
+     * Group by DocumentChunk.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentChunkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocumentChunkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocumentChunkGroupByArgs['orderBy'] }
+        : { orderBy?: DocumentChunkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocumentChunkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocumentChunkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DocumentChunk model
+   */
+  readonly fields: DocumentChunkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DocumentChunk.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocumentChunkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    document<T extends DocumentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DocumentDefaultArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DocumentChunk model
+   */ 
+  interface DocumentChunkFieldRefs {
+    readonly id: FieldRef<"DocumentChunk", 'String'>
+    readonly documentId: FieldRef<"DocumentChunk", 'String'>
+    readonly content: FieldRef<"DocumentChunk", 'String'>
+    readonly embedding: FieldRef<"DocumentChunk", 'Float[]'>
+    readonly position: FieldRef<"DocumentChunk", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DocumentChunk findUnique
+   */
+  export type DocumentChunkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentChunk to fetch.
+     */
+    where: DocumentChunkWhereUniqueInput
+  }
+
+  /**
+   * DocumentChunk findUniqueOrThrow
+   */
+  export type DocumentChunkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentChunk to fetch.
+     */
+    where: DocumentChunkWhereUniqueInput
+  }
+
+  /**
+   * DocumentChunk findFirst
+   */
+  export type DocumentChunkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentChunk to fetch.
+     */
+    where?: DocumentChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentChunks to fetch.
+     */
+    orderBy?: DocumentChunkOrderByWithRelationInput | DocumentChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentChunks.
+     */
+    cursor?: DocumentChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentChunks.
+     */
+    distinct?: DocumentChunkScalarFieldEnum | DocumentChunkScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentChunk findFirstOrThrow
+   */
+  export type DocumentChunkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentChunk to fetch.
+     */
+    where?: DocumentChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentChunks to fetch.
+     */
+    orderBy?: DocumentChunkOrderByWithRelationInput | DocumentChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentChunks.
+     */
+    cursor?: DocumentChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentChunks.
+     */
+    distinct?: DocumentChunkScalarFieldEnum | DocumentChunkScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentChunk findMany
+   */
+  export type DocumentChunkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentChunks to fetch.
+     */
+    where?: DocumentChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentChunks to fetch.
+     */
+    orderBy?: DocumentChunkOrderByWithRelationInput | DocumentChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DocumentChunks.
+     */
+    cursor?: DocumentChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentChunks.
+     */
+    skip?: number
+    distinct?: DocumentChunkScalarFieldEnum | DocumentChunkScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentChunk create
+   */
+  export type DocumentChunkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DocumentChunk.
+     */
+    data: XOR<DocumentChunkCreateInput, DocumentChunkUncheckedCreateInput>
+  }
+
+  /**
+   * DocumentChunk createMany
+   */
+  export type DocumentChunkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DocumentChunks.
+     */
+    data: DocumentChunkCreateManyInput | DocumentChunkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocumentChunk createManyAndReturn
+   */
+  export type DocumentChunkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DocumentChunks.
+     */
+    data: DocumentChunkCreateManyInput | DocumentChunkCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocumentChunk update
+   */
+  export type DocumentChunkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DocumentChunk.
+     */
+    data: XOR<DocumentChunkUpdateInput, DocumentChunkUncheckedUpdateInput>
+    /**
+     * Choose, which DocumentChunk to update.
+     */
+    where: DocumentChunkWhereUniqueInput
+  }
+
+  /**
+   * DocumentChunk updateMany
+   */
+  export type DocumentChunkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DocumentChunks.
+     */
+    data: XOR<DocumentChunkUpdateManyMutationInput, DocumentChunkUncheckedUpdateManyInput>
+    /**
+     * Filter which DocumentChunks to update
+     */
+    where?: DocumentChunkWhereInput
+  }
+
+  /**
+   * DocumentChunk upsert
+   */
+  export type DocumentChunkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DocumentChunk to update in case it exists.
+     */
+    where: DocumentChunkWhereUniqueInput
+    /**
+     * In case the DocumentChunk found by the `where` argument doesn't exist, create a new DocumentChunk with this data.
+     */
+    create: XOR<DocumentChunkCreateInput, DocumentChunkUncheckedCreateInput>
+    /**
+     * In case the DocumentChunk was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocumentChunkUpdateInput, DocumentChunkUncheckedUpdateInput>
+  }
+
+  /**
+   * DocumentChunk delete
+   */
+  export type DocumentChunkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+    /**
+     * Filter which DocumentChunk to delete.
+     */
+    where: DocumentChunkWhereUniqueInput
+  }
+
+  /**
+   * DocumentChunk deleteMany
+   */
+  export type DocumentChunkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentChunks to delete
+     */
+    where?: DocumentChunkWhereInput
+  }
+
+  /**
+   * DocumentChunk without action
+   */
+  export type DocumentChunkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentChunk
+     */
+    select?: DocumentChunkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentChunkInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10103,7 +12375,9 @@ export namespace Prisma {
     content: 'content',
     depth: 'depth',
     path: 'path',
+    position: 'position',
     isCollapsed: 'isCollapsed',
+    embedding: 'embedding',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -10151,6 +12425,29 @@ export namespace Prisma {
   };
 
   export type AiRequestScalarFieldEnum = (typeof AiRequestScalarFieldEnum)[keyof typeof AiRequestScalarFieldEnum]
+
+
+  export const DocumentScalarFieldEnum: {
+    id: 'id',
+    workspaceId: 'workspaceId',
+    conversationId: 'conversationId',
+    title: 'title',
+    url: 'url',
+    createdAt: 'createdAt'
+  };
+
+  export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
+
+
+  export const DocumentChunkScalarFieldEnum: {
+    id: 'id',
+    documentId: 'documentId',
+    content: 'content',
+    embedding: 'embedding',
+    position: 'position'
+  };
+
+  export type DocumentChunkScalarFieldEnum = (typeof DocumentChunkScalarFieldEnum)[keyof typeof DocumentChunkScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -10274,6 +12571,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
    * Reference to a field of type 'BlockType'
    */
   export type EnumBlockTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BlockType'>
@@ -10312,20 +12623,6 @@ export namespace Prisma {
    * Reference to a field of type 'AiRequestStatus[]'
    */
   export type ListEnumAiRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiRequestStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -10412,6 +12709,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Workspace"> | Date | string
     members?: WorkspaceMemberListRelationFilter
     conversations?: ConversationListRelationFilter
+    documents?: DocumentListRelationFilter
   }
 
   export type WorkspaceOrderByWithRelationInput = {
@@ -10422,6 +12720,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     members?: WorkspaceMemberOrderByRelationAggregateInput
     conversations?: ConversationOrderByRelationAggregateInput
+    documents?: DocumentOrderByRelationAggregateInput
   }
 
   export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
@@ -10435,6 +12734,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Workspace"> | Date | string
     members?: WorkspaceMemberListRelationFilter
     conversations?: ConversationListRelationFilter
+    documents?: DocumentListRelationFilter
   }, "id" | "slug">
 
   export type WorkspaceOrderByWithAggregationInput = {
@@ -10535,6 +12835,7 @@ export namespace Prisma {
     workspace?: XOR<WorkspaceNullableRelationFilter, WorkspaceWhereInput> | null
     nodes?: NodeListRelationFilter
     aiRequests?: AiRequestListRelationFilter
+    documents?: DocumentListRelationFilter
   }
 
   export type ConversationOrderByWithRelationInput = {
@@ -10551,6 +12852,7 @@ export namespace Prisma {
     workspace?: WorkspaceOrderByWithRelationInput
     nodes?: NodeOrderByRelationAggregateInput
     aiRequests?: AiRequestOrderByRelationAggregateInput
+    documents?: DocumentOrderByRelationAggregateInput
   }
 
   export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -10570,6 +12872,7 @@ export namespace Prisma {
     workspace?: XOR<WorkspaceNullableRelationFilter, WorkspaceWhereInput> | null
     nodes?: NodeListRelationFilter
     aiRequests?: AiRequestListRelationFilter
+    documents?: DocumentListRelationFilter
   }, "id">
 
   export type ConversationOrderByWithAggregationInput = {
@@ -10616,7 +12919,9 @@ export namespace Prisma {
     content?: StringNullableFilter<"Node"> | string | null
     depth?: IntFilter<"Node"> | number
     path?: StringFilter<"Node"> | string
+    position?: IntFilter<"Node"> | number
     isCollapsed?: BoolFilter<"Node"> | boolean
+    embedding?: FloatNullableListFilter<"Node">
     createdAt?: DateTimeFilter<"Node"> | Date | string
     updatedAt?: DateTimeFilter<"Node"> | Date | string
     conversation?: XOR<ConversationRelationFilter, ConversationWhereInput>
@@ -10639,7 +12944,9 @@ export namespace Prisma {
     content?: SortOrderInput | SortOrder
     depth?: SortOrder
     path?: SortOrder
+    position?: SortOrder
     isCollapsed?: SortOrder
+    embedding?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     conversation?: ConversationOrderByWithRelationInput
@@ -10665,7 +12972,9 @@ export namespace Prisma {
     content?: StringNullableFilter<"Node"> | string | null
     depth?: IntFilter<"Node"> | number
     path?: StringFilter<"Node"> | string
+    position?: IntFilter<"Node"> | number
     isCollapsed?: BoolFilter<"Node"> | boolean
+    embedding?: FloatNullableListFilter<"Node">
     createdAt?: DateTimeFilter<"Node"> | Date | string
     updatedAt?: DateTimeFilter<"Node"> | Date | string
     conversation?: XOR<ConversationRelationFilter, ConversationWhereInput>
@@ -10688,7 +12997,9 @@ export namespace Prisma {
     content?: SortOrderInput | SortOrder
     depth?: SortOrder
     path?: SortOrder
+    position?: SortOrder
     isCollapsed?: SortOrder
+    embedding?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: NodeCountOrderByAggregateInput
@@ -10712,7 +13023,9 @@ export namespace Prisma {
     content?: StringNullableWithAggregatesFilter<"Node"> | string | null
     depth?: IntWithAggregatesFilter<"Node"> | number
     path?: StringWithAggregatesFilter<"Node"> | string
+    position?: IntWithAggregatesFilter<"Node"> | number
     isCollapsed?: BoolWithAggregatesFilter<"Node"> | boolean
+    embedding?: FloatNullableListFilter<"Node">
     createdAt?: DateTimeWithAggregatesFilter<"Node"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Node"> | Date | string
   }
@@ -10945,6 +13258,129 @@ export namespace Prisma {
     completedAt?: DateTimeNullableWithAggregatesFilter<"AiRequest"> | Date | string | null
   }
 
+  export type DocumentWhereInput = {
+    AND?: DocumentWhereInput | DocumentWhereInput[]
+    OR?: DocumentWhereInput[]
+    NOT?: DocumentWhereInput | DocumentWhereInput[]
+    id?: StringFilter<"Document"> | string
+    workspaceId?: StringNullableFilter<"Document"> | string | null
+    conversationId?: StringNullableFilter<"Document"> | string | null
+    title?: StringFilter<"Document"> | string
+    url?: StringNullableFilter<"Document"> | string | null
+    createdAt?: DateTimeFilter<"Document"> | Date | string
+    workspace?: XOR<WorkspaceNullableRelationFilter, WorkspaceWhereInput> | null
+    conversation?: XOR<ConversationNullableRelationFilter, ConversationWhereInput> | null
+    chunks?: DocumentChunkListRelationFilter
+  }
+
+  export type DocumentOrderByWithRelationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
+    conversationId?: SortOrderInput | SortOrder
+    title?: SortOrder
+    url?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    workspace?: WorkspaceOrderByWithRelationInput
+    conversation?: ConversationOrderByWithRelationInput
+    chunks?: DocumentChunkOrderByRelationAggregateInput
+  }
+
+  export type DocumentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DocumentWhereInput | DocumentWhereInput[]
+    OR?: DocumentWhereInput[]
+    NOT?: DocumentWhereInput | DocumentWhereInput[]
+    workspaceId?: StringNullableFilter<"Document"> | string | null
+    conversationId?: StringNullableFilter<"Document"> | string | null
+    title?: StringFilter<"Document"> | string
+    url?: StringNullableFilter<"Document"> | string | null
+    createdAt?: DateTimeFilter<"Document"> | Date | string
+    workspace?: XOR<WorkspaceNullableRelationFilter, WorkspaceWhereInput> | null
+    conversation?: XOR<ConversationNullableRelationFilter, ConversationWhereInput> | null
+    chunks?: DocumentChunkListRelationFilter
+  }, "id">
+
+  export type DocumentOrderByWithAggregationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
+    conversationId?: SortOrderInput | SortOrder
+    title?: SortOrder
+    url?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: DocumentCountOrderByAggregateInput
+    _max?: DocumentMaxOrderByAggregateInput
+    _min?: DocumentMinOrderByAggregateInput
+  }
+
+  export type DocumentScalarWhereWithAggregatesInput = {
+    AND?: DocumentScalarWhereWithAggregatesInput | DocumentScalarWhereWithAggregatesInput[]
+    OR?: DocumentScalarWhereWithAggregatesInput[]
+    NOT?: DocumentScalarWhereWithAggregatesInput | DocumentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Document"> | string
+    workspaceId?: StringNullableWithAggregatesFilter<"Document"> | string | null
+    conversationId?: StringNullableWithAggregatesFilter<"Document"> | string | null
+    title?: StringWithAggregatesFilter<"Document"> | string
+    url?: StringNullableWithAggregatesFilter<"Document"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Document"> | Date | string
+  }
+
+  export type DocumentChunkWhereInput = {
+    AND?: DocumentChunkWhereInput | DocumentChunkWhereInput[]
+    OR?: DocumentChunkWhereInput[]
+    NOT?: DocumentChunkWhereInput | DocumentChunkWhereInput[]
+    id?: StringFilter<"DocumentChunk"> | string
+    documentId?: StringFilter<"DocumentChunk"> | string
+    content?: StringFilter<"DocumentChunk"> | string
+    embedding?: FloatNullableListFilter<"DocumentChunk">
+    position?: IntFilter<"DocumentChunk"> | number
+    document?: XOR<DocumentRelationFilter, DocumentWhereInput>
+  }
+
+  export type DocumentChunkOrderByWithRelationInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    content?: SortOrder
+    embedding?: SortOrder
+    position?: SortOrder
+    document?: DocumentOrderByWithRelationInput
+  }
+
+  export type DocumentChunkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DocumentChunkWhereInput | DocumentChunkWhereInput[]
+    OR?: DocumentChunkWhereInput[]
+    NOT?: DocumentChunkWhereInput | DocumentChunkWhereInput[]
+    documentId?: StringFilter<"DocumentChunk"> | string
+    content?: StringFilter<"DocumentChunk"> | string
+    embedding?: FloatNullableListFilter<"DocumentChunk">
+    position?: IntFilter<"DocumentChunk"> | number
+    document?: XOR<DocumentRelationFilter, DocumentWhereInput>
+  }, "id">
+
+  export type DocumentChunkOrderByWithAggregationInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    content?: SortOrder
+    embedding?: SortOrder
+    position?: SortOrder
+    _count?: DocumentChunkCountOrderByAggregateInput
+    _avg?: DocumentChunkAvgOrderByAggregateInput
+    _max?: DocumentChunkMaxOrderByAggregateInput
+    _min?: DocumentChunkMinOrderByAggregateInput
+    _sum?: DocumentChunkSumOrderByAggregateInput
+  }
+
+  export type DocumentChunkScalarWhereWithAggregatesInput = {
+    AND?: DocumentChunkScalarWhereWithAggregatesInput | DocumentChunkScalarWhereWithAggregatesInput[]
+    OR?: DocumentChunkScalarWhereWithAggregatesInput[]
+    NOT?: DocumentChunkScalarWhereWithAggregatesInput | DocumentChunkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DocumentChunk"> | string
+    documentId?: StringWithAggregatesFilter<"DocumentChunk"> | string
+    content?: StringWithAggregatesFilter<"DocumentChunk"> | string
+    embedding?: FloatNullableListFilter<"DocumentChunk">
+    position?: IntWithAggregatesFilter<"DocumentChunk"> | number
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -11032,6 +13468,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     conversations?: ConversationCreateNestedManyWithoutWorkspaceInput
+    documents?: DocumentCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateInput = {
@@ -11042,6 +13479,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutWorkspaceInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUpdateInput = {
@@ -11052,6 +13490,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     conversations?: ConversationUpdateManyWithoutWorkspaceNestedInput
+    documents?: DocumentUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateInput = {
@@ -11062,6 +13501,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutWorkspaceNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceCreateManyInput = {
@@ -11154,6 +13594,7 @@ export namespace Prisma {
     workspace?: WorkspaceCreateNestedOneWithoutConversationsInput
     nodes?: NodeCreateNestedManyWithoutConversationInput
     aiRequests?: AiRequestCreateNestedManyWithoutConversationInput
+    documents?: DocumentCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateInput = {
@@ -11168,6 +13609,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutConversationInput
     aiRequests?: AiRequestUncheckedCreateNestedManyWithoutConversationInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUpdateInput = {
@@ -11182,6 +13624,7 @@ export namespace Prisma {
     workspace?: WorkspaceUpdateOneWithoutConversationsNestedInput
     nodes?: NodeUpdateManyWithoutConversationNestedInput
     aiRequests?: AiRequestUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateInput = {
@@ -11196,6 +13639,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutConversationNestedInput
     aiRequests?: AiRequestUncheckedUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationCreateManyInput = {
@@ -11239,7 +13683,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -11262,7 +13708,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -11277,7 +13725,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -11300,7 +13750,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -11319,7 +13771,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11331,7 +13785,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11347,7 +13803,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11586,6 +14044,126 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type DocumentCreateInput = {
+    id?: string
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+    workspace?: WorkspaceCreateNestedOneWithoutDocumentsInput
+    conversation?: ConversationCreateNestedOneWithoutDocumentsInput
+    chunks?: DocumentChunkCreateNestedManyWithoutDocumentInput
+  }
+
+  export type DocumentUncheckedCreateInput = {
+    id?: string
+    workspaceId?: string | null
+    conversationId?: string | null
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+    chunks?: DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  }
+
+  export type DocumentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneWithoutDocumentsNestedInput
+    conversation?: ConversationUpdateOneWithoutDocumentsNestedInput
+    chunks?: DocumentChunkUpdateManyWithoutDocumentNestedInput
+  }
+
+  export type DocumentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chunks?: DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  }
+
+  export type DocumentCreateManyInput = {
+    id?: string
+    workspaceId?: string | null
+    conversationId?: string | null
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocumentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentChunkCreateInput = {
+    id?: string
+    content: string
+    embedding?: DocumentChunkCreateembeddingInput | number[]
+    position?: number
+    document: DocumentCreateNestedOneWithoutChunksInput
+  }
+
+  export type DocumentChunkUncheckedCreateInput = {
+    id?: string
+    documentId: string
+    content: string
+    embedding?: DocumentChunkCreateembeddingInput | number[]
+    position?: number
+  }
+
+  export type DocumentChunkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: DocumentChunkUpdateembeddingInput | number[]
+    position?: IntFieldUpdateOperationsInput | number
+    document?: DocumentUpdateOneRequiredWithoutChunksNestedInput
+  }
+
+  export type DocumentChunkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    documentId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: DocumentChunkUpdateembeddingInput | number[]
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type DocumentChunkCreateManyInput = {
+    id?: string
+    documentId: string
+    content: string
+    embedding?: DocumentChunkCreateembeddingInput | number[]
+    position?: number
+  }
+
+  export type DocumentChunkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: DocumentChunkUpdateembeddingInput | number[]
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type DocumentChunkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    documentId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: DocumentChunkUpdateembeddingInput | number[]
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -11747,6 +14325,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type DocumentListRelationFilter = {
+    every?: DocumentWhereInput
+    some?: DocumentWhereInput
+    none?: DocumentWhereInput
+  }
+
+  export type DocumentOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type WorkspaceCountOrderByAggregateInput = {
@@ -11914,6 +14502,14 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type FloatNullableListFilter<$PrismaModel = never> = {
+    equals?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    has?: number | FloatFieldRefInput<$PrismaModel> | null
+    hasEvery?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    hasSome?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type ConversationRelationFilter = {
     is?: ConversationWhereInput
     isNot?: ConversationWhereInput
@@ -11950,13 +14546,17 @@ export namespace Prisma {
     content?: SortOrder
     depth?: SortOrder
     path?: SortOrder
+    position?: SortOrder
     isCollapsed?: SortOrder
+    embedding?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type NodeAvgOrderByAggregateInput = {
     depth?: SortOrder
+    position?: SortOrder
+    embedding?: SortOrder
   }
 
   export type NodeMaxOrderByAggregateInput = {
@@ -11970,6 +14570,7 @@ export namespace Prisma {
     content?: SortOrder
     depth?: SortOrder
     path?: SortOrder
+    position?: SortOrder
     isCollapsed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11986,6 +14587,7 @@ export namespace Prisma {
     content?: SortOrder
     depth?: SortOrder
     path?: SortOrder
+    position?: SortOrder
     isCollapsed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11993,6 +14595,8 @@ export namespace Prisma {
 
   export type NodeSumOrderByAggregateInput = {
     depth?: SortOrder
+    position?: SortOrder
+    embedding?: SortOrder
   }
 
   export type EnumNodeTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -12281,6 +14885,85 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type ConversationNullableRelationFilter = {
+    is?: ConversationWhereInput | null
+    isNot?: ConversationWhereInput | null
+  }
+
+  export type DocumentChunkListRelationFilter = {
+    every?: DocumentChunkWhereInput
+    some?: DocumentChunkWhereInput
+    none?: DocumentChunkWhereInput
+  }
+
+  export type DocumentChunkOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DocumentCountOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    conversationId?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocumentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    conversationId?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocumentMinOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    conversationId?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocumentRelationFilter = {
+    is?: DocumentWhereInput
+    isNot?: DocumentWhereInput
+  }
+
+  export type DocumentChunkCountOrderByAggregateInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    content?: SortOrder
+    embedding?: SortOrder
+    position?: SortOrder
+  }
+
+  export type DocumentChunkAvgOrderByAggregateInput = {
+    embedding?: SortOrder
+    position?: SortOrder
+  }
+
+  export type DocumentChunkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    content?: SortOrder
+    position?: SortOrder
+  }
+
+  export type DocumentChunkMinOrderByAggregateInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    content?: SortOrder
+    position?: SortOrder
+  }
+
+  export type DocumentChunkSumOrderByAggregateInput = {
+    embedding?: SortOrder
+    position?: SortOrder
+  }
+
   export type WorkspaceMemberCreateNestedManyWithoutUserInput = {
     create?: XOR<WorkspaceMemberCreateWithoutUserInput, WorkspaceMemberUncheckedCreateWithoutUserInput> | WorkspaceMemberCreateWithoutUserInput[] | WorkspaceMemberUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutUserInput | WorkspaceMemberCreateOrConnectWithoutUserInput[]
@@ -12475,6 +15158,13 @@ export namespace Prisma {
     connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
   }
 
+  export type DocumentCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<DocumentCreateWithoutWorkspaceInput, DocumentUncheckedCreateWithoutWorkspaceInput> | DocumentCreateWithoutWorkspaceInput[] | DocumentUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutWorkspaceInput | DocumentCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: DocumentCreateManyWorkspaceInputEnvelope
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+  }
+
   export type WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput = {
     create?: XOR<WorkspaceMemberCreateWithoutWorkspaceInput, WorkspaceMemberUncheckedCreateWithoutWorkspaceInput> | WorkspaceMemberCreateWithoutWorkspaceInput[] | WorkspaceMemberUncheckedCreateWithoutWorkspaceInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutWorkspaceInput | WorkspaceMemberCreateOrConnectWithoutWorkspaceInput[]
@@ -12487,6 +15177,13 @@ export namespace Prisma {
     connectOrCreate?: ConversationCreateOrConnectWithoutWorkspaceInput | ConversationCreateOrConnectWithoutWorkspaceInput[]
     createMany?: ConversationCreateManyWorkspaceInputEnvelope
     connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+  }
+
+  export type DocumentUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<DocumentCreateWithoutWorkspaceInput, DocumentUncheckedCreateWithoutWorkspaceInput> | DocumentCreateWithoutWorkspaceInput[] | DocumentUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutWorkspaceInput | DocumentCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: DocumentCreateManyWorkspaceInputEnvelope
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
   }
 
   export type WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput = {
@@ -12517,6 +15214,20 @@ export namespace Prisma {
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
   }
 
+  export type DocumentUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<DocumentCreateWithoutWorkspaceInput, DocumentUncheckedCreateWithoutWorkspaceInput> | DocumentCreateWithoutWorkspaceInput[] | DocumentUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutWorkspaceInput | DocumentCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: DocumentUpsertWithWhereUniqueWithoutWorkspaceInput | DocumentUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: DocumentCreateManyWorkspaceInputEnvelope
+    set?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    disconnect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    delete?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    update?: DocumentUpdateWithWhereUniqueWithoutWorkspaceInput | DocumentUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: DocumentUpdateManyWithWhereWithoutWorkspaceInput | DocumentUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+  }
+
   export type WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput = {
     create?: XOR<WorkspaceMemberCreateWithoutWorkspaceInput, WorkspaceMemberUncheckedCreateWithoutWorkspaceInput> | WorkspaceMemberCreateWithoutWorkspaceInput[] | WorkspaceMemberUncheckedCreateWithoutWorkspaceInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutWorkspaceInput | WorkspaceMemberCreateOrConnectWithoutWorkspaceInput[]
@@ -12543,6 +15254,20 @@ export namespace Prisma {
     update?: ConversationUpdateWithWhereUniqueWithoutWorkspaceInput | ConversationUpdateWithWhereUniqueWithoutWorkspaceInput[]
     updateMany?: ConversationUpdateManyWithWhereWithoutWorkspaceInput | ConversationUpdateManyWithWhereWithoutWorkspaceInput[]
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+  }
+
+  export type DocumentUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<DocumentCreateWithoutWorkspaceInput, DocumentUncheckedCreateWithoutWorkspaceInput> | DocumentCreateWithoutWorkspaceInput[] | DocumentUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutWorkspaceInput | DocumentCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: DocumentUpsertWithWhereUniqueWithoutWorkspaceInput | DocumentUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: DocumentCreateManyWorkspaceInputEnvelope
+    set?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    disconnect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    delete?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    update?: DocumentUpdateWithWhereUniqueWithoutWorkspaceInput | DocumentUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: DocumentUpdateManyWithWhereWithoutWorkspaceInput | DocumentUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
   }
 
   export type WorkspaceCreateNestedOneWithoutMembersInput = {
@@ -12607,6 +15332,13 @@ export namespace Prisma {
     connect?: AiRequestWhereUniqueInput | AiRequestWhereUniqueInput[]
   }
 
+  export type DocumentCreateNestedManyWithoutConversationInput = {
+    create?: XOR<DocumentCreateWithoutConversationInput, DocumentUncheckedCreateWithoutConversationInput> | DocumentCreateWithoutConversationInput[] | DocumentUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutConversationInput | DocumentCreateOrConnectWithoutConversationInput[]
+    createMany?: DocumentCreateManyConversationInputEnvelope
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+  }
+
   export type NodeUncheckedCreateNestedManyWithoutConversationInput = {
     create?: XOR<NodeCreateWithoutConversationInput, NodeUncheckedCreateWithoutConversationInput> | NodeCreateWithoutConversationInput[] | NodeUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: NodeCreateOrConnectWithoutConversationInput | NodeCreateOrConnectWithoutConversationInput[]
@@ -12619,6 +15351,13 @@ export namespace Prisma {
     connectOrCreate?: AiRequestCreateOrConnectWithoutConversationInput | AiRequestCreateOrConnectWithoutConversationInput[]
     createMany?: AiRequestCreateManyConversationInputEnvelope
     connect?: AiRequestWhereUniqueInput | AiRequestWhereUniqueInput[]
+  }
+
+  export type DocumentUncheckedCreateNestedManyWithoutConversationInput = {
+    create?: XOR<DocumentCreateWithoutConversationInput, DocumentUncheckedCreateWithoutConversationInput> | DocumentCreateWithoutConversationInput[] | DocumentUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutConversationInput | DocumentCreateOrConnectWithoutConversationInput[]
+    createMany?: DocumentCreateManyConversationInputEnvelope
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -12676,6 +15415,20 @@ export namespace Prisma {
     deleteMany?: AiRequestScalarWhereInput | AiRequestScalarWhereInput[]
   }
 
+  export type DocumentUpdateManyWithoutConversationNestedInput = {
+    create?: XOR<DocumentCreateWithoutConversationInput, DocumentUncheckedCreateWithoutConversationInput> | DocumentCreateWithoutConversationInput[] | DocumentUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutConversationInput | DocumentCreateOrConnectWithoutConversationInput[]
+    upsert?: DocumentUpsertWithWhereUniqueWithoutConversationInput | DocumentUpsertWithWhereUniqueWithoutConversationInput[]
+    createMany?: DocumentCreateManyConversationInputEnvelope
+    set?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    disconnect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    delete?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    update?: DocumentUpdateWithWhereUniqueWithoutConversationInput | DocumentUpdateWithWhereUniqueWithoutConversationInput[]
+    updateMany?: DocumentUpdateManyWithWhereWithoutConversationInput | DocumentUpdateManyWithWhereWithoutConversationInput[]
+    deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+  }
+
   export type NodeUncheckedUpdateManyWithoutConversationNestedInput = {
     create?: XOR<NodeCreateWithoutConversationInput, NodeUncheckedCreateWithoutConversationInput> | NodeCreateWithoutConversationInput[] | NodeUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: NodeCreateOrConnectWithoutConversationInput | NodeCreateOrConnectWithoutConversationInput[]
@@ -12702,6 +15455,24 @@ export namespace Prisma {
     update?: AiRequestUpdateWithWhereUniqueWithoutConversationInput | AiRequestUpdateWithWhereUniqueWithoutConversationInput[]
     updateMany?: AiRequestUpdateManyWithWhereWithoutConversationInput | AiRequestUpdateManyWithWhereWithoutConversationInput[]
     deleteMany?: AiRequestScalarWhereInput | AiRequestScalarWhereInput[]
+  }
+
+  export type DocumentUncheckedUpdateManyWithoutConversationNestedInput = {
+    create?: XOR<DocumentCreateWithoutConversationInput, DocumentUncheckedCreateWithoutConversationInput> | DocumentCreateWithoutConversationInput[] | DocumentUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutConversationInput | DocumentCreateOrConnectWithoutConversationInput[]
+    upsert?: DocumentUpsertWithWhereUniqueWithoutConversationInput | DocumentUpsertWithWhereUniqueWithoutConversationInput[]
+    createMany?: DocumentCreateManyConversationInputEnvelope
+    set?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    disconnect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    delete?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    update?: DocumentUpdateWithWhereUniqueWithoutConversationInput | DocumentUpdateWithWhereUniqueWithoutConversationInput[]
+    updateMany?: DocumentUpdateManyWithWhereWithoutConversationInput | DocumentUpdateManyWithWhereWithoutConversationInput[]
+    deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+  }
+
+  export type NodeCreateembeddingInput = {
+    set: number[]
   }
 
   export type ConversationCreateNestedOneWithoutNodesInput = {
@@ -12784,6 +15555,11 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NodeUpdateembeddingInput = {
+    set?: number[]
+    push?: number | number[]
   }
 
   export type ConversationUpdateOneRequiredWithoutNodesNestedInput = {
@@ -13084,6 +15860,103 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutAiRequestsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAiRequestsInput, UserUpdateWithoutAiRequestsInput>, UserUncheckedUpdateWithoutAiRequestsInput>
+  }
+
+  export type WorkspaceCreateNestedOneWithoutDocumentsInput = {
+    create?: XOR<WorkspaceCreateWithoutDocumentsInput, WorkspaceUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutDocumentsInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type ConversationCreateNestedOneWithoutDocumentsInput = {
+    create?: XOR<ConversationCreateWithoutDocumentsInput, ConversationUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: ConversationCreateOrConnectWithoutDocumentsInput
+    connect?: ConversationWhereUniqueInput
+  }
+
+  export type DocumentChunkCreateNestedManyWithoutDocumentInput = {
+    create?: XOR<DocumentChunkCreateWithoutDocumentInput, DocumentChunkUncheckedCreateWithoutDocumentInput> | DocumentChunkCreateWithoutDocumentInput[] | DocumentChunkUncheckedCreateWithoutDocumentInput[]
+    connectOrCreate?: DocumentChunkCreateOrConnectWithoutDocumentInput | DocumentChunkCreateOrConnectWithoutDocumentInput[]
+    createMany?: DocumentChunkCreateManyDocumentInputEnvelope
+    connect?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+  }
+
+  export type DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput = {
+    create?: XOR<DocumentChunkCreateWithoutDocumentInput, DocumentChunkUncheckedCreateWithoutDocumentInput> | DocumentChunkCreateWithoutDocumentInput[] | DocumentChunkUncheckedCreateWithoutDocumentInput[]
+    connectOrCreate?: DocumentChunkCreateOrConnectWithoutDocumentInput | DocumentChunkCreateOrConnectWithoutDocumentInput[]
+    createMany?: DocumentChunkCreateManyDocumentInputEnvelope
+    connect?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+  }
+
+  export type WorkspaceUpdateOneWithoutDocumentsNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutDocumentsInput, WorkspaceUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutDocumentsInput
+    upsert?: WorkspaceUpsertWithoutDocumentsInput
+    disconnect?: WorkspaceWhereInput | boolean
+    delete?: WorkspaceWhereInput | boolean
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutDocumentsInput, WorkspaceUpdateWithoutDocumentsInput>, WorkspaceUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type ConversationUpdateOneWithoutDocumentsNestedInput = {
+    create?: XOR<ConversationCreateWithoutDocumentsInput, ConversationUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: ConversationCreateOrConnectWithoutDocumentsInput
+    upsert?: ConversationUpsertWithoutDocumentsInput
+    disconnect?: ConversationWhereInput | boolean
+    delete?: ConversationWhereInput | boolean
+    connect?: ConversationWhereUniqueInput
+    update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutDocumentsInput, ConversationUpdateWithoutDocumentsInput>, ConversationUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type DocumentChunkUpdateManyWithoutDocumentNestedInput = {
+    create?: XOR<DocumentChunkCreateWithoutDocumentInput, DocumentChunkUncheckedCreateWithoutDocumentInput> | DocumentChunkCreateWithoutDocumentInput[] | DocumentChunkUncheckedCreateWithoutDocumentInput[]
+    connectOrCreate?: DocumentChunkCreateOrConnectWithoutDocumentInput | DocumentChunkCreateOrConnectWithoutDocumentInput[]
+    upsert?: DocumentChunkUpsertWithWhereUniqueWithoutDocumentInput | DocumentChunkUpsertWithWhereUniqueWithoutDocumentInput[]
+    createMany?: DocumentChunkCreateManyDocumentInputEnvelope
+    set?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+    disconnect?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+    delete?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+    connect?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+    update?: DocumentChunkUpdateWithWhereUniqueWithoutDocumentInput | DocumentChunkUpdateWithWhereUniqueWithoutDocumentInput[]
+    updateMany?: DocumentChunkUpdateManyWithWhereWithoutDocumentInput | DocumentChunkUpdateManyWithWhereWithoutDocumentInput[]
+    deleteMany?: DocumentChunkScalarWhereInput | DocumentChunkScalarWhereInput[]
+  }
+
+  export type DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput = {
+    create?: XOR<DocumentChunkCreateWithoutDocumentInput, DocumentChunkUncheckedCreateWithoutDocumentInput> | DocumentChunkCreateWithoutDocumentInput[] | DocumentChunkUncheckedCreateWithoutDocumentInput[]
+    connectOrCreate?: DocumentChunkCreateOrConnectWithoutDocumentInput | DocumentChunkCreateOrConnectWithoutDocumentInput[]
+    upsert?: DocumentChunkUpsertWithWhereUniqueWithoutDocumentInput | DocumentChunkUpsertWithWhereUniqueWithoutDocumentInput[]
+    createMany?: DocumentChunkCreateManyDocumentInputEnvelope
+    set?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+    disconnect?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+    delete?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+    connect?: DocumentChunkWhereUniqueInput | DocumentChunkWhereUniqueInput[]
+    update?: DocumentChunkUpdateWithWhereUniqueWithoutDocumentInput | DocumentChunkUpdateWithWhereUniqueWithoutDocumentInput[]
+    updateMany?: DocumentChunkUpdateManyWithWhereWithoutDocumentInput | DocumentChunkUpdateManyWithWhereWithoutDocumentInput[]
+    deleteMany?: DocumentChunkScalarWhereInput | DocumentChunkScalarWhereInput[]
+  }
+
+  export type DocumentChunkCreateembeddingInput = {
+    set: number[]
+  }
+
+  export type DocumentCreateNestedOneWithoutChunksInput = {
+    create?: XOR<DocumentCreateWithoutChunksInput, DocumentUncheckedCreateWithoutChunksInput>
+    connectOrCreate?: DocumentCreateOrConnectWithoutChunksInput
+    connect?: DocumentWhereUniqueInput
+  }
+
+  export type DocumentChunkUpdateembeddingInput = {
+    set?: number[]
+    push?: number | number[]
+  }
+
+  export type DocumentUpdateOneRequiredWithoutChunksNestedInput = {
+    create?: XOR<DocumentCreateWithoutChunksInput, DocumentUncheckedCreateWithoutChunksInput>
+    connectOrCreate?: DocumentCreateOrConnectWithoutChunksInput
+    upsert?: DocumentUpsertWithoutChunksInput
+    connect?: DocumentWhereUniqueInput
+    update?: XOR<XOR<DocumentUpdateToOneWithWhereWithoutChunksInput, DocumentUpdateWithoutChunksInput>, DocumentUncheckedUpdateWithoutChunksInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -13424,6 +16297,7 @@ export namespace Prisma {
     workspace?: WorkspaceCreateNestedOneWithoutConversationsInput
     nodes?: NodeCreateNestedManyWithoutConversationInput
     aiRequests?: AiRequestCreateNestedManyWithoutConversationInput
+    documents?: DocumentCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutOwnerInput = {
@@ -13437,6 +16311,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutConversationInput
     aiRequests?: AiRequestUncheckedCreateNestedManyWithoutConversationInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutOwnerInput = {
@@ -13456,7 +16331,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -13477,7 +16354,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -13621,7 +16500,9 @@ export namespace Prisma {
     content?: StringNullableFilter<"Node"> | string | null
     depth?: IntFilter<"Node"> | number
     path?: StringFilter<"Node"> | string
+    position?: IntFilter<"Node"> | number
     isCollapsed?: BoolFilter<"Node"> | boolean
+    embedding?: FloatNullableListFilter<"Node">
     createdAt?: DateTimeFilter<"Node"> | Date | string
     updatedAt?: DateTimeFilter<"Node"> | Date | string
   }
@@ -13695,6 +16576,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutConversationsInput
     nodes?: NodeCreateNestedManyWithoutConversationInput
     aiRequests?: AiRequestCreateNestedManyWithoutConversationInput
+    documents?: DocumentCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutWorkspaceInput = {
@@ -13708,6 +16590,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutConversationInput
     aiRequests?: AiRequestUncheckedCreateNestedManyWithoutConversationInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutWorkspaceInput = {
@@ -13717,6 +16600,34 @@ export namespace Prisma {
 
   export type ConversationCreateManyWorkspaceInputEnvelope = {
     data: ConversationCreateManyWorkspaceInput | ConversationCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DocumentCreateWithoutWorkspaceInput = {
+    id?: string
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+    conversation?: ConversationCreateNestedOneWithoutDocumentsInput
+    chunks?: DocumentChunkCreateNestedManyWithoutDocumentInput
+  }
+
+  export type DocumentUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    conversationId?: string | null
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+    chunks?: DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  }
+
+  export type DocumentCreateOrConnectWithoutWorkspaceInput = {
+    where: DocumentWhereUniqueInput
+    create: XOR<DocumentCreateWithoutWorkspaceInput, DocumentUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type DocumentCreateManyWorkspaceInputEnvelope = {
+    data: DocumentCreateManyWorkspaceInput | DocumentCreateManyWorkspaceInput[]
     skipDuplicates?: boolean
   }
 
@@ -13752,6 +16663,34 @@ export namespace Prisma {
     data: XOR<ConversationUpdateManyMutationInput, ConversationUncheckedUpdateManyWithoutWorkspaceInput>
   }
 
+  export type DocumentUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: DocumentWhereUniqueInput
+    update: XOR<DocumentUpdateWithoutWorkspaceInput, DocumentUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<DocumentCreateWithoutWorkspaceInput, DocumentUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type DocumentUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: DocumentWhereUniqueInput
+    data: XOR<DocumentUpdateWithoutWorkspaceInput, DocumentUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type DocumentUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: DocumentScalarWhereInput
+    data: XOR<DocumentUpdateManyMutationInput, DocumentUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
+  export type DocumentScalarWhereInput = {
+    AND?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+    OR?: DocumentScalarWhereInput[]
+    NOT?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+    id?: StringFilter<"Document"> | string
+    workspaceId?: StringNullableFilter<"Document"> | string | null
+    conversationId?: StringNullableFilter<"Document"> | string | null
+    title?: StringFilter<"Document"> | string
+    url?: StringNullableFilter<"Document"> | string | null
+    createdAt?: DateTimeFilter<"Document"> | Date | string
+  }
+
   export type WorkspaceCreateWithoutMembersInput = {
     id?: string
     name: string
@@ -13759,6 +16698,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     conversations?: ConversationCreateNestedManyWithoutWorkspaceInput
+    documents?: DocumentCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -13768,6 +16708,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     conversations?: ConversationUncheckedCreateNestedManyWithoutWorkspaceInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -13822,6 +16763,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversations?: ConversationUpdateManyWithoutWorkspaceNestedInput
+    documents?: DocumentUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -13831,6 +16773,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversations?: ConversationUncheckedUpdateManyWithoutWorkspaceNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type UserUpsertWithoutWorkspaceMembersInput = {
@@ -13904,6 +16847,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    documents?: DocumentCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutConversationsInput = {
@@ -13913,6 +16857,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutConversationsInput = {
@@ -13927,7 +16872,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     parent?: NodeCreateNestedOneWithoutChildrenInput
@@ -13948,7 +16895,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -14001,6 +16950,34 @@ export namespace Prisma {
 
   export type AiRequestCreateManyConversationInputEnvelope = {
     data: AiRequestCreateManyConversationInput | AiRequestCreateManyConversationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DocumentCreateWithoutConversationInput = {
+    id?: string
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+    workspace?: WorkspaceCreateNestedOneWithoutDocumentsInput
+    chunks?: DocumentChunkCreateNestedManyWithoutDocumentInput
+  }
+
+  export type DocumentUncheckedCreateWithoutConversationInput = {
+    id?: string
+    workspaceId?: string | null
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+    chunks?: DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  }
+
+  export type DocumentCreateOrConnectWithoutConversationInput = {
+    where: DocumentWhereUniqueInput
+    create: XOR<DocumentCreateWithoutConversationInput, DocumentUncheckedCreateWithoutConversationInput>
+  }
+
+  export type DocumentCreateManyConversationInputEnvelope = {
+    data: DocumentCreateManyConversationInput | DocumentCreateManyConversationInput[]
     skipDuplicates?: boolean
   }
 
@@ -14057,6 +17034,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    documents?: DocumentUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutConversationsInput = {
@@ -14066,6 +17044,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type NodeUpsertWithWhereUniqueWithoutConversationInput = {
@@ -14100,6 +17079,22 @@ export namespace Prisma {
     data: XOR<AiRequestUpdateManyMutationInput, AiRequestUncheckedUpdateManyWithoutConversationInput>
   }
 
+  export type DocumentUpsertWithWhereUniqueWithoutConversationInput = {
+    where: DocumentWhereUniqueInput
+    update: XOR<DocumentUpdateWithoutConversationInput, DocumentUncheckedUpdateWithoutConversationInput>
+    create: XOR<DocumentCreateWithoutConversationInput, DocumentUncheckedCreateWithoutConversationInput>
+  }
+
+  export type DocumentUpdateWithWhereUniqueWithoutConversationInput = {
+    where: DocumentWhereUniqueInput
+    data: XOR<DocumentUpdateWithoutConversationInput, DocumentUncheckedUpdateWithoutConversationInput>
+  }
+
+  export type DocumentUpdateManyWithWhereWithoutConversationInput = {
+    where: DocumentScalarWhereInput
+    data: XOR<DocumentUpdateManyMutationInput, DocumentUncheckedUpdateManyWithoutConversationInput>
+  }
+
   export type ConversationCreateWithoutNodesInput = {
     id?: string
     title: string
@@ -14111,6 +17106,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutConversationsInput
     workspace?: WorkspaceCreateNestedOneWithoutConversationsInput
     aiRequests?: AiRequestCreateNestedManyWithoutConversationInput
+    documents?: DocumentCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutNodesInput = {
@@ -14124,6 +17120,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     aiRequests?: AiRequestUncheckedCreateNestedManyWithoutConversationInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutNodesInput = {
@@ -14138,7 +17135,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -14160,7 +17159,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     blocks?: BlockUncheckedCreateNestedManyWithoutNodeInput
@@ -14179,7 +17180,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -14200,7 +17203,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -14370,6 +17375,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutConversationsNestedInput
     workspace?: WorkspaceUpdateOneWithoutConversationsNestedInput
     aiRequests?: AiRequestUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutNodesInput = {
@@ -14383,6 +17389,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiRequests?: AiRequestUncheckedUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type NodeUpsertWithoutChildrenInput = {
@@ -14403,7 +17410,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -14425,7 +17434,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     blocks?: BlockUncheckedUpdateManyWithoutNodeNestedInput
@@ -14571,7 +17582,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -14593,7 +17606,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -14634,7 +17649,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -14655,7 +17672,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -14691,7 +17710,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -14713,7 +17734,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -14837,6 +17860,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutConversationsInput
     workspace?: WorkspaceCreateNestedOneWithoutConversationsInput
     nodes?: NodeCreateNestedManyWithoutConversationInput
+    documents?: DocumentCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutAiRequestsInput = {
@@ -14850,6 +17874,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutConversationInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutAiRequestsInput = {
@@ -14864,7 +17889,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -14886,7 +17913,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -14949,6 +17978,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutConversationsNestedInput
     workspace?: WorkspaceUpdateOneWithoutConversationsNestedInput
     nodes?: NodeUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutAiRequestsInput = {
@@ -14962,6 +17992,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type NodeUpsertWithoutAiRequestsInput = {
@@ -14982,7 +18013,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -15004,7 +18037,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -15046,6 +18081,237 @@ export namespace Prisma {
     nodes?: NodeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
+  export type WorkspaceCreateWithoutDocumentsInput = {
+    id?: string
+    name: string
+    slug: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    conversations?: ConversationCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutDocumentsInput = {
+    id?: string
+    name: string
+    slug: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    conversations?: ConversationUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutDocumentsInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutDocumentsInput, WorkspaceUncheckedCreateWithoutDocumentsInput>
+  }
+
+  export type ConversationCreateWithoutDocumentsInput = {
+    id?: string
+    title: string
+    description?: string | null
+    isFavorite?: boolean
+    tags?: ConversationCreatetagsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutConversationsInput
+    workspace?: WorkspaceCreateNestedOneWithoutConversationsInput
+    nodes?: NodeCreateNestedManyWithoutConversationInput
+    aiRequests?: AiRequestCreateNestedManyWithoutConversationInput
+  }
+
+  export type ConversationUncheckedCreateWithoutDocumentsInput = {
+    id?: string
+    title: string
+    description?: string | null
+    ownerId: string
+    workspaceId?: string | null
+    isFavorite?: boolean
+    tags?: ConversationCreatetagsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    nodes?: NodeUncheckedCreateNestedManyWithoutConversationInput
+    aiRequests?: AiRequestUncheckedCreateNestedManyWithoutConversationInput
+  }
+
+  export type ConversationCreateOrConnectWithoutDocumentsInput = {
+    where: ConversationWhereUniqueInput
+    create: XOR<ConversationCreateWithoutDocumentsInput, ConversationUncheckedCreateWithoutDocumentsInput>
+  }
+
+  export type DocumentChunkCreateWithoutDocumentInput = {
+    id?: string
+    content: string
+    embedding?: DocumentChunkCreateembeddingInput | number[]
+    position?: number
+  }
+
+  export type DocumentChunkUncheckedCreateWithoutDocumentInput = {
+    id?: string
+    content: string
+    embedding?: DocumentChunkCreateembeddingInput | number[]
+    position?: number
+  }
+
+  export type DocumentChunkCreateOrConnectWithoutDocumentInput = {
+    where: DocumentChunkWhereUniqueInput
+    create: XOR<DocumentChunkCreateWithoutDocumentInput, DocumentChunkUncheckedCreateWithoutDocumentInput>
+  }
+
+  export type DocumentChunkCreateManyDocumentInputEnvelope = {
+    data: DocumentChunkCreateManyDocumentInput | DocumentChunkCreateManyDocumentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WorkspaceUpsertWithoutDocumentsInput = {
+    update: XOR<WorkspaceUpdateWithoutDocumentsInput, WorkspaceUncheckedUpdateWithoutDocumentsInput>
+    create: XOR<WorkspaceCreateWithoutDocumentsInput, WorkspaceUncheckedCreateWithoutDocumentsInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutDocumentsInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutDocumentsInput, WorkspaceUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type WorkspaceUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    conversations?: ConversationUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    conversations?: ConversationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type ConversationUpsertWithoutDocumentsInput = {
+    update: XOR<ConversationUpdateWithoutDocumentsInput, ConversationUncheckedUpdateWithoutDocumentsInput>
+    create: XOR<ConversationCreateWithoutDocumentsInput, ConversationUncheckedCreateWithoutDocumentsInput>
+    where?: ConversationWhereInput
+  }
+
+  export type ConversationUpdateToOneWithWhereWithoutDocumentsInput = {
+    where?: ConversationWhereInput
+    data: XOR<ConversationUpdateWithoutDocumentsInput, ConversationUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type ConversationUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    tags?: ConversationUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutConversationsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutConversationsNestedInput
+    nodes?: NodeUpdateManyWithoutConversationNestedInput
+    aiRequests?: AiRequestUpdateManyWithoutConversationNestedInput
+  }
+
+  export type ConversationUncheckedUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    tags?: ConversationUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    nodes?: NodeUncheckedUpdateManyWithoutConversationNestedInput
+    aiRequests?: AiRequestUncheckedUpdateManyWithoutConversationNestedInput
+  }
+
+  export type DocumentChunkUpsertWithWhereUniqueWithoutDocumentInput = {
+    where: DocumentChunkWhereUniqueInput
+    update: XOR<DocumentChunkUpdateWithoutDocumentInput, DocumentChunkUncheckedUpdateWithoutDocumentInput>
+    create: XOR<DocumentChunkCreateWithoutDocumentInput, DocumentChunkUncheckedCreateWithoutDocumentInput>
+  }
+
+  export type DocumentChunkUpdateWithWhereUniqueWithoutDocumentInput = {
+    where: DocumentChunkWhereUniqueInput
+    data: XOR<DocumentChunkUpdateWithoutDocumentInput, DocumentChunkUncheckedUpdateWithoutDocumentInput>
+  }
+
+  export type DocumentChunkUpdateManyWithWhereWithoutDocumentInput = {
+    where: DocumentChunkScalarWhereInput
+    data: XOR<DocumentChunkUpdateManyMutationInput, DocumentChunkUncheckedUpdateManyWithoutDocumentInput>
+  }
+
+  export type DocumentChunkScalarWhereInput = {
+    AND?: DocumentChunkScalarWhereInput | DocumentChunkScalarWhereInput[]
+    OR?: DocumentChunkScalarWhereInput[]
+    NOT?: DocumentChunkScalarWhereInput | DocumentChunkScalarWhereInput[]
+    id?: StringFilter<"DocumentChunk"> | string
+    documentId?: StringFilter<"DocumentChunk"> | string
+    content?: StringFilter<"DocumentChunk"> | string
+    embedding?: FloatNullableListFilter<"DocumentChunk">
+    position?: IntFilter<"DocumentChunk"> | number
+  }
+
+  export type DocumentCreateWithoutChunksInput = {
+    id?: string
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+    workspace?: WorkspaceCreateNestedOneWithoutDocumentsInput
+    conversation?: ConversationCreateNestedOneWithoutDocumentsInput
+  }
+
+  export type DocumentUncheckedCreateWithoutChunksInput = {
+    id?: string
+    workspaceId?: string | null
+    conversationId?: string | null
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocumentCreateOrConnectWithoutChunksInput = {
+    where: DocumentWhereUniqueInput
+    create: XOR<DocumentCreateWithoutChunksInput, DocumentUncheckedCreateWithoutChunksInput>
+  }
+
+  export type DocumentUpsertWithoutChunksInput = {
+    update: XOR<DocumentUpdateWithoutChunksInput, DocumentUncheckedUpdateWithoutChunksInput>
+    create: XOR<DocumentCreateWithoutChunksInput, DocumentUncheckedCreateWithoutChunksInput>
+    where?: DocumentWhereInput
+  }
+
+  export type DocumentUpdateToOneWithWhereWithoutChunksInput = {
+    where?: DocumentWhereInput
+    data: XOR<DocumentUpdateWithoutChunksInput, DocumentUncheckedUpdateWithoutChunksInput>
+  }
+
+  export type DocumentUpdateWithoutChunksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneWithoutDocumentsNestedInput
+    conversation?: ConversationUpdateOneWithoutDocumentsNestedInput
+  }
+
+  export type DocumentUncheckedUpdateWithoutChunksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type WorkspaceMemberCreateManyUserInput = {
     id?: string
     workspaceId: string
@@ -15074,7 +18340,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15125,6 +18393,7 @@ export namespace Prisma {
     workspace?: WorkspaceUpdateOneWithoutConversationsNestedInput
     nodes?: NodeUpdateManyWithoutConversationNestedInput
     aiRequests?: AiRequestUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutOwnerInput = {
@@ -15138,6 +18407,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutConversationNestedInput
     aiRequests?: AiRequestUncheckedUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutOwnerInput = {
@@ -15158,7 +18428,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -15179,7 +18451,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -15197,7 +18471,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15262,6 +18538,14 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type DocumentCreateManyWorkspaceInput = {
+    id?: string
+    conversationId?: string | null
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+  }
+
   export type WorkspaceMemberUpdateWithoutWorkspaceInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumWorkspaceMemberRoleFieldUpdateOperationsInput | $Enums.WorkspaceMemberRole
@@ -15294,6 +18578,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutConversationsNestedInput
     nodes?: NodeUpdateManyWithoutConversationNestedInput
     aiRequests?: AiRequestUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutWorkspaceInput = {
@@ -15307,6 +18592,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutConversationNestedInput
     aiRequests?: AiRequestUncheckedUpdateManyWithoutConversationNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -15320,6 +18606,32 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DocumentUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    conversation?: ConversationUpdateOneWithoutDocumentsNestedInput
+    chunks?: DocumentChunkUpdateManyWithoutDocumentNestedInput
+  }
+
+  export type DocumentUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chunks?: DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  }
+
+  export type DocumentUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type NodeCreateManyConversationInput = {
     id?: string
     parentNodeId?: string | null
@@ -15330,7 +18642,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15349,6 +18663,14 @@ export namespace Prisma {
     completedAt?: Date | string | null
   }
 
+  export type DocumentCreateManyConversationInput = {
+    id?: string
+    workspaceId?: string | null
+    title: string
+    url?: string | null
+    createdAt?: Date | string
+  }
+
   export type NodeUpdateWithoutConversationInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
@@ -15356,7 +18678,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parent?: NodeUpdateOneWithoutChildrenNestedInput
@@ -15377,7 +18701,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -15395,7 +18721,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15442,6 +18770,32 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type DocumentUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneWithoutDocumentsNestedInput
+    chunks?: DocumentChunkUpdateManyWithoutDocumentNestedInput
+  }
+
+  export type DocumentUncheckedUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chunks?: DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  }
+
+  export type DocumentUncheckedUpdateManyWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type NodeCreateManyParentInput = {
     id?: string
     conversationId: string
@@ -15452,7 +18806,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15488,7 +18844,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -15509,7 +18867,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -15527,7 +18887,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15624,7 +18986,9 @@ export namespace Prisma {
     content?: string | null
     depth?: number
     path: string
+    position?: number
     isCollapsed?: boolean
+    embedding?: NodeCreateembeddingInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15654,7 +19018,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -15675,7 +19041,9 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -15693,9 +19061,39 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     depth?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
+    embedding?: NodeUpdateembeddingInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentChunkCreateManyDocumentInput = {
+    id?: string
+    content: string
+    embedding?: DocumentChunkCreateembeddingInput | number[]
+    position?: number
+  }
+
+  export type DocumentChunkUpdateWithoutDocumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: DocumentChunkUpdateembeddingInput | number[]
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type DocumentChunkUncheckedUpdateWithoutDocumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: DocumentChunkUpdateembeddingInput | number[]
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type DocumentChunkUncheckedUpdateManyWithoutDocumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: DocumentChunkUpdateembeddingInput | number[]
+    position?: IntFieldUpdateOperationsInput | number
   }
 
 
@@ -15723,6 +19121,10 @@ export namespace Prisma {
      * @deprecated Use BlockCountOutputTypeDefaultArgs instead
      */
     export type BlockCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BlockCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DocumentCountOutputTypeDefaultArgs instead
+     */
+    export type DocumentCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocumentCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use UserDefaultArgs instead
      */
@@ -15755,6 +19157,14 @@ export namespace Prisma {
      * @deprecated Use AiRequestDefaultArgs instead
      */
     export type AiRequestArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AiRequestDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DocumentDefaultArgs instead
+     */
+    export type DocumentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocumentDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DocumentChunkDefaultArgs instead
+     */
+    export type DocumentChunkArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocumentChunkDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

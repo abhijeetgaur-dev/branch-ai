@@ -252,6 +252,23 @@ export async function findSimilarNodes(
     .filter((n) => n.similarity > 0.3); // only return meaningfully related results
 }
 
+/**
+ * findPathSummary
+ * Returns the most recent 'summary' node for a given node path.
+ * Used by the context engine to inject branch overviews after truncation.
+ */
+export async function findPathSummary(nodePath: string) {
+  const ancestorIds = nodePath.split('.');
+  return prisma.node.findFirst({
+    where: {
+      id:   { in: ancestorIds },
+      type: 'summary',
+    },
+    orderBy: { depth: 'desc' },
+    select:  { content: true },
+  });
+}
+
 
 export async function deleteNodeWithChildren(nodeId: string) {
   return prisma.node.delete({ where: { id: nodeId } });

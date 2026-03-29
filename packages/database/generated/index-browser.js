@@ -170,7 +170,9 @@ exports.Prisma.NodeScalarFieldEnum = {
   content: 'content',
   depth: 'depth',
   path: 'path',
+  position: 'position',
   isCollapsed: 'isCollapsed',
+  embedding: 'embedding',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -208,6 +210,23 @@ exports.Prisma.AiRequestScalarFieldEnum = {
   completedAt: 'completedAt'
 };
 
+exports.Prisma.DocumentScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  conversationId: 'conversationId',
+  title: 'title',
+  url: 'url',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.DocumentChunkScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  content: 'content',
+  embedding: 'embedding',
+  position: 'position'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -231,7 +250,8 @@ exports.WorkspaceMemberRole = exports.$Enums.WorkspaceMemberRole = {
 
 exports.NodeType = exports.$Enums.NodeType = {
   question: 'question',
-  answer: 'answer'
+  answer: 'answer',
+  summary: 'summary'
 };
 
 exports.Role = exports.$Enums.Role = {
@@ -271,7 +291,9 @@ exports.Prisma.ModelName = {
   Node: 'Node',
   Block: 'Block',
   BlockItem: 'BlockItem',
-  AiRequest: 'AiRequest'
+  AiRequest: 'AiRequest',
+  Document: 'Document',
+  DocumentChunk: 'DocumentChunk'
 };
 
 /**
