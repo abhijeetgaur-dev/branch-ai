@@ -63,7 +63,7 @@ export const BranchInput: React.FC<BranchInputProps> = ({
   };
 
   return (
-    <div className="bg-gradient-to-r from-brand-50 to-violet-50 rounded-xl p-4 border border-brand-100 animate-slide-down">
+    <div className=" rounded-xl p-4  animate-slide-down">
       <div className="flex items-center gap-2 mb-3 text-xs text-brand-600">
         <Sparkles className="w-3.5 h-3.5" />
         <span className="font-medium">Create a branch</span>
@@ -89,7 +89,7 @@ export const BranchInput: React.FC<BranchInputProps> = ({
           placeholder={placeholder}
           rows={2}
           className={cn(
-            'w-full bg-white rounded-lg px-4 py-3 pr-24 text-sm resize-none',
+            'w-full rounded-lg px-4 py-3 pr-24 text-sm resize-none',
             'border border-brand-200 focus:border-brand-400',
             'focus:outline-none focus:ring-2 focus:ring-brand-500/20',
             'placeholder:text-surface-400 transition-all duration-200'

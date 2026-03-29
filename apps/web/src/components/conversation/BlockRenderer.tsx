@@ -42,11 +42,11 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
 
   const getCalloutStyles = () => {
     switch (block.calloutType) {
-      case 'info':    return { bg: 'bg-blue-50',    border: 'border-blue-200',    icon: <Info          className="w-3.5 h-3.5 text-blue-500"    />, text: 'text-blue-800'    };
-      case 'warning': return { bg: 'bg-amber-50',   border: 'border-amber-200',   icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-500"   />, text: 'text-amber-800'   };
-      case 'success': return { bg: 'bg-emerald-50', border: 'border-emerald-200', icon: <CheckCircle   className="w-3.5 h-3.5 text-emerald-500" />, text: 'text-emerald-800' };
-      case 'error':   return { bg: 'bg-red-50',     border: 'border-red-200',     icon: <XCircle       className="w-3.5 h-3.5 text-red-500"     />, text: 'text-red-800'     };
-      default:        return { bg: 'bg-surface-50', border: 'border-surface-200', icon: <Info          className="w-3.5 h-3.5 text-surface-400"  />, text: 'text-surface-700' };
+      case 'info':    return { bg: 'bg-surface-100', border: 'border-surface-200', icon: <Info          className="w-3.5 h-3.5 text-surface-400"  />, text: 'text-surface-700' };
+      case 'warning': return { bg: 'bg-amber-50/50', border: 'border-amber-200',   icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-600"   />, text: 'text-amber-900' };
+      case 'success': return { bg: 'bg-emerald-50/50', border: 'border-emerald-200', icon: <CheckCircle   className="w-3.5 h-3.5 text-emerald-600" />, text: 'text-emerald-900' };
+      case 'error':   return { bg: 'bg-brand-50',     border: 'border-brand-200',   icon: <XCircle       className="w-3.5 h-3.5 text-brand-600"     />, text: 'text-brand-900'   };
+      default:        return { bg: 'bg-surface-50',  border: 'border-surface-200', icon: <Info          className="w-3.5 h-3.5 text-surface-400"  />, text: 'text-surface-700' };
     }
   };
 

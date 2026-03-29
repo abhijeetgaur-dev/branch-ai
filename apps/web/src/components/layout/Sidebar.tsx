@@ -271,8 +271,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside className="w-72 h-full bg-white border-r border-surface-200 flex flex-col flex-shrink-0">
       <div className="h-16 px-5 flex items-center border-b border-surface-200">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center">
-            <GitBranch className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 rounded-lg bg-brand-100 border border-brand-200 flex items-center justify-center">
+            <GitBranch className="w-4 h-4 text-brand-600" />
           </div>
           <span className="text-lg font-bold text-surface-900">BranchAI</span>
         </div>
@@ -297,9 +297,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="p-4 flex flex-col gap-2">
-        <Button variant="primary" size="md" className="w-full shadow-md shadow-brand-500/20" onClick={onNewConversation}>
-          <Plus className="w-4 h-4" />
-          New Conversation
+        <Button variant="primary" size="md" className="w-full" onClick={onNewConversation}>
+          <Plus className="w-3.5 h-3.5" />
+          New Thread
         </Button>
         <Button variant="secondary" size="md" className="w-full bg-surface-100 hover:bg-surface-200 text-surface-700" onClick={onOpenKnowledgeBase}>
           <Archive className="w-4 h-4" />
@@ -353,19 +353,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       <div className="p-4 border-t border-surface-200">
-        <div className="bg-gradient-to-r from-brand-50 to-violet-50 rounded-xl p-4">
-          <div className="flex items-center gap-2 text-brand-700 mb-2">
-            <Archive className="w-4 h-4" />
-            <span className="text-sm font-medium">Conversations</span>
+        <div className="rounded-xl p-4 border border-surface-200/50">
+          <div className="flex items-center gap-2 text-surface-600 mb-2">
+            <Archive className="w-3.5 h-3.5" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Storage</span>
           </div>
-          <div className="w-full bg-white rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-surface-200/50 rounded-full h-1.5 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-brand-500 to-violet-500 h-full rounded-full transition-all"
+              className="bg-brand-400/60 h-full rounded-full transition-all"
               style={{ width: `${Math.min((conversations.length / 25) * 100, 100)}%` }}
             />
           </div>
-          <p className="text-xs text-surface-500 mt-2">
-            {conversations.length} of 25 conversations used
+          <p className="text-[10px] text-surface-400 font-medium mt-2 uppercase tracking-tight">
+            {conversations.length} of 25 nodes used
           </p>
         </div>
       </div>
