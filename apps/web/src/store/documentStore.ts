@@ -8,8 +8,9 @@ interface DocumentStore {
   error: string | null;
 
   fetchDocuments: (conversationId?: string) => Promise<void>;
-  uploadDocument: (file: File, conversationId?: string) => Promise<void>;
+  uploadDocument: (file: File, conversationId?: string) => Promise<DocumentSummary | null>;
   deleteDocument: (id: string) => Promise<void>;
+
   clearError: () => void;
 }
 
@@ -33,12 +34,14 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   uploadDocument: async (file: File, conversationId?: string) => {
     set({ isUploading: true, error: null });
     try {
-      await api.documents.upload(file, conversationId);
+      const result = await (api.documents.upload as any)(file, conversationId);
       // Refresh the list after successful upload
       const documents = await api.documents.list(conversationId);
       set({ documents, isUploading: false });
+      return result.document;
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), isUploading: false });
+      return null;
     }
   },
 

@@ -7,9 +7,14 @@ import {
 } from 'lucide-react';
 import { cn, formatDate } from '../../lib/utils';
 import type { Conversation, Node } from '../../types';
-import { NodeRenderer, SiblingGroup } from './NodeRenderer';
+import { SiblingGroup } from './NodeRenderer';
+import { LoadingShimmer } from './LoadingShimmer';
+
 import { useConversationStore } from '../../store/conversationStore';
+
 import { useDocumentStore } from '../../store/documentStore';
+import type { DocumentSummary } from '../../lib/api';
+
 
 interface ConversationViewProps {
   conversation:       Conversation;
@@ -29,15 +34,9 @@ function countAllNodes(nodes: Node[]): number {
   }, 0);
 }
 
-function maxDepthAcross(nodes: Node[]): number {
-  if (!nodes.length) return 0;
-  return Math.max(...nodes.map((n) => {
-    if (!n.children?.length) return n.depth;
-    return maxDepthAcross(n.children);
-  }));
-}
 
 export const ConversationView: React.FC<ConversationViewProps> = ({
+
   conversation,
   isBranching = false,
   onBranchCreate,
@@ -46,8 +45,12 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
 }) => {
   const [newQuestion, setNewQuestion] = useState('');
   const fileInputRef                  = useRef<HTMLInputElement>(null);
-  const { isRegenerating }            = useConversationStore();
-  const { documents, fetchDocuments, uploadDocument, isUploading } = useDocumentStore();
+  const [stagedDocs, setStagedDocs] = useState<DocumentSummary[]>([]);
+  const { isRegenerating, processingNodeId } = useConversationStore();
+
+
+  const { fetchDocuments, uploadDocument, isUploading } = useDocumentStore();
+
 
   useEffect(() => {
     fetchDocuments(conversation.id);
@@ -57,20 +60,35 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
     if (fileInputRef.current) fileInputRef.current.value = '';
-    await uploadDocument(file, conversation.id);
+    const uploaded = await uploadDocument(file, conversation.id);
+    if (uploaded) {
+      setStagedDocs(prev => [...prev, uploaded]);
+    }
   };
+
 
   const rootNodes  = conversation.rootNodes ?? [];
   const totalNodes = countAllNodes(rootNodes);
-  const maxDepth   = maxDepthAcross(rootNodes);
   const isDisabled = isBranching || isRegenerating;
 
+
   const handleSubmit = () => {
-    const q = newQuestion.trim();
-    if (!q || isDisabled) return;
+    let q = newQuestion.trim();
+    if (!q && stagedDocs.length === 0) return;
+    if (isDisabled) return;
+    
+    if (stagedDocs.length > 0) {
+      if (q) q += '\n\n';
+      stagedDocs.forEach(doc => {
+         q += `📝 [Attached: ${doc.title}](${doc.url || '#'})\n`;
+      });
+    }
+
     onBottomBarSubmit?.(q);
     setNewQuestion('');
+    setStagedDocs([]);
   };
+
 
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-surface-50">
@@ -135,27 +153,11 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
             />
           )}
 
-          {/* Branching / regenerating skeleton */}
-          {(isBranching || isRegenerating) && (
-            <div className="mt-8 animate-fade-in">
-              <div className="flex items-start gap-3 py-1 mb-4">
-                <div className="w-5 h-5 rounded-full bg-brand-100 border-2 border-brand-200 flex-shrink-0" />
-                <div className="h-4 bg-surface-200 rounded animate-pulse" style={{ width: '55%' }} />
-              </div>
-              <div className="bg-white rounded-xl border border-surface-200 p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 animate-pulse flex-shrink-0" />
-                  <div className="h-3 w-16 bg-surface-100 rounded animate-pulse" />
-                </div>
-                <div className="border-t border-surface-100" />
-                <div className="space-y-2.5 pt-1">
-                  <div className="h-3 bg-surface-100 rounded animate-pulse w-3/4" />
-                  <div className="h-3 bg-surface-100 rounded animate-pulse w-full" />
-                  <div className="h-3 bg-surface-100 rounded animate-pulse w-4/5" />
-                </div>
-              </div>
-            </div>
+          {/* Global shimmer (new root threads only) */}
+          {(isBranching || isRegenerating) && !processingNodeId && (
+            <LoadingShimmer />
           )}
+
         </div>
       </div>
 
@@ -163,16 +165,17 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
       <div className="bg-white border-t border-surface-200 px-3 md:px-6 py-2 md:py-3 bottom-bar-safe flex flex-col items-center">
         <div className="max-w-4xl w-full">
           
-          {documents && documents.length > 0 && (
+          {stagedDocs.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-2 px-1">
-              {documents.map(doc => (
-                <div key={doc.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-50 border border-surface-200 rounded-md text-xs text-surface-700 shadow-sm animate-fade-in">
+              {stagedDocs.map(doc => (
+                <div key={doc.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-50 border border-surface-200 rounded-md text-xs text-surface-700 shadow-sm animate-fade-in tooltip-trigger" title="Document attached to next message">
                   <FileText className="w-3 h-3 text-brand-500" />
                   <span className="truncate max-w-[200px]">{doc.title}</span>
                 </div>
               ))}
             </div>
           )}
+
 
           <div className={cn(
             'flex items-center gap-3 bg-surface-50 border rounded-xl px-3 md:px-4 py-3 md:py-2.5 transition-all',
@@ -213,10 +216,11 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
             </button>
             <button
               onClick={handleSubmit}
-              disabled={!newQuestion.trim() || isDisabled}
+              disabled={(!newQuestion.trim() && stagedDocs.length === 0) || isDisabled}
               className={cn(
                 'p-1.5 rounded-lg transition-all duration-150 flex-shrink-0',
-                newQuestion.trim() && !isDisabled
+                (newQuestion.trim() || stagedDocs.length > 0) && !isDisabled
+
                   ? 'bg-brand-600 text-white hover:bg-brand-700'
                   : 'text-surface-300 cursor-not-allowed'
               )}

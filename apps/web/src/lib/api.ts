@@ -90,8 +90,9 @@ export const api = {
       // Create custom logic for File since `request` wrapper enforces JSON and content type manually.
       
       const formData = new FormData();
-      formData.append('file', file);
       if (conversationId) formData.append('conversationId', conversationId);
+      formData.append('file', file);
+
       
       const headers: Record<string, string> = {};
       const token = await (api as any)._hackyGetToken?.();

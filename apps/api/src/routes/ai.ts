@@ -64,43 +64,44 @@ aiRouter.post('/branch', async (req, res, next) => {
        if (member) targetWorkspaceId = member.workspaceId;
     }
 
-    if (targetWorkspaceId) {
-      try {
-        const questionEmbedding = await generateEmbeddings(question);
-        
-        // Fetch chunks for the workspace AND the conversation
-        const chunks = await prisma.documentChunk.findMany({
-          where: { 
-            document: {
-              OR: [
-                { workspaceId: targetWorkspaceId },
-                { conversationId: conversationId }
-              ]
-            }
-          }
-        });
+    try {
+      const questionEmbedding = await generateEmbeddings(question);
+      
+      const orConditions: any[] = [{ conversationId: conversationId }];
+      if (targetWorkspaceId) {
+        orConditions.push({ workspaceId: targetWorkspaceId });
+      }
 
-        if (chunks.length > 0) {
-          // Calculate similarity
-          const scored = chunks.map(chunk => ({
-            content: chunk.content,
-            score: cosineSimilarity(questionEmbedding, chunk.embedding)
-          }));
-          
-          // Deduplicate and take top 3
-          scored.sort((a,b) => b.score - a.score);
-          const topChunks = scored.slice(0, 3);
-          
-          // Only include if reasonably relevant (Xenova threshold can be typically around 0.15 - 0.25)
-          if (topChunks[0].score > 0.1) {
-             ragContextString = topChunks.map(c => c.content).join('\n\n');
-             console.log(`[RAG] Found context with max score ${topChunks[0].score.toFixed(3)}`);
+      // Fetch chunks for the workspace AND the conversation
+      const chunks = await prisma.documentChunk.findMany({
+        where: { 
+          document: {
+            OR: orConditions
           }
         }
-      } catch (err) {
-         console.error('[RAG] Error retrieving context:', err);
+      });
+
+      if (chunks.length > 0) {
+        // Calculate similarity
+        const scored = chunks.map(chunk => ({
+          content: chunk.content,
+          score: cosineSimilarity(questionEmbedding, chunk.embedding)
+        }));
+        
+        // Deduplicate and take top 3
+        scored.sort((a,b) => b.score - a.score);
+        const topChunks = scored.slice(0, 3);
+        
+        // Only include if reasonably relevant (Xenova threshold can be typically around 0.15 - 0.25)
+        if (topChunks[0].score > 0.1) {
+           ragContextString = topChunks.map(c => c.content).join('\n\n');
+           console.log(`[RAG] Found context with max score ${topChunks[0].score.toFixed(3)}`);
+        }
       }
+    } catch (err) {
+       console.error('[RAG] Error retrieving context:', err);
     }
+
 
     const context = await buildPromptMessages(
       { parentNodeId, parentBlockId, question },

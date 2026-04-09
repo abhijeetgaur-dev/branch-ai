@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import {
   Bot, GitBranch, Copy,
   Pencil, Trash2, ChevronDown, ChevronRight,
-  GripVertical, Check, X, Loader2,
+  GripVertical, Check, X, Loader2, FileText,
 } from 'lucide-react';
 import { cn, formatDate, getDepthAccentStyle } from '../../lib/utils';
 import type { Node } from '../../types';
@@ -12,7 +12,9 @@ import { BlockRenderer } from './BlockRenderer';
 import { BranchInput } from './BranchInput';
 import { RelatedPanel } from './RelatedPanel';
 import { SuggestionChips } from './SuggestionChips';
+import { LoadingShimmer } from './LoadingShimmer';
 import { useConversationStore } from '../../store/conversationStore';
+
 
 interface NodeRendererProps {
   node:             Node;
@@ -117,12 +119,16 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
   const { 
     deleteNode, 
     editQuestion, 
-    isRegenerating, 
-    selectConversation, 
     nodeSuggestions, 
     collapsedNodeIds, 
-    toggleNodeCollapse 
+    toggleNodeCollapse,
+    isBranching,
+    processingNodeId,
+    isRegenerating,
+    selectConversation
   } = useConversationStore();
+
+
 
   const isCollapsed = collapsedNodeIds.has(node.id) || forceCollapsed;
   const [showBranchInput, setShowBranchInput] = useState(false);
@@ -202,7 +208,32 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
                 </button>
               </div>
             ) : (
-              <p className="text-sm font-medium text-surface-800 leading-relaxed">{node.content}</p>
+              <div className="text-sm font-medium text-surface-800 leading-relaxed whitespace-pre-wrap">
+                {(node.content ?? '').split(/(📝 \[Attached: [^\]]+\]\([^)]+\))/g).map((part, i) => {
+                  const match = part.match(/📝 \[Attached: ([^\]]+)\]\(([^)]+)\)/);
+                  if (match) {
+                    const title = match[1];
+                    let url = match[2];
+                    if (url.startsWith('/')) {
+                      url = `${import.meta.env.VITE_API_URL ?? 'http://localhost:4000'}${url}`;
+                    }
+                    return (
+                      <a
+                        key={i}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-2 py-0.5 mt-1 bg-surface-50 border border-surface-200 rounded-md text-xs text-brand-600 hover:bg-brand-50 hover:border-brand-300 transition-colors mx-1 align-middle"
+                        title="View document"
+                      >
+                        <FileText className="w-3 h-3 text-brand-500 flex-shrink-0" />
+                        <span className="truncate max-w-[200px]">{title}</span>
+                      </a>
+                    );
+                  }
+                  return <span key={i}>{part}</span>;
+                })}
+              </div>
             )}
             <span className="text-xs text-surface-400 mt-0.5 block">
               {formatDate(node.createdAt)}
@@ -404,7 +435,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
               ) : (
                 <BranchInput
                   conversationId={conversationId}
-                  onSubmit={(q) => { onBranchCreate?.(node.parentNodeId ?? node.id, null, q); setShowBranchInput(false); }}
+                  onSubmit={(q) => { onBranchCreate?.(node.id, null, q); setShowBranchInput(false); }}
                   onCancel={() => setShowBranchInput(false)}
                   placeholder="Ask anything about this response..."
                 />
@@ -439,6 +470,17 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
           </div>
         </div>
       )}
+      
+      {/* Shimmer for new branches from this node */}
+      {!isCollapsed && isBranching && processingNodeId === node.id && (
+        <div className="mt-5 relative">
+          <div className="absolute left-[9px] top-0 bottom-0 w-[1px] bg-brand-200/50" />
+          <div className="pl-6 pb-4">
+            <LoadingShimmer />
+          </div>
+        </div>
+      )}
     </div>
+
   );
 };

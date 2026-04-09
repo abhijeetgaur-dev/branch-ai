@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, Sparkles, Paperclip, Loader2, FileText } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useDocumentStore } from '../../store/documentStore';
+import type { DocumentSummary } from '../../lib/api';
+
 
 interface BranchInputProps {
   onSubmit:       (question: string) => void;
@@ -22,7 +24,9 @@ export const BranchInput: React.FC<BranchInputProps> = ({
   const [value, setValue]   = useState('');
   const inputRef            = useRef<HTMLTextAreaElement>(null);
   const fileInputRef        = useRef<HTMLInputElement>(null);
-  const { documents, uploadDocument, isUploading } = useDocumentStore();
+  const [stagedDocs, setStagedDocs] = useState<DocumentSummary[]>([]);
+  const { uploadDocument, isUploading } = useDocumentStore();
+
 
   useEffect(() => {
     if (autoFocus && inputRef.current) {
@@ -31,13 +35,23 @@ export const BranchInput: React.FC<BranchInputProps> = ({
   }, [autoFocus]);
 
   const handleSubmit = () => {
-    const q = value.trim();
-    if (!q) return;
+    let q = value.trim();
+    if (!q && stagedDocs.length === 0) return;
+    
+    if (stagedDocs.length > 0) {
+      if (q) q += '\n\n';
+      stagedDocs.forEach(doc => {
+         q += `📝 [Attached: ${doc.title}](${doc.url || '#'})\n`;
+      });
+    }
+
     // Call onSubmit directly — no fake delay.
     // The isBranching state in Zustand handles the loading indicator globally.
     onSubmit(q);
     setValue('');
+    setStagedDocs([]);
   };
+
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -59,8 +73,12 @@ export const BranchInput: React.FC<BranchInputProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
     if (fileInputRef.current) fileInputRef.current.value = '';
-    await uploadDocument(file, conversationId);
+    const uploaded = await uploadDocument(file, conversationId);
+    if (uploaded) {
+      setStagedDocs(prev => [...prev, uploaded]);
+    }
   };
+
 
   return (
     <div className=" rounded-xl p-4  animate-slide-down">
@@ -69,16 +87,17 @@ export const BranchInput: React.FC<BranchInputProps> = ({
         <span className="font-medium">Create a branch</span>
       </div>
 
-      {documents && documents.length > 0 && (
+      {stagedDocs.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2">
-          {documents.map(doc => (
-            <div key={doc.id} className="flex items-center gap-1.5 px-2 py-1 bg-white border border-brand-100 rounded-md text-xs text-brand-700 shadow-sm">
+          {stagedDocs.map(doc => (
+            <div key={doc.id} className="flex items-center gap-1.5 px-2 py-1 bg-white border border-brand-100 rounded-md text-xs text-brand-700 shadow-sm tooltip-trigger" title="Document attached to next message">
               <FileText className="w-3 h-3 text-brand-500" />
               <span className="truncate max-w-[150px]">{doc.title}</span>
             </div>
           ))}
         </div>
       )}
+
 
       <div className="relative">
         <textarea
@@ -119,10 +138,10 @@ export const BranchInput: React.FC<BranchInputProps> = ({
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!value.trim()}
+            disabled={!value.trim() && stagedDocs.length === 0}
             className={cn(
               'p-2 rounded-lg transition-all duration-200',
-              value.trim()
+              (value.trim() || stagedDocs.length > 0)
                 ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm'
                 : 'bg-surface-100 text-surface-400 cursor-not-allowed'
             )}

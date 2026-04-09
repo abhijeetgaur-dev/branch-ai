@@ -13,7 +13,9 @@ interface ConversationStore {
   isLoadingTree:        boolean;
   isBranching:          boolean;
   isRegenerating:       boolean;
+  processingNodeId:     string | null;
   error:                string | null;
+
   /** Suggestions for each answer node: { nodeId: string[] } */
   nodeSuggestions:      Record<string, string[]>;
   /** IDs of answer nodes that are currently collapsed in the UI */
@@ -43,7 +45,9 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
   isLoadingTree:        false,
   isBranching:          false,
   isRegenerating:       false,
+  processingNodeId:     null,
   error:                null,
+
   nodeSuggestions:      {},
   collapsedNodeIds:     new Set(),
 
@@ -77,7 +81,8 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
   setActiveNodeId: (id) => set({ activeNodeId: id }),
 
   createBranch: async (payload: BranchPayload) => {
-    set({ isBranching: true, error: null });
+    set({ isBranching: true, processingNodeId: payload.parentNodeId, error: null });
+
     try {
       const { questionNode, answerNode, suggestions } = await api.ai.branch(payload);
       
@@ -99,17 +104,21 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
           return {
             activeTree:  [...tree, questionWithAnswer],
             isBranching: false,
+            processingNodeId: null,
           };
+
         }
 
         // Otherwise insert into the existing tree
         return {
           activeTree:  insertIntoForest(tree, payload.parentNodeId, questionWithAnswer),
           isBranching: false,
+          processingNodeId: null,
         };
       });
     } catch (err) {
-      set({ error: err instanceof Error ? err.message : String(err), isBranching: false });
+      set({ error: err instanceof Error ? err.message : String(err), isBranching: false, processingNodeId: null });
+
     }
   },
 

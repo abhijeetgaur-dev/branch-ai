@@ -97,7 +97,7 @@ router.post('/', requireAuth, upload.single('file'), async (req, res, next) => {
       data: chunkData
     });
 
-    res.json({ success: true, document: { id: document.id, title: document.title } });
+    res.json({ success: true, document });
   } catch (err) {
     next(err);
   }
