@@ -1,186 +1,195 @@
-# BranchAI
+# 🌱 BranchAI
 
-**Explore ideas without losing context.**
+> **Explore ideas without losing context. Think in trees, not timelines.**
 
-BranchAI is a non-linear AI conversation platform where answers are structured, expandable, and branchable. Instead of scrolling through a flat chat history, every conversation is a navigable knowledge tree — branch from any section, collapse what you don't need, and rearrange threads to match how you actually think.
-
----
-
-## Why BranchAI
-
-Every AI chat interface works the same way: you ask, it answers, you scroll. The deeper you go, the more you lose track of where you started.
-
-BranchAI treats conversations as trees, not timelines. Ask a question, get a structured answer broken into sections, then branch from any specific section to go deeper — without losing the context of the original thread. Multiple root-level threads live in the same conversation. Drag to reorder them. Collapse branches you're done with. Navigate the whole structure from the sidebar.
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![React](https://img.shields.io/badge/frontend-React_19-61dafb.svg?logo=react)
+![Node](https://img.shields.io/badge/backend-Node.js_Express-339933.svg?logo=nodedotjs)
+![Prisma](https://img.shields.io/badge/database-Prisma_PostgreSQL-2d3748.svg?logo=prisma)
+![AI](https://img.shields.io/badge/AI-OpenAI_%7C_Groq-FF3366.svg)
 
 ---
 
-## Features
+## 🎯 Purpose & Overview
 
-- **Structured AI answers** — every response is broken into typed blocks: headings, paragraphs, code, lists, callouts, and quotes
-- **Inline branching** — click any section heading to ask a follow-up right there, creating a branch at that exact point
-- **Multiple root threads** — the bottom bar starts new top-level threads in the same conversation
-- **Drag-to-reorder** — rearrange sibling branches at any depth, persisted to the database
-- **Collapse / expand** — collapse any branch and all its sub-branches
-- **Branch navigator** — sidebar shows the full conversation tree; click any node to scroll and highlight it
-- **Edit questions** — edit any question inline; the answer regenerates automatically
-- **Delete branches** — remove a node and all its descendants
-- **Dark mode** — warm, readable Wes Anderson-inspired palette in both light and dark
-- **Auth** — sign in with Clerk; each user's conversations are private
-- **Context-aware AI** — the context engine sends only the relevant ancestry path to the AI, with token budgeting for deep trees
+**The Problem:** Every AI chat interface works exactly the same way: you ask, it answers, you scroll. The deeper you go down the rabbit hole investigating a single point, the more you lose track of where you started.
+
+**The Solution:** BranchAI is a non-linear AI conversation platform where answers are structured, expandable, and natively branchable. Instead of scrolling back through a flat chat history to find where you pivoted, every conversation becomes an easily navigable knowledge tree.
+
+**Elevator Pitch:** Stop losing answers in your chat's timeline. Start treating your conversations like a mind map and branch off into new directions dynamically. 
+
+If you're a curious learner, a researcher, or a developer debugging deep architecture, this is for you.
 
 ---
 
-## Tech Stack
+## ✨ Features
 
-**Monorepo** managed with `pnpm` workspaces.
-
-| Layer | Technology |
-|---|---|
-| Frontend | React 19, Vite, TypeScript, Tailwind CSS v4, Zustand, TanStack Query |
-| Backend | Node.js, Express 5, TypeScript |
-| Database | PostgreSQL, Prisma ORM |
-| AI | Groq (Llama 3.3 70B) — provider-agnostic, swap via env var |
-| Auth | Clerk |
+- 📁 **Inline Document References (RAG)** — Seamlessly attach PDFs, MD, or TXT docs directly within your prompts. Branch AI parses and performs semantic searches locally.
+- 🌳 **Inline Branching** — Click any specific section heading to ask a follow-up *right there*, building a child node at that exact point.
+- 🗂 **Structured AI Responses** — Responses aren't just walls of text. Every output is parsed into semantic blocks: headings, code, lists, callouts, and quotes.
+- 🔄 **Drag-To-Reorder** — Rearrange sibling branches at any depth directly in the UI. We sync positions to the database automatically.
+- 👁 **Tree Visualization** — Utilize the global navigation sidebar to jump between branches, instantly expanding or collapsing nodes.
+- 🔒 **Authentication & Workspaces** — Fast, secure sign-in via Clerk, featuring isolated workspaces and document sharing.
+- 🎨 **Rich Aesthetics** — Custom vibrant UI gradients, responsive layouts, micro-animations, and a sleek modern aesthetic.
+- 🧩 **Agnostic AI Layer** — Default support for Groq (Llama 3.3) and OpenAI, heavily optimized through the use of an ancestral prompt-building engine to save tokens on deep trees.
 
 ---
 
-## Project Structure
+## 🛠️ Tech Stack
 
+Built in a robust **Monorepo** managed with `pnpm` workspaces for clean separation of concerns.
+
+| Component | Technology | Why it was chosen |
+|---|---|---|
+| **Frontend** | React 19, Vite, Tailwind CSS v4 | Provides bleeding-edge performance, concurrent features, and rapid styling without bloated external component libraries. |
+| **State Management**| Zustand, TanStack Query | Lightweight global state sync (for the conversation tree logic) alongside reliable server state caching. |
+| **Backend API** | Node.js, Express 5, TypeScript | Typesafe, scalable, heavily customizable routing framework capable of cleanly managing our RAG upload streams. |
+| **Database** | PostgreSQL, Prisma ORM | Relational querying matches perfectly with our self-referential Conversation Node hierarchies (`parentId`). |
+| **AI Layer** | OpenAI, Groq, Xenova | Uses leading LLM endpoints alongside `@xenova/transformers` for incredibly fast, localized embedding generations. |
+| **Integrations** | Clerk, AWS S3 | Rock-solid user/workspace context management alongside persistent knowledge base file uploads. |
+
+---
+
+## 🗺️ App Flow
+
+BranchAI treats every prompt and response as a parent and child node.
+
+```mermaid
+flowchart TD
+  A[Login via Clerk] --> B[Open Dashboard]
+  B --> C[Bottom Bar: Type a prompt or Attach a Document]
+  C --> D[Submit Query]
+  D --> E{Has Attached File?}
+  E -- Yes --> F[File parsed & vectorized locally via Xenova -> Stored in Postgres]
+  E -- No --> G[Direct API Request Setup]
+  F --> G
+  G --> H[Backend processes query utilizing LLM and contextual RAG matches]
+  H --> I[AI generates a beautifully structured JSON response]
+  I --> J[Response chunks split into UI Blocks: Text, Code, Callout]
+  J --> K[Inline Branching: User clicks to branch deeper from a specific block]
+  K --> L[Nested Conversation Tree Node is appended to the tree]
 ```
+
+---
+
+## 📂 Project Structure
+
+```text
 branch-ai/
 ├── apps/
-│   ├── web/          # React frontend
-│   └── api/          # Express backend
+│   ├── web/                # React frontend (Vite)
+│   │   ├── src/
+│   │   │   ├── components/ # Core UI, node rendering, Branch inputs
+│   │   │   ├── store/      # Zustand states (conversationStore & documentStore)
+│   │   │   └── lib/        # Shared frontend API logic
+│   └── api/                # Express backend
+│       ├── src/
+│       │   ├── ai/         # Intelligent core: prompt generation & parsers
+│       │   ├── routes/     # App endpoints (ai, conversations, documents)
+│       │   └── services/   # RAG chunking, embeddings, S3/Local Storage
 ├── packages/
-│   └── database/     # Prisma schema, queries, client
-└── docs/             # Architecture docs
+│   └── database/           # Typesafe DB Layer (Prisma Schemas, Queries)
+└── package.json            # Monorepo PNPM configurations
 ```
 
 ---
 
-## Getting Started
+## 🚀 Setup & Installation Guide
 
 ### Prerequisites
+* **Node.js** 18+
+* **pnpm** 10+ (`npm i -g pnpm`)
+* **PostgreSQL** instance running locally or via Docker
+* **Clerk** account for Auth
+* **OpenAI** or **Groq** API Key
 
-- Node.js 18+
-- pnpm 10+
-- PostgreSQL database
-- [Clerk](https://clerk.com) account
-- [Groq](https://console.groq.com) API key
-
-### 1. Clone and install
-
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/your-username/branch-ai.git
 cd branch-ai
 pnpm install
 ```
 
-### 2. Set up environment variables
+### 2. Configure Environment Variables
+Copy and rename the default `.env` files for both applications.
 
-```bash
-# apps/api/.env
+**For `apps/api/.env`:**
+```env
 DATABASE_URL="postgresql://user:password@localhost:5432/branchai"
 PORT=4000
 WEB_URL="http://localhost:5173"
 NODE_ENV="development"
 
-AI_PROVIDER="groq"
-AI_MODEL="llama-3.3-70b-versatile"
-GROQ_API_KEY="your_groq_api_key"
+# Set your preferred provider (openai | groq)
+AI_PROVIDER="openai"
+OPEN_AI_API_KEY="sk-proj-YourToken..."
 
+# Toggle Storage (s3 | local)
+STORAGE_TYPE="local"
+
+# Clerk Config
 CLERK_PUBLISHABLE_KEY="pk_test_..."
 CLERK_SECRET_KEY="sk_test_..."
-CLERK_WEBHOOK_SECRET="whsec_..."
 ```
 
+**For `apps/web/.env`:**
+```env
+VITE_API_URL="http://localhost:4000"
+VITE_CLERK_PUBLISHABLE_KEY="pk_test_..."
+```
+
+### 3. Initialize the Database
+Build the schema and generate the typescript interfaces:
 ```bash
-# apps/web/.env
-VITE_API_URL=http://localhost:4000
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+pnpm db:push
+pnpm db:generate
 ```
 
-### 3. Set up the database
-
-```bash
-pnpm db:push       # push schema to your database
-pnpm db:generate   # generate Prisma client
-```
-
-### 4. Configure Clerk webhooks (for user sync)
-
-In the [Clerk dashboard](https://dashboard.clerk.com):
-- Go to **Webhooks → Add endpoint**
-- URL: `https://your-domain.com/webhooks/clerk` (use [ngrok](https://ngrok.com) for local dev)
-- Subscribe to: `user.created`, `user.updated`, `user.deleted`
-- Copy the signing secret into `CLERK_WEBHOOK_SECRET`
-
-### 5. Run
-
+### 4. Start Development Servers
+Start both the Frontend and Backend concurrently using our monorepo script:
 ```bash
 pnpm dev
 ```
-
-Opens at `http://localhost:5173`.
-
----
-
-## Switching AI Providers
-
-The AI layer is provider-agnostic. To switch from Groq to another provider:
-
-1. Set `AI_PROVIDER=openai` (or `anthropic`) in `apps/api/.env`
-2. Create `apps/api/src/ai/providers/openai.ts` implementing the `AiProvider` interface
-3. Register it in `apps/api/src/ai/providers/index.ts`
-
-Nothing else changes. The context engine, prompt builder, and response parser are all provider-independent.
+The client dashboard should now be running at `http://localhost:5173`.
 
 ---
 
-## Database Commands
+## 💡 How to Use (Personal Use Guide)
 
-```bash
-pnpm db:push       # sync schema to database (dev)
-pnpm db:migrate    # create and run migrations (production)
-pnpm db:generate   # regenerate Prisma client after schema changes
-pnpm db:studio     # open Prisma Studio
-```
+Whether you are studying for exams, architecting a codebase, or researching topics:
 
----
-
-## How Branching Works
-
-The data model is built around a self-referential node tree:
-
-```
-Conversation
-  └── Node (question, depth 0)        ← root thread
-        └── Node (answer, depth 1)
-              ├── Node (question, depth 1)   ← inline branch from answer
-              │     └── Node (answer, depth 2)
-              └── Node (question, depth 1)   ← another inline branch
-                    └── Node (answer, depth 2)
-  └── Node (question, depth 0)        ← second root thread (bottom bar)
-        └── Node (answer, depth 1)
-```
-
-Each node has a `path` field (e.g. `"nodeId1.nodeId2.nodeId3"`) that enables fast ancestor lookups without recursive SQL. The context engine uses this path to build AI prompts from only the relevant ancestry chain.
-
-Sibling ordering is stored as a `position` integer on each node, updated atomically when you drag to reorder.
+1. **Creating a Document Baseline**: Instead of juggling separate tabs, click the **paperclip** icon in the bottom input bar to attach your PDF or code file.
+2. **First Broad Question**: Ask the AI a general question (e.g., *"Summarize the overarching goals of this architecture doc"*) and send the prompt. 
+3. **Pivoting your logic**: The AI will return structured blocks of text. Let's say one block touches on "Authentication". Hover over that specific block and click **Ask a follow-up**.
+4. **Context Switching Without Forgetting**: After you spend 5 messages diving into Auth, you don't have to scroll infinitely to get back. Just look to your **Sidebar Navigator**, click the original root node, and start an entirely different branch discussing "Database Models". 
 
 ---
 
-## Roadmap
+## 🛤️ Upcoming Features (Roadmap)
 
-- [ ] Collaboration — workspaces, shared conversations, permissions
-- [ ] SaaS billing — Stripe integration, usage limits, plans
-- [ ] Performance — Redis caching, lazy loading deep trees
-- [ ] Auto-summaries — AI-generated summaries for collapsed branches
-- [ ] Related branch suggestions — AI suggests what to explore next
-- [ ] Knowledge graph — nodes become semantic entities with cross-conversation links
+**v1.1**
+- [ ] Auto-summaries — AI-generated summaries for visually collapsed branches to maintain visual clarity.
+- [ ] Related Branch Knowledge Graphs — Semantic networking linking nodes across entirely separate conversations.
+
+**v2.0**
+- [ ] Multi-user Workspaces — Realtime collaboration allowing users to branch off each other's ideas.
+- [ ] Voice Mode — Talk your way through a conversational tree utilizing real-time web audio.
+- [ ] Advanced Exporting — Export your entire tree logic directly into a beautiful markdown Wiki.
 
 ---
 
-## License
+## 🤝 Contributing
 
-MIT
+We love contributions! If you'd like to help push the non-linear AI boundary:
+1. Fork the repo.
+2. Create a feature branch `git checkout -b feature/your-idea`.
+3. Read the codebase architecture in the `docs/` folder (if available).
+4. Commit your changes logically.
+5. Open a Pull Request for review!
+
+---
+
+## 📄 License
+
+This project operates beneath the **MIT** License.
