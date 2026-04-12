@@ -1,6 +1,7 @@
 // apps/web/src/main.tsx
 import React    from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter }                    from 'react-router-dom';
 import { ClerkProvider }                    from '@clerk/clerk-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App      from './App';
@@ -20,10 +21,12 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-        <App />
-      </ClerkProvider>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+          <App />
+        </ClerkProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
