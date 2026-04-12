@@ -361,11 +361,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="w-full bg-surface-200/50 rounded-full h-1.5 overflow-hidden">
             <div
               className="bg-brand-400/60 h-full rounded-full transition-all"
-              style={{ width: `${Math.min((conversations.length / 25) * 100, 100)}%` }}
+              style={{ width: `${Math.min((conversations.length / 5) * 100, 100)}%` }}
             />
           </div>
           <p className="text-[10px] text-surface-400 font-medium mt-2 uppercase tracking-tight">
-            {conversations.length} of 25 nodes used
+            {conversations.length} of 5 nodes used
           </p>
         </div>
       </div>
