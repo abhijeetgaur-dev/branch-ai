@@ -9,6 +9,7 @@ import { useClerk } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { useThemeStore } from '../../store/themeStore';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/Button';
 
 interface HeaderUser {
   name:    string;
@@ -71,19 +72,19 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* ── Left: title ── */}
         <div className="flex-1 min-w-0">
-          {conversationTitle ? (
-            <div className="flex items-center gap-2 min-w-0">
-              <h1 className="text-sm md:text-base font-semibold text-primary truncate">
-                {conversationTitle}
-              </h1>
-              {branchCount != null && branchCount > 0 && (
-                <span className="hidden sm:block text-xs text-muted whitespace-nowrap flex-shrink-0">
-                  · {branchCount} {branchCount === 1 ? 'branch' : 'branches'}
-                </span>
-              )}
-            </div>
+          {location.pathname === '/' ? (
+            <></>
           ) : (
-            <span className="text-sm text-faint hidden md:block">No conversation selected</span>
+            <button className="
+            inline-flex items-center gap-2
+            px-3  rounded-lg
+            bg-surface-50 border border-brand-200
+            text-brand-400
+            hover:bg-brand-100 hover:text-brand-500
+            transition-all duration-200
+            shadow-sm hover:shadow-md
+            italic
+      "onClick={() => navigate('/')}>Home</button>
           )}
         </div>
 
