@@ -6,6 +6,7 @@ import {
   Menu, GitBranch,
 } from 'lucide-react';
 import { useClerk } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 import { useThemeStore } from '../../store/themeStore';
 import { cn } from '../../lib/utils';
 
@@ -30,6 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
   onMenuOpen, onTreeOpen, showTreeButton,
 }) => {
   const { signOut }            = useClerk();
+  const navigate               = useNavigate();
   const { isDark, toggle }     = useThemeStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen]     = useState(false);
@@ -174,7 +176,10 @@ export const Header: React.FC<HeaderProps> = ({
                     { icon: <CreditCard className="w-4 h-4" />, label: 'Billing' },
                     { icon: <Settings className="w-4 h-4" />, label: 'Settings' },
                   ].map(({ icon, label }) => (
-                    <button key={label} onClick={() => setDropdownOpen(false)}
+                    <button key={label} onClick={() => {
+                        setDropdownOpen(false);
+                        if (label === 'Billing') navigate('/billing');
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors"
                       style={{ color: 'var(--ui-text-secondary)' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--ui-sidebar-hover)')}
