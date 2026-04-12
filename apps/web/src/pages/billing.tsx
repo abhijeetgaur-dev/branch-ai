@@ -1126,7 +1126,7 @@ export const BillingPage: React.FC<BillingPageProps> = ({
             </span>
             <span className="flex items-center gap-1.5">
               <CreditCard className="w-4 h-4" />
-              Powered by Stripe
+              Powered by Razorpay
             </span>
             <span className="flex items-center gap-1.5">
               <Clock className="w-4 h-4" />
