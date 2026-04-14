@@ -5,7 +5,10 @@ import { BrowserRouter }                    from 'react-router-dom';
 import { ClerkProvider }                    from '@clerk/clerk-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App      from './App';
+import { setupTauriListeners } from './lib/tauriListeners';
 import './index.css';
+
+setupTauriListeners();
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
