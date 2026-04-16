@@ -125,12 +125,20 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
     isBranching,
     processingNodeId,
     isRegenerating,
-    selectConversation
+    selectConversation,
+    summarizeNode,
+    summarizingNodeIds,
   } = useConversationStore();
 
-
-
   const isCollapsed = collapsedNodeIds.has(node.id) || forceCollapsed;
+  const isSummarizing = summarizingNodeIds.has(node.id);
+
+  React.useEffect(() => {
+    if (isCollapsed && !node.summarySnapshot && !isSummarizing && node.type === 'answer') {
+      void summarizeNode(node.id);
+    }
+  }, [isCollapsed, node.summarySnapshot, node.id, isSummarizing, summarizeNode, node.type]);
+
   const [showBranchInput, setShowBranchInput] = useState(false);
   const [isEditing, setIsEditing]             = useState(false);
   const [editValue, setEditValue]             = useState(node.content ?? '');
@@ -447,9 +455,19 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
         {/* Collapsed summary */}
         {isCollapsed && (
           <div className="px-4 pb-3">
-            <p className="text-xs text-surface-400 italic">
-              {node.blocks?.length ?? 0} sections · {totalBranches > 0 ? `${totalBranches} branch${totalBranches !== 1 ? 'es' : ''}` : 'no branches'} · click Show to expand
-            </p>
+            {node.summarySnapshot ? (
+              <p className="text-sm font-medium text-surface-700 italic border-l-2 border-brand-300 pl-3">
+                {node.summarySnapshot}
+              </p>
+            ) : isSummarizing ? (
+              <p className="text-xs text-brand-500 italic flex items-center gap-2">
+                <Loader2 className="w-3 h-3 animate-spin" /> Generating AI summary...
+              </p>
+            ) : (
+              <p className="text-xs text-surface-400 italic">
+                {node.blocks?.length ?? 0} sections · {totalBranches > 0 ? `${totalBranches} branch${totalBranches !== 1 ? 'es' : ''}` : 'no branches'} · click Show to expand
+              </p>
+            )}
           </div>
         )}
       </div>

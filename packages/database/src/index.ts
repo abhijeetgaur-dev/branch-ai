@@ -9,7 +9,7 @@ export {
   deleteNodeWithChildren, reorderSiblings,
   createBlocks, deleteAnswerBlocks,
   createAiRequest, completeAiRequest, failAiRequest,
-  findSimilarNodes, findPathSummary,
+  findSimilarNodes, findPathSummary, getGlobalGraphData, updateNodeSummarySnapshot
 } from './queries';
 
 export type {

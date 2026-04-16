@@ -173,6 +173,7 @@ exports.Prisma.NodeScalarFieldEnum = {
   position: 'position',
   isCollapsed: 'isCollapsed',
   embedding: 'embedding',
+  summarySnapshot: 'summarySnapshot',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

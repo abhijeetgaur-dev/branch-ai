@@ -111,6 +111,10 @@ export const api = {
   intelligence: {
     getRelated: (nodeId: string) =>
       request<{ related: RelatedNode[] }>(`/api/intelligence/related?nodeId=${encodeURIComponent(nodeId)}`),
+    summarize: (nodeId: string) =>
+      request<{ summary: string }>(`/api/intelligence/summarize/${encodeURIComponent(nodeId)}`, { method: 'POST' }),
+    getGraph: () =>
+      request<GraphData>('/api/intelligence/graph'),
   },
 };
 
@@ -169,6 +173,7 @@ export interface TreeNode {
   path:           string;
   position:       number;
   isCollapsed:    boolean;
+  summarySnapshot?: string | null;
   createdAt:      string;
   blocks:         ApiBlock[];
   children:       TreeNode[];
@@ -188,4 +193,22 @@ export interface RelatedNode {
   questionNodeId:    string | null;
   conversationId:    string;
   conversationTitle: string;
+}
+
+export interface GraphNode {
+  id: string;
+  label: string;
+  conversationId: string;
+  conversationTitle: string;
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  weight: number;
+}
+
+export interface GraphData {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
 }

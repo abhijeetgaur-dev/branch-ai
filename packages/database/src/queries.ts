@@ -183,6 +183,10 @@ export async function updateNodeEmbedding(nodeId: string, embedding: number[]) {
   return prisma.node.update({ where: { id: nodeId }, data: { embedding } });
 }
 
+export async function updateNodeSummarySnapshot(nodeId: string, summarySnapshot: string) {
+  return prisma.node.update({ where: { id: nodeId }, data: { summarySnapshot } });
+}
+
 /**
  * findSimilarNodes
  * Finds the top-N answer nodes similar to a given embedding vector,
@@ -250,6 +254,75 @@ export async function findSimilarNodes(
     .sort((a, b) => b.similarity - a.similarity)
     .slice(0, limit)
     .filter((n) => n.similarity > 0.3); // only return meaningfully related results
+}
+
+/**
+ * getGlobalGraphData
+ * Fetches recent embedded answer nodes to build a node/edge JSON for global graph mapping.
+ */
+export async function getGlobalGraphData(userId: string, limit: number = 200) {
+  // Load most recent embedded answer nodes
+  const nodes = await prisma.node.findMany({
+    where: {
+      type: 'answer',
+      conversation: { ownerId: userId },
+      NOT: { embedding: { isEmpty: true } },
+    },
+    select: {
+      id: true,
+      embedding: true,
+      parent: {
+        select: { content: true } // the question
+      },
+      conversation: {
+        select: { id: true, title: true }
+      }
+    },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  });
+
+  const graphNodes: any[] = [];
+  const edges: any[] = [];
+
+  function cosineSim(a: number[], b: number[]): number {
+    let dot = 0, na = 0, nb = 0;
+    for (let i = 0; i < a.length; i++) {
+        dot += a[i] * b[i];
+        na  += a[i] * a[i];
+        nb  += b[i] * b[i];
+    }
+    return na === 0 || nb === 0 ? 0 : dot / (Math.sqrt(na) * Math.sqrt(nb));
+  }
+
+  // Generate nodes
+  nodes.forEach(n => {
+    graphNodes.push({
+      id: n.id,
+      label: n.parent?.content || 'Answer',
+      conversationId: n.conversation.id,
+      conversationTitle: n.conversation.title,
+    });
+  });
+
+  // Calculate pairs and add edges if similarity > 0.4
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      // Don't strongly link nodes inside the SAME conversation (we want cross-pollination)
+      if (nodes[i].conversation.id !== nodes[j].conversation.id) {
+        let sim = cosineSim(nodes[i].embedding, nodes[j].embedding);
+        if (sim > 0.5) {
+          edges.push({
+            source: nodes[i].id,
+            target: nodes[j].id,
+            weight: sim,
+          });
+        }
+      }
+    }
+  }
+
+  return { nodes: graphNodes, edges };
 }
 
 /**

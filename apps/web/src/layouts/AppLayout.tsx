@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { Sidebar } from '../components/layout/Sidebar';
 import { Header } from '../components/layout/Header';
@@ -20,6 +20,7 @@ export type AppLayoutContext = {
 };
 
 export function AppLayout() {
+  const navigate = useNavigate();
   const { user } = useUser();
   const [showDocumentManager, setShowDocumentManager] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -92,6 +93,7 @@ export function AppLayout() {
             onRenameConversation={renameConversation}
             onToggleFavorite={toggleFavorite}
             onOpenKnowledgeBase={() => setShowDocumentManager(true)}
+            onOpenKnowledgeGraph={() => navigate('/graph')}
           />
         </div>
       )}
@@ -116,6 +118,10 @@ export function AppLayout() {
               onRenameConversation={renameConversation}
               onToggleFavorite={toggleFavorite}
               onOpenKnowledgeBase={() => setShowDocumentManager(true)}
+              onOpenKnowledgeGraph={() => {
+                navigate('/graph');
+                setSidebarOpen(false);
+              }}
               onClose={() => setSidebarOpen(false)}
             />
           </div>

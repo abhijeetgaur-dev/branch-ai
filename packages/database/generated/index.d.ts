@@ -6057,6 +6057,7 @@ export namespace Prisma {
     path: string | null
     position: number | null
     isCollapsed: boolean | null
+    summarySnapshot: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6074,6 +6075,7 @@ export namespace Prisma {
     path: string | null
     position: number | null
     isCollapsed: boolean | null
+    summarySnapshot: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6092,6 +6094,7 @@ export namespace Prisma {
     position: number
     isCollapsed: number
     embedding: number
+    summarySnapshot: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -6123,6 +6126,7 @@ export namespace Prisma {
     path?: true
     position?: true
     isCollapsed?: true
+    summarySnapshot?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6140,6 +6144,7 @@ export namespace Prisma {
     path?: true
     position?: true
     isCollapsed?: true
+    summarySnapshot?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6158,6 +6163,7 @@ export namespace Prisma {
     position?: true
     isCollapsed?: true
     embedding?: true
+    summarySnapshot?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -6263,6 +6269,7 @@ export namespace Prisma {
     position: number
     isCollapsed: boolean
     embedding: number[]
+    summarySnapshot: string | null
     createdAt: Date
     updatedAt: Date
     _count: NodeCountAggregateOutputType | null
@@ -6300,6 +6307,7 @@ export namespace Prisma {
     position?: boolean
     isCollapsed?: boolean
     embedding?: boolean
+    summarySnapshot?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -6326,6 +6334,7 @@ export namespace Prisma {
     position?: boolean
     isCollapsed?: boolean
     embedding?: boolean
+    summarySnapshot?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -6348,6 +6357,7 @@ export namespace Prisma {
     position?: boolean
     isCollapsed?: boolean
     embedding?: boolean
+    summarySnapshot?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -6394,6 +6404,7 @@ export namespace Prisma {
       position: number
       isCollapsed: boolean
       embedding: number[]
+      summarySnapshot: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["node"]>
@@ -6809,6 +6820,7 @@ export namespace Prisma {
     readonly position: FieldRef<"Node", 'Int'>
     readonly isCollapsed: FieldRef<"Node", 'Boolean'>
     readonly embedding: FieldRef<"Node", 'Float[]'>
+    readonly summarySnapshot: FieldRef<"Node", 'String'>
     readonly createdAt: FieldRef<"Node", 'DateTime'>
     readonly updatedAt: FieldRef<"Node", 'DateTime'>
   }
@@ -12378,6 +12390,7 @@ export namespace Prisma {
     position: 'position',
     isCollapsed: 'isCollapsed',
     embedding: 'embedding',
+    summarySnapshot: 'summarySnapshot',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12922,6 +12935,7 @@ export namespace Prisma {
     position?: IntFilter<"Node"> | number
     isCollapsed?: BoolFilter<"Node"> | boolean
     embedding?: FloatNullableListFilter<"Node">
+    summarySnapshot?: StringNullableFilter<"Node"> | string | null
     createdAt?: DateTimeFilter<"Node"> | Date | string
     updatedAt?: DateTimeFilter<"Node"> | Date | string
     conversation?: XOR<ConversationRelationFilter, ConversationWhereInput>
@@ -12947,6 +12961,7 @@ export namespace Prisma {
     position?: SortOrder
     isCollapsed?: SortOrder
     embedding?: SortOrder
+    summarySnapshot?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     conversation?: ConversationOrderByWithRelationInput
@@ -12975,6 +12990,7 @@ export namespace Prisma {
     position?: IntFilter<"Node"> | number
     isCollapsed?: BoolFilter<"Node"> | boolean
     embedding?: FloatNullableListFilter<"Node">
+    summarySnapshot?: StringNullableFilter<"Node"> | string | null
     createdAt?: DateTimeFilter<"Node"> | Date | string
     updatedAt?: DateTimeFilter<"Node"> | Date | string
     conversation?: XOR<ConversationRelationFilter, ConversationWhereInput>
@@ -13000,6 +13016,7 @@ export namespace Prisma {
     position?: SortOrder
     isCollapsed?: SortOrder
     embedding?: SortOrder
+    summarySnapshot?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: NodeCountOrderByAggregateInput
@@ -13026,6 +13043,7 @@ export namespace Prisma {
     position?: IntWithAggregatesFilter<"Node"> | number
     isCollapsed?: BoolWithAggregatesFilter<"Node"> | boolean
     embedding?: FloatNullableListFilter<"Node">
+    summarySnapshot?: StringNullableWithAggregatesFilter<"Node"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Node"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Node"> | Date | string
   }
@@ -13686,6 +13704,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -13711,6 +13730,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -13728,6 +13748,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -13753,6 +13774,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -13774,6 +13796,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13788,6 +13811,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13806,6 +13830,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14549,6 +14574,7 @@ export namespace Prisma {
     position?: SortOrder
     isCollapsed?: SortOrder
     embedding?: SortOrder
+    summarySnapshot?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14572,6 +14598,7 @@ export namespace Prisma {
     path?: SortOrder
     position?: SortOrder
     isCollapsed?: SortOrder
+    summarySnapshot?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14589,6 +14616,7 @@ export namespace Prisma {
     path?: SortOrder
     position?: SortOrder
     isCollapsed?: SortOrder
+    summarySnapshot?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16334,6 +16362,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -16357,6 +16386,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -16503,6 +16533,7 @@ export namespace Prisma {
     position?: IntFilter<"Node"> | number
     isCollapsed?: BoolFilter<"Node"> | boolean
     embedding?: FloatNullableListFilter<"Node">
+    summarySnapshot?: StringNullableFilter<"Node"> | string | null
     createdAt?: DateTimeFilter<"Node"> | Date | string
     updatedAt?: DateTimeFilter<"Node"> | Date | string
   }
@@ -16875,6 +16906,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     parent?: NodeCreateNestedOneWithoutChildrenInput
@@ -16898,6 +16930,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -17138,6 +17171,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -17162,6 +17196,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     blocks?: BlockUncheckedCreateNestedManyWithoutNodeInput
@@ -17183,6 +17218,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -17206,6 +17242,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -17413,6 +17450,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -17437,6 +17475,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     blocks?: BlockUncheckedUpdateManyWithoutNodeNestedInput
@@ -17585,6 +17624,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -17609,6 +17649,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -17652,6 +17693,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -17675,6 +17717,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -17713,6 +17756,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -17737,6 +17781,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -17892,6 +17937,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutNodesInput
@@ -17916,6 +17962,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: NodeUncheckedCreateNestedManyWithoutParentInput
@@ -18016,6 +18063,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -18040,6 +18088,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -18343,6 +18392,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18431,6 +18481,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -18454,6 +18505,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -18474,6 +18526,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18645,6 +18698,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18681,6 +18735,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parent?: NodeUpdateOneWithoutChildrenNestedInput
@@ -18704,6 +18759,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -18724,6 +18780,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18809,6 +18866,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18847,6 +18905,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -18870,6 +18929,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -18890,6 +18950,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18989,6 +19050,7 @@ export namespace Prisma {
     position?: number
     isCollapsed?: boolean
     embedding?: NodeCreateembeddingInput | number[]
+    summarySnapshot?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19021,6 +19083,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutNodesNestedInput
@@ -19044,6 +19107,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: NodeUncheckedUpdateManyWithoutParentNestedInput
@@ -19064,6 +19128,7 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     isCollapsed?: BoolFieldUpdateOperationsInput | boolean
     embedding?: NodeUpdateembeddingInput | number[]
+    summarySnapshot?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

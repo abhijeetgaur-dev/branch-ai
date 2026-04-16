@@ -1,6 +1,6 @@
 // apps/api/src/ai/intelligence.ts
 import { generateEmbeddings }          from '../services/embeddings';
-import { updateNodeEmbedding, createNode } from '@branch-ai/database';
+import { updateNodeEmbedding, createNode, updateNodeSummarySnapshot, prisma } from '@branch-ai/database';
 import { getProvider, getModel }           from './providers/index';
 
 // ─────────────────────────────────────────────
@@ -116,5 +116,56 @@ ${historyText}
     }
   } catch (err) {
     console.error('[Summary] summarizeLineage failed:', err);
+  }
+}
+
+/**
+ * generateNodeSummary
+ * Generates a concise 1-sentence AI summary for a specific node (and its children) 
+ * for visual UI collapsing, and saves it to the node's summarySnapshot.
+ */
+export async function generateNodeSummary(nodeId: string): Promise<string | null> {
+  try {
+    const node = await prisma.node.findUnique({
+      where: { id: nodeId },
+      include: {
+        blocks: { orderBy: { position: 'asc' }, include: { items: { orderBy: { position: 'asc' } } } },
+        children: {
+          orderBy: { createdAt: 'asc' },
+          take: 3,
+          include: { blocks: { orderBy: { position: 'asc' }, include: { items: { orderBy: { position: 'asc' } } } } }
+        }
+      }
+    });
+
+    if (!node) return null;
+
+    let contextText = nodeToSummaryText(node as any);
+    for (const child of node.children) {
+      contextText += '\n\n' + nodeToSummaryText(child as any);
+    }
+
+    const prompt = `
+Please provide a very concise, 1-sentence summary (max 15 words) of the following conversation branch. 
+Do not include any conversational filler like "This branch discusses", just output the core semantic summary directly.
+
+CONTEXT:
+${contextText}
+`;
+
+    const response = await getProvider().complete({
+      messages: [{ role: 'system', content: 'You are a technical summarizer.' }, { role: 'user', content: prompt }],
+      model:     getModel(),
+      temperature: 0.3,
+    });
+
+    const summaryText = response.content.trim();
+    if (!summaryText) return null;
+
+    await updateNodeSummarySnapshot(nodeId, summaryText);
+    return summaryText;
+  } catch (err) {
+    console.error('[Summary] generateNodeSummary failed:', err);
+    return null;
   }
 }

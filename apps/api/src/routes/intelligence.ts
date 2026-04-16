@@ -6,7 +6,8 @@
 import { Router }           from 'express';
 import { requireAuth }      from '../middleware/auth';
 import type { AuthedRequest } from '../middleware/auth';
-import { prisma, findSimilarNodes } from '@branch-ai/database';
+import { prisma, findSimilarNodes, getGlobalGraphData } from '@branch-ai/database';
+import { generateNodeSummary } from '../ai/intelligence';
 
 export const intelligenceRouter = Router();
 intelligenceRouter.use(requireAuth);
@@ -41,6 +42,46 @@ intelligenceRouter.get('/related', async (req, res, next) => {
     const related = await findSimilarNodes(userId, node.embedding, nodeId);
 
     res.json({ related });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/intelligence/graph
+intelligenceRouter.get('/graph', async (req, res, next) => {
+  try {
+    const { userId } = (req as AuthedRequest).auth;
+    const graphData = await getGlobalGraphData(userId, 200);
+    res.json(graphData);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/intelligence/summarize/:nodeId
+intelligenceRouter.post('/summarize/:nodeId', async (req, res, next) => {
+  try {
+    const { nodeId } = req.params;
+    
+    // Quick verify the node
+    const node = await prisma.node.findUnique({ where: { id: nodeId } });
+    if (!node) {
+      res.status(404).json({ error: 'Node not found' });
+      return;
+    }
+    
+    if (node.summarySnapshot) {
+      res.json({ summary: node.summarySnapshot });
+      return;
+    }
+
+    const summary = await generateNodeSummary(nodeId);
+    if (!summary) {
+      res.status(500).json({ error: 'Summarization failed' });
+      return;
+    }
+
+    res.json({ summary });
   } catch (err) {
     next(err);
   }

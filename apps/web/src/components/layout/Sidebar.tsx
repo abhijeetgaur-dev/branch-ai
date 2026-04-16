@@ -4,6 +4,7 @@ import {
   GitBranch, Plus, Star, Clock, Archive,
   ChevronRight, MoreHorizontal, Loader2,
   Trash2, Edit3, StarOff, PanelLeftClose, PanelLeftOpen, X,
+  Network,
 } from 'lucide-react';
 import { cn, formatDate, truncate } from '../../lib/utils';
 import { Button } from '../ui/Button';
@@ -19,6 +20,7 @@ interface SidebarProps {
   onRenameConversation?: (id: string, newTitle: string) => void;
   onToggleFavorite?:    (id: string) => void;
   onOpenKnowledgeBase?: () => void;
+  onOpenKnowledgeGraph?: () => void;
   onClose?:             () => void;
 }
 
@@ -32,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onRenameConversation,
   onToggleFavorite,
   onOpenKnowledgeBase,
+  onOpenKnowledgeGraph,
   onClose,
 }) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -244,6 +247,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <Archive className="w-4 h-4" />
         </button>
+        <button
+          onClick={onOpenKnowledgeGraph}
+          className="p-2 rounded-lg bg-surface-100 text-surface-600 hover:bg-surface-200 transition-colors"
+          title="Global Graph"
+        >
+          <Network className="w-4 h-4" />
+        </button>
         <div className="flex-1" />
         <div className="flex flex-col items-center gap-1">
           {conversations.slice(0, 6).map((c) => (
@@ -300,6 +310,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <Button variant="primary" size="md" className="w-full" onClick={onNewConversation}>
           <Plus className="w-3.5 h-3.5" />
           New Thread
+        </Button>
+        <Button variant="secondary" size="md" className="w-full bg-surface-100 hover:bg-surface-200 text-surface-700" onClick={onOpenKnowledgeGraph}>
+          <Network className="w-4 h-4" />
+          Knowledge Graph
         </Button>
         <Button variant="secondary" size="md" className="w-full bg-surface-100 hover:bg-surface-200 text-surface-700" onClick={onOpenKnowledgeBase}>
           <Archive className="w-4 h-4" />

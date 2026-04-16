@@ -138,6 +138,7 @@ model Node {
   isCollapsed    Boolean  @default(false) @map("is_collapsed")
   // 384-dim embedding for knowledge graph similarity search (all-MiniLM-L6-v2)
   embedding      Float[]  @default([])
+  summarySnapshot String? @map("summary_snapshot")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 

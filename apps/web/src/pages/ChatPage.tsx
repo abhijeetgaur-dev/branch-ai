@@ -1,5 +1,5 @@
 import React from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { GitBranch, ArrowRight, Sparkles, Layers, Zap, Loader2 } from 'lucide-react';
 import { TreeSidebar } from '../components/tree/TreeSidebar';
@@ -17,12 +17,28 @@ function countQuestions(node: TreeNode): number {
 export function ChatPage() {
   const { user } = useUser();
   const { treeOpen, setTreeOpen } = useOutletContext<AppLayoutContext>();
-  
+  const [searchParams, setSearchParams] = useSearchParams();
+  const conversationParam = searchParams.get('conversation');
+  const nodeParam = searchParams.get('node');
+
   const {
     conversations, activeConversationId, activeTree,
     activeNodeId, isLoadingTree, isBranching,
-    setActiveNodeId, toggleFavorite, renameConversation,
+    setActiveNodeId, selectConversation, toggleFavorite, renameConversation,
   } = useConversationStore();
+
+  React.useEffect(() => {
+    if (conversationParam && conversationParam !== activeConversationId) {
+      void selectConversation(conversationParam);
+    }
+  }, [conversationParam, activeConversationId, selectConversation]);
+
+  React.useEffect(() => {
+    if (activeTree && nodeParam && nodeParam !== activeNodeId) {
+      setTimeout(() => setActiveNodeId(nodeParam), 100);
+      setSearchParams({});
+    }
+  }, [activeTree, nodeParam, activeNodeId, setActiveNodeId, setSearchParams]);
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
   

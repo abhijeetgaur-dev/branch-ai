@@ -20,6 +20,8 @@ interface ConversationStore {
   nodeSuggestions:      Record<string, string[]>;
   /** IDs of answer nodes that are currently collapsed in the UI */
   collapsedNodeIds:     Set<string>;
+  /** IDs of nodes currently generating a summary */
+  summarizingNodeIds:   Set<string>;
 
   fetchConversations:  () => Promise<void>;
   selectConversation:  (id: string) => Promise<void>;
@@ -33,6 +35,7 @@ interface ConversationStore {
   editQuestion:        (questionNodeId: string, answerNodeId: string, newContent: string) => Promise<void>;
   reorderNodes:        (parentNodeId: string | null, orderedIds: string[]) => Promise<void>;
   toggleNodeCollapse:  (nodeId: string) => void;
+  summarizeNode:       (nodeId: string) => Promise<void>;
   clearError:          () => void;
 }
 
@@ -50,6 +53,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
 
   nodeSuggestions:      {},
   collapsedNodeIds:     new Set(),
+  summarizingNodeIds:   new Set(),
 
   fetchConversations: async () => {
     if (get().isLoadingList) return;
@@ -254,6 +258,34 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
     });
   },
 
+  summarizeNode: async (nodeId: string) => {
+    if (get().summarizingNodeIds.has(nodeId)) return; // prevent duplicate calls
+    set((state) => ({
+      summarizingNodeIds: new Set(state.summarizingNodeIds).add(nodeId),
+    }));
+
+    try {
+      const { summary } = await api.intelligence.summarize(nodeId);
+      set((state) => {
+        const nextSet = new Set(state.summarizingNodeIds);
+        nextSet.delete(nodeId);
+        return {
+          summarizingNodeIds: nextSet,
+          activeTree: state.activeTree 
+            ? updateSummarySnapshotInForest(state.activeTree, nodeId, summary) 
+            : null,
+        };
+      });
+    } catch (err) {
+      console.error('Summarize node failed', err);
+      set((state) => {
+        const nextSet = new Set(state.summarizingNodeIds);
+        nextSet.delete(nodeId);
+        return { summarizingNodeIds: nextSet };
+      });
+    }
+  },
+
   clearError: () => set({ error: null }),
 }));
 
@@ -304,6 +336,18 @@ function updateContentInNode(node: TreeNode, nodeId: string, content: string): T
   return {
     ...node,
     children: (node.children ?? []).map((c) => updateContentInNode(c, nodeId, content)),
+  };
+}
+
+function updateSummarySnapshotInForest(forest: TreeNode[], nodeId: string, summarySnapshot: string): TreeNode[] {
+  return forest.map((root) => updateSummarySnapshotInNode(root, nodeId, summarySnapshot));
+}
+
+function updateSummarySnapshotInNode(node: TreeNode, nodeId: string, summarySnapshot: string): TreeNode {
+  if (node.id === nodeId) return { ...node, summarySnapshot };
+  return {
+    ...node,
+    children: (node.children ?? []).map((c) => updateSummarySnapshotInNode(c, nodeId, summarySnapshot)),
   };
 }
 
