@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { cn, formatDate } from '../../lib/utils';
 import type { Conversation, Node } from '../../types';
-import { SiblingGroup } from './NodeRenderer';
+import { DragProvider, SiblingGroup } from './NodeRenderer';
 import { LoadingShimmer } from './LoadingShimmer';
 
 import { useConversationStore } from '../../store/conversationStore';
@@ -145,12 +145,15 @@ export const ConversationView: React.FC<ConversationViewProps> = ({
             </div>
           ) : (
             // Root threads — wrapped in SiblingGroup for drag reorder
-            <SiblingGroup
-              nodes={rootNodes}
-              conversationId={conversation.id}
-              parentNodeId={null}
-              onBranchCreate={onBranchCreate}
-            />
+            <DragProvider>
+              <SiblingGroup
+                nodes={rootNodes}
+                conversationId={conversation.id}
+                parentNodeId={null}
+                onBranchCreate={onBranchCreate}
+                depth={0}
+              />
+            </DragProvider>
           )}
 
           {/* Global shimmer (new root threads only) */}

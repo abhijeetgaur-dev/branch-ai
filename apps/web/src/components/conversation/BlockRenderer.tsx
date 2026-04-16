@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import {
   GitBranch, Copy, Check,
   Info, AlertTriangle, CheckCircle, XCircle,
+  Terminal, ChevronDown,
 } from 'lucide-react';
-import { cn } from '../../lib/utils';
 import type { Block, Node } from '../../types';
 import { BranchInput } from './BranchInput';
+import { pal } from './design-tokens';
 
 interface BlockRendererProps {
   block:          Block;
@@ -16,167 +17,354 @@ interface BlockRendererProps {
   onAskFollowup?: (blockId: string, question: string) => void;
 }
 
-export const BlockRenderer: React.FC<BlockRendererProps> = ({
-  block,
-  depth,
-  conversationId,
-  childBranches = [],
-  onAskFollowup,
-}) => {
-  const [showBranchInput, setShowBranchInput] = useState(false);
-  const [copied, setCopied]                   = useState(false);
-  const [isHovered, setIsHovered]             = useState(false);
+/* ── Code block ── */
+function CodeBlock({ block }: { block: Block }) {
+  const [copied, setCopied] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const lines = block.content.split('\n').length;
 
-  const hasChildBranches = childBranches.length > 0;
-
-  const handleCopy = () => {
+  const copy = () => {
     navigator.clipboard.writeText(block.content);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 1800);
   };
 
-  const handleBranchSubmit = (question: string) => {
-    onAskFollowup?.(block.id, question);
-    setShowBranchInput(false);
-  };
+  return (
+    <div
+      className="rounded-xl overflow-hidden text-xs"
+      style={{
+        backgroundColor: 'var(--ui-code-body)',
+        border: '1px solid var(--ui-border-faint)',
+      }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-3.5 py-2"
+        style={{ backgroundColor: 'var(--ui-code-header)' }}
+      >
+        <div className="flex items-center gap-2">
+          <Terminal className="w-3.5 h-3.5" style={{ color: 'var(--ui-brand-muted)' }} />
+          <span
+            className="font-mono font-medium text-[11px]"
+            style={{ color: 'var(--ui-text-muted)' }}
+          >
+            {block.language ?? 'code'}
+          </span>
+          <span className="text-[10px]" style={{ color: 'var(--ui-text-faint)' }}>
+            {lines} line{lines !== 1 ? 's' : ''}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          {lines > 12 && (
+            <button
+              onClick={() => setCollapsed(v => !v)}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all hover:scale-105"
+              style={{ color: 'var(--ui-text-faint)', backgroundColor: 'rgba(255,255,255,0.05)' }}
+            >
+              <ChevronDown
+                className="w-3 h-3 transition-transform duration-200"
+                style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
+              />
+              {collapsed ? 'Expand' : 'Collapse'}
+            </button>
+          )}
+          <button
+            onClick={copy}
+            className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-medium transition-all hover:scale-105"
+            style={{
+              color: copied ? '#4a9f7c' : 'var(--ui-text-faint)',
+              backgroundColor: copied ? 'rgba(74,159,124,0.1)' : 'rgba(255,255,255,0.05)',
+            }}
+          >
+            {copied
+              ? <><Check className="w-3 h-3" />Copied</>
+              : <><Copy  className="w-3 h-3" />Copy</>}
+          </button>
+        </div>
+      </div>
 
-  const getCalloutStyles = () => {
-    switch (block.calloutType) {
-      case 'info':    return { bg: 'bg-surface-100', border: 'border-surface-200', icon: <Info          className="w-3.5 h-3.5 text-surface-400"  />, text: 'text-surface-700' };
-      case 'warning': return { bg: 'bg-amber-50/50', border: 'border-amber-200',   icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-600"   />, text: 'text-amber-900' };
-      case 'success': return { bg: 'bg-emerald-50/50', border: 'border-emerald-200', icon: <CheckCircle   className="w-3.5 h-3.5 text-emerald-600" />, text: 'text-emerald-900' };
-      case 'error':   return { bg: 'bg-brand-50',     border: 'border-brand-200',   icon: <XCircle       className="w-3.5 h-3.5 text-brand-600"     />, text: 'text-brand-900'   };
-      default:        return { bg: 'bg-surface-50',  border: 'border-surface-200', icon: <Info          className="w-3.5 h-3.5 text-surface-400"  />, text: 'text-surface-700' };
-    }
-  };
+      {/* Code body */}
+      <div
+        style={{
+          maxHeight: collapsed ? 0 : 500,
+          overflow: 'hidden',
+          transition: 'max-height 0.35s cubic-bezier(0.4,0,0.2,1)',
+        }}
+      >
+        <pre
+          className="p-3.5 overflow-x-auto leading-relaxed font-mono"
+          style={{ color: 'var(--ui-code-text)', fontSize: 12 }}
+        >
+          <code>{block.content}</code>
+        </pre>
+      </div>
+    </div>
+  );
+}
 
-  const renderContent = () => {
+/* ── Callout ── */
+const CALLOUT_CONFIG = {
+  info:    { icon: Info,          bg: 'var(--ui-callout-info-bg)',  border: 'var(--ui-callout-info-border)',  text: 'var(--ui-callout-info-text)'  },
+  warning: { icon: AlertTriangle, bg: 'var(--ui-callout-warn-bg)',  border: 'var(--ui-callout-warn-border)',  text: 'var(--ui-callout-warn-text)'  },
+  success: { icon: CheckCircle,   bg: 'var(--ui-callout-ok-bg)',    border: 'var(--ui-callout-ok-border)',    text: 'var(--ui-callout-ok-text)'    },
+  error:   { icon: XCircle,       bg: 'var(--ui-callout-err-bg)',   border: 'var(--ui-callout-err-border)',   text: 'var(--ui-callout-err-text)'   },
+} as const;
+
+/* ── Branch button on block ── */
+function BlockBranchBtn({
+  block,
+  conversationId,
+  onAskFollowup,
+}: {
+  block:          Block;
+  conversationId: string;
+  onAskFollowup?: (blockId: string, q: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  if (open) {
+    return (
+      <div className="mt-3">
+        <BranchInput
+          conversationId={conversationId}
+          onSubmit={q => { onAskFollowup?.(block.id, q); setOpen(false); }}
+          onCancel={() => setOpen(false)}
+          placeholder={`Explore this section deeper…`}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setOpen(true)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="mt-2 flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-lg transition-all duration-150 hover:scale-105"
+      style={{
+        color: hovered ? 'var(--ui-brand-text)' : 'var(--ui-text-faint)',
+        backgroundColor: hovered ? 'var(--ui-brand-subtle)' : 'transparent',
+        border: '1px dashed',
+        borderColor: hovered ? 'rgba(212,88,111,0.35)' : 'var(--ui-border-faint)',
+      }}
+    >
+      <GitBranch className="w-3 h-3" />
+      Branch
+    </button>
+  );
+}
+
+/* ── Main BlockRenderer ── */
+export const BlockRenderer: React.FC<BlockRendererProps> = ({
+  block, depth, conversationId, childBranches = [], onAskFollowup,
+}) => {
+  const hasBranches = childBranches.length > 0;
+
+  const renderBlock = () => {
     switch (block.type) {
 
       case 'heading':
         return (
-          <div
-            className="group"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-surface-900 flex-1 leading-snug">
+          <div>
+            <div className="flex items-start justify-between gap-2 group">
+              <h3
+                className="text-sm font-semibold leading-snug flex-1"
+                style={{ color: 'var(--ui-text-primary)' }}
+              >
                 {block.content}
               </h3>
-
-              {/* Branch button — appears on hover or if branches exist */}
-              <div className={cn(
-                'flex items-center gap-1.5 transition-opacity duration-150',
-                (hasChildBranches || isHovered) ? 'opacity-100' : 'opacity-0'
-              )}>
-                {hasChildBranches && (
-                  <span className="text-xs text-brand-500 font-medium px-1.5 py-0.5 bg-brand-50 rounded">
-                    {childBranches.length}
-                  </span>
-                )}
-                <button
-                  onClick={() => setShowBranchInput(!showBranchInput)}
-                  className={cn(
-                    'p-1 rounded transition-all duration-150',
-                    showBranchInput
-                      ? 'bg-brand-100 text-brand-600'
-                      : 'hover:bg-surface-100 text-surface-300 hover:text-brand-500'
-                  )}
-                  title="Branch from this section"
+              {hasBranches && (
+                <span
+                  className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0"
+                  style={{ backgroundColor: 'var(--ui-brand-subtle)', color: 'var(--ui-brand-text)' }}
                 >
-                  <GitBranch className="w-3.5 h-3.5" />
-                </button>
-              </div>
+                  {childBranches.length}
+                </span>
+              )}
             </div>
-
-            {showBranchInput && (
-              <div className="mt-2 animate-slide-down">
-                <BranchInput
-                  conversationId={conversationId}
-                  onSubmit={handleBranchSubmit}
-                  onCancel={() => setShowBranchInput(false)}
-                  placeholder={`Explore "${block.content}" deeper...`}
-                />
-              </div>
-            )}
+            <BlockBranchBtn block={block} conversationId={conversationId} onAskFollowup={onAskFollowup} />
           </div>
         );
 
       case 'paragraph':
         return (
-          <p className="text-sm text-surface-600 leading-relaxed">
-            {block.content}
-          </p>
+          <div>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--ui-text-secondary)' }}>
+              {block.content}
+            </p>
+            <BlockBranchBtn block={block} conversationId={conversationId} onAskFollowup={onAskFollowup} />
+          </div>
         );
 
       case 'code':
         return (
-          <div className="rounded-lg overflow-hidden border border-surface-200 text-xs">
-            <div className="flex items-center justify-between px-3 py-1.5 bg-surface-800 text-surface-300">
-              <span className="font-mono text-xs">{block.language ?? 'code'}</span>
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-surface-700 transition-colors"
-              >
-                {copied
-                  ? <><Check className="w-3 h-3 text-emerald-400" /><span className="text-emerald-400">Copied</span></>
-                  : <><Copy  className="w-3 h-3" /><span>Copy</span></>}
-              </button>
-            </div>
-            <pre className="p-3 bg-surface-900 text-surface-100 font-mono overflow-x-auto leading-relaxed">
-              <code>{block.content}</code>
-            </pre>
+          <div>
+            <CodeBlock block={block} />
+            <BlockBranchBtn block={block} conversationId={conversationId} onAskFollowup={onAskFollowup} />
           </div>
         );
 
       case 'bullet_list':
         return (
-          <ul className="space-y-1.5">
-            {block.items.map((item) => (
-              <li key={item.id} className="flex items-start gap-2.5 text-sm text-surface-600">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-400 mt-1.5 flex-shrink-0" />
-                <span className="leading-relaxed">{item.content}</span>
-              </li>
-            ))}
-          </ul>
+          <div>
+            <ul className="space-y-2">
+              {block.items?.map(item => (
+                <li key={item.id} className="flex items-start gap-2.5 text-sm" style={{ color: 'var(--ui-text-secondary)' }}>
+                  <div
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-2"
+                    style={{ backgroundColor: pal(depth).dot }}
+                  />
+                  <span className="leading-relaxed">{item.content}</span>
+                </li>
+              ))}
+            </ul>
+            <BlockBranchBtn block={block} conversationId={conversationId} onAskFollowup={onAskFollowup} />
+          </div>
         );
 
       case 'numbered_list':
         return (
-          <ol className="space-y-1.5">
-            {block.items.map((item, idx) => (
-              <li key={item.id} className="flex items-start gap-2.5 text-sm text-surface-600">
-                <span className="w-5 h-5 rounded-full bg-brand-50 text-brand-600 text-xs font-semibold flex items-center justify-center flex-shrink-0 mt-0.5 border border-brand-200">
-                  {idx + 1}
-                </span>
-                <span className="leading-relaxed pt-0.5">{item.content}</span>
-              </li>
-            ))}
-          </ol>
+          <div>
+            <ol className="space-y-2">
+              {block.items?.map((item, idx) => (
+                <li key={item.id} className="flex items-start gap-2.5 text-sm" style={{ color: 'var(--ui-text-secondary)' }}>
+                  <span
+                    className="w-5 h-5 rounded-lg text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5"
+                    style={{
+                      backgroundColor: pal(depth).glow,
+                      color: pal(depth).dot,
+                      border: `1px solid ${pal(depth).line}`,
+                    }}
+                  >
+                    {idx + 1}
+                  </span>
+                  <span className="leading-relaxed pt-0.5">{item.content}</span>
+                </li>
+              ))}
+            </ol>
+            <BlockBranchBtn block={block} conversationId={conversationId} onAskFollowup={onAskFollowup} />
+          </div>
         );
 
       case 'callout': {
-        const s = getCalloutStyles();
+        const cfg = CALLOUT_CONFIG[block.calloutType ?? 'info'] ?? CALLOUT_CONFIG.info;
+        const Icon = cfg.icon;
         return (
-          <div className={cn('flex items-start gap-2.5 px-3 py-2.5 rounded-lg border', s.bg, s.border)}>
-            <span className="flex-shrink-0 mt-0.5">{s.icon}</span>
-            <p className={cn('text-xs leading-relaxed', s.text)}>{block.content}</p>
+          <div
+            className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl"
+            style={{
+              backgroundColor: cfg.bg,
+              border: `1px solid ${cfg.border}`,
+            }}
+          >
+            <Icon className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: cfg.text }} />
+            <p className="text-xs leading-relaxed" style={{ color: cfg.text }}>{block.content}</p>
           </div>
         );
       }
 
       case 'quote':
         return (
-          <blockquote className="border-l-2 border-brand-300 pl-3 py-0.5 text-sm italic text-surface-500">
+          <blockquote
+            className="pl-4 py-0.5 text-sm italic leading-relaxed"
+            style={{
+              borderLeft: `2px solid ${pal(depth).dot}`,
+              color: 'var(--ui-text-muted)',
+            }}
+          >
             {block.content}
           </blockquote>
         );
 
       default:
-        return <p className="text-sm text-surface-600">{block.content}</p>;
+        return (
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--ui-text-secondary)' }}>
+            {block.content}
+          </p>
+        );
     }
   };
 
-  return <div>{renderContent()}</div>;
+  return <div>{renderBlock()}</div>;
 };
+
+/* ── Loading shimmer ── */
+export const LoadingShimmer: React.FC = () => (
+  <div
+    className="pointer-events-none"
+    style={{ animation: 'nrFadeUp 0.3s ease' }}
+  >
+    {/* Question placeholder */}
+    <div className="flex items-center gap-3 mb-4">
+      <div
+        className="w-7 h-7 rounded-full flex-shrink-0 animate-pulse"
+        style={{ backgroundColor: 'var(--ui-brand-subtle)' }}
+      />
+      <div className="h-3.5 rounded-full animate-pulse" style={{ width: '48%', backgroundColor: 'var(--ui-bg-subtle)' }} />
+    </div>
+
+    {/* Answer card placeholder */}
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{
+        backgroundColor: 'var(--ui-card-bg)',
+        border: '1px solid var(--ui-card-border)',
+      }}
+    >
+      {/* Accent bar */}
+      <div
+        className="h-0.5 w-full animate-pulse"
+        style={{ backgroundColor: 'var(--ui-brand-subtle)' }}
+      />
+
+      {/* Header */}
+      <div className="flex items-center gap-2.5 px-4 py-3">
+        <div
+          className="w-6 h-6 rounded-lg flex-shrink-0 animate-pulse"
+          style={{ backgroundColor: 'var(--ui-brand-subtle)' }}
+        />
+        <div className="h-3 rounded-full animate-pulse" style={{ width: 60, backgroundColor: 'var(--ui-bg-subtle)' }} />
+        <div className="h-2.5 rounded-full animate-pulse ml-2" style={{ width: 40, backgroundColor: 'var(--ui-bg-subtle)' }} />
+      </div>
+
+      <div className="h-px mx-4" style={{ backgroundColor: 'var(--ui-border-faint)' }} />
+
+      {/* Body lines */}
+      <div className="px-4 py-4 space-y-3">
+        {[82, 100, 68, 90, 55].map((w, i) => (
+          <div
+            key={i}
+            className="h-3 rounded-full animate-pulse"
+            style={{
+              width: `${w}%`,
+              backgroundColor: 'var(--ui-bg-subtle)',
+              animationDelay: `${i * 0.08}s`,
+            }}
+          />
+        ))}
+
+        {/* Fake code block */}
+        <div
+          className="mt-4 rounded-xl overflow-hidden"
+          style={{ backgroundColor: 'var(--ui-code-body)', border: '1px solid var(--ui-border-faint)' }}
+        >
+          <div className="h-7 animate-pulse" style={{ backgroundColor: 'var(--ui-code-header)' }} />
+          <div className="p-3 space-y-2">
+            {[60, 85, 45, 70].map((w, i) => (
+              <div
+                key={i}
+                className="h-2.5 rounded animate-pulse"
+                style={{
+                  width: `${w}%`,
+                  backgroundColor: 'rgba(255,255,255,0.06)',
+                  animationDelay: `${i * 0.1}s`,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);

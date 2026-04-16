@@ -1,10 +1,8 @@
 // src/components/conversation/BranchInput.tsx
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, X, Sparkles, Paperclip, Loader2, FileText } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { ArrowUp, X, Sparkles, Paperclip, Loader2, FileText, Plus } from 'lucide-react';
 import { useDocumentStore } from '../../store/documentStore';
 import type { DocumentSummary } from '../../lib/api';
-
 
 interface BranchInputProps {
   onSubmit:       (question: string) => void;
@@ -14,154 +12,208 @@ interface BranchInputProps {
   autoFocus?:     boolean;
 }
 
+const QUICK_STARTERS = [
+  'Explain this further',
+  'Show me an example',
+  'What are the trade-offs?',
+];
+
 export const BranchInput: React.FC<BranchInputProps> = ({
   onSubmit,
   onCancel,
   conversationId,
-  placeholder = 'Ask a follow-up question...',
+  placeholder = 'Ask a follow-up…',
   autoFocus   = true,
 }) => {
-  const [value, setValue]   = useState('');
-  const inputRef            = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef        = useRef<HTMLInputElement>(null);
+  const [value, setValue]         = useState('');
+  const [focused, setFocused]     = useState(false);
+  const [mounted, setMounted]     = useState(false);
   const [stagedDocs, setStagedDocs] = useState<DocumentSummary[]>([]);
+  const inputRef                  = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef              = useRef<HTMLInputElement>(null);
   const { uploadDocument, isUploading } = useDocumentStore();
 
-
   useEffect(() => {
-    if (autoFocus && inputRef.current) {
-      inputRef.current.focus();
-    }
+    requestAnimationFrame(() => setMounted(true));
+    if (autoFocus) setTimeout(() => inputRef.current?.focus(), 60);
   }, [autoFocus]);
+
+  // Auto-resize
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  }, [value]);
 
   const handleSubmit = () => {
     let q = value.trim();
     if (!q && stagedDocs.length === 0) return;
-    
     if (stagedDocs.length > 0) {
       if (q) q += '\n\n';
-      stagedDocs.forEach(doc => {
-         q += `📝 [Attached: ${doc.title}](${doc.url || '#'})\n`;
-      });
+      stagedDocs.forEach(d => { q += `📝 [Attached: ${d.title}](${d.url || '#'})\n`; });
     }
-
-    // Call onSubmit directly — no fake delay.
-    // The isBranching state in Zustand handles the loading indicator globally.
     onSubmit(q);
     setValue('');
     setStagedDocs([]);
   };
 
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-    if (e.key === 'Escape') {
-      onCancel();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); }
+    if (e.key === 'Escape') onCancel();
   };
 
-  const suggestions = [
-    'Explain this in more detail',
-    'Show me an example',
-    'What are the trade-offs?',
-  ];
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (fileInputRef.current) fileInputRef.current.value = '';
-    const uploaded = await uploadDocument(file, conversationId);
-    if (uploaded) {
-      setStagedDocs(prev => [...prev, uploaded]);
-    }
+    const up = await uploadDocument(file, conversationId);
+    if (up) setStagedDocs(p => [...p, up]);
   };
 
+  const canSend = value.trim().length > 0 || stagedDocs.length > 0;
 
   return (
-    <div className=" rounded-xl p-4  animate-slide-down">
-      <div className="flex items-center gap-2 mb-3 text-xs text-brand-600">
-        <Sparkles className="w-3.5 h-3.5" />
-        <span className="font-medium">Create a branch</span>
+    <div
+      style={{
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? 'translateY(0) scale(1)' : 'translateY(6px) scale(0.98)',
+        transition: 'opacity 0.25s ease, transform 0.25s ease',
+      }}
+    >
+      {/* Label */}
+      <div
+        className="flex items-center gap-1.5 mb-2 text-[11px] font-semibold uppercase tracking-wider"
+        style={{ color: 'var(--ui-brand-text)' }}
+      >
+        <Sparkles className="w-3 h-3" />
+        Branch from here
       </div>
 
+      {/* Staged docs */}
       {stagedDocs.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="flex flex-wrap gap-1.5 mb-2">
           {stagedDocs.map(doc => (
-            <div key={doc.id} className="flex items-center gap-1.5 px-2 py-1 bg-white border border-brand-100 rounded-md text-xs text-brand-700 shadow-sm tooltip-trigger" title="Document attached to next message">
-              <FileText className="w-3 h-3 text-brand-500" />
-              <span className="truncate max-w-[150px]">{doc.title}</span>
+            <div
+              key={doc.id}
+              className="flex items-center gap-1.5 pl-2 pr-1.5 py-1 rounded-lg border text-xs font-medium"
+              style={{
+                backgroundColor: 'var(--ui-brand-subtle)',
+                borderColor: 'rgba(212,88,111,0.2)',
+                color: 'var(--ui-brand-text)',
+              }}
+            >
+              <FileText className="w-3 h-3 flex-shrink-0" />
+              <span className="truncate max-w-[120px]">{doc.title}</span>
+              <button
+                onClick={() => setStagedDocs(p => p.filter(d => d.id !== doc.id))}
+                className="p-0.5 rounded transition-colors"
+                style={{ color: 'var(--ui-brand-muted)' }}
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
             </div>
           ))}
         </div>
       )}
 
-
-      <div className="relative">
+      {/* Input area */}
+      <div
+        className="rounded-xl overflow-hidden transition-all duration-200"
+        style={{
+          border: '1.5px solid',
+          borderColor: focused ? 'var(--ui-brand)' : 'var(--ui-border)',
+          backgroundColor: 'var(--ui-bg-input)',
+          boxShadow: focused ? '0 0 0 3px rgba(181,56,79,0.08)' : 'none',
+        }}
+      >
         <textarea
           ref={inputRef}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={e => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           placeholder={placeholder}
-          rows={2}
-          className={cn(
-            'w-full rounded-lg px-4 py-3 pr-24 text-sm resize-none',
-            'border border-brand-200 focus:border-brand-400',
-            'focus:outline-none focus:ring-2 focus:ring-brand-500/20',
-            'placeholder:text-surface-400 transition-all duration-200'
-          )}
+          rows={1}
+          className="w-full px-3 py-2.5 text-sm bg-transparent resize-none focus:outline-none"
+          style={{
+            color: 'var(--ui-text-primary)',
+            minHeight: 40,
+            maxHeight: 120,
+          }}
         />
-        <div className="absolute right-2 bottom-2 flex items-center gap-1">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept=".pdf,.txt,.md,.csv"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isUploading}
-            className="p-2 rounded-lg text-surface-400 hover:text-surface-600 hover:bg-surface-100 transition-colors disabled:opacity-50"
-            title="Attach a document"
-          >
-            {isUploading ? <Loader2 className="w-4 h-4 animate-spin text-brand-500" /> : <Paperclip className="w-4 h-4" />}
-          </button>
-          <button
-            onClick={onCancel}
-            className="p-2 rounded-lg text-surface-400 hover:text-surface-600 hover:bg-surface-100 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={!value.trim() && stagedDocs.length === 0}
-            className={cn(
-              'p-2 rounded-lg transition-all duration-200',
-              (value.trim() || stagedDocs.length > 0)
-                ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm'
-                : 'bg-surface-100 text-surface-400 cursor-not-allowed'
-            )}
-          >
-            <Send className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
 
-      {/* Suggested starters */}
-      <div className="flex flex-wrap gap-2 mt-3">
-        {suggestions.map((q) => (
-          <button
-            key={q}
-            onClick={() => setValue(q)}
-            className="px-3 py-1.5 text-xs bg-white border border-brand-200 rounded-full text-brand-600 hover:bg-brand-50 hover:border-brand-300 transition-colors"
-          >
-            {q}
-          </button>
-        ))}
+        {/* Quick starters */}
+        <div className="px-3 pb-2 flex flex-wrap gap-1.5">
+          {QUICK_STARTERS.map(q => (
+            <button
+              key={q}
+              onClick={() => { setValue(q); inputRef.current?.focus(); }}
+              className="px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all duration-150 hover:scale-105"
+              style={{
+                backgroundColor: 'var(--ui-bg-subtle)',
+                color: 'var(--ui-text-muted)',
+                border: '1px solid var(--ui-border-faint)',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = 'var(--ui-brand-subtle)';
+                e.currentTarget.style.color = 'var(--ui-brand-text)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = 'var(--ui-bg-subtle)';
+                e.currentTarget.style.color = 'var(--ui-text-muted)';
+              }}
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div
+          className="flex items-center justify-between px-3 py-2"
+          style={{ borderTop: '1px solid var(--ui-border-faint)' }}
+        >
+          <div className="flex items-center gap-1">
+            <input type="file" ref={fileInputRef} onChange={handleFile} className="hidden" accept=".pdf,.txt,.md,.csv" />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="p-1.5 rounded-lg transition-all hover:scale-105 disabled:opacity-40"
+              style={{ color: 'var(--ui-text-faint)' }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--ui-bg-subtle)')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+              {isUploading
+                ? <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: 'var(--ui-brand-muted)' }} />
+                : <Paperclip className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={onCancel}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105"
+              style={{ color: 'var(--ui-text-faint)', backgroundColor: 'var(--ui-bg-subtle)' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={!canSend}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: canSend ? 'var(--ui-brand)' : 'var(--ui-bg-subtle)',
+                color: canSend ? 'white' : 'var(--ui-text-faint)',
+                boxShadow: canSend ? '0 2px 8px rgba(181,56,79,0.3)' : 'none',
+              }}
+            >
+              <ArrowUp className="w-3.5 h-3.5" />
+              Send
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
