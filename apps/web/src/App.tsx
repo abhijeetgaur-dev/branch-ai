@@ -334,12 +334,12 @@ function SignInPage() {
 
   return (
     <div
-      className="min-h-screen flex overflow-hidden"
+      className=" flex "
       style={{ backgroundColor: 'var(--ui-bg-page)' }}
     >
       {/* ── Left panel (hero / branding) — hidden on mobile ── */}
       <div
-        className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative flex-col items-center justify-center p-12 overflow-hidden"
+        className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative flex-col items-center justify-center p-12"
         style={{ backgroundColor: 'var(--ui-bg-subtle)' }}
       >
         {/* Canvas background */}
@@ -425,7 +425,7 @@ function SignInPage() {
           {/* Logo + title */}
           <div className="text-center mb-8">
             <div
-              className="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden"
+              className="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg relative "
               style={{
                 background: 'linear-gradient(135deg, var(--ui-brand) 0%, var(--ui-bot-to) 100%)',
               }}
