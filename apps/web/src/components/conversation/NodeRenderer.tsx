@@ -108,53 +108,6 @@ function CopyBtn({ text }: { text: string }) {
   );
 }
 
-/* ─────────────────────────────────────────────────────
-   Drag-state collapsed card
-   Shown in place of a full AnswerNode while any sibling
-   is being dragged. Keeps the layout scannable.
-   ───────────────────────────────────────────────────── */
-function DragCollapsedCard({ node, depth = 0 }: { node: Node; depth?: number }) {
-  const p = pal(depth);
-  const totalBranches = node.children?.filter(c => c.type === 'question').length ?? 0;
-
-  return (
-    <div
-      className="rounded-xl overflow-hidden"
-      style={{
-        backgroundColor: 'var(--ui-card-bg)',
-        border: '1px solid var(--ui-card-border)',
-        opacity: 0.75,
-      }}
-    >
-      {/* Depth stripe */}
-      <div className="h-0.5 w-full" style={{ background: `linear-gradient(90deg, ${p.dot}, transparent)` }} />
-
-      <div className="flex items-center gap-2 pl-4 pr-3 py-2.5">
-        <div
-          className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, var(--ui-bot-from), var(--ui-bot-to))' }}
-        >
-          <Bot className="w-3 h-3 text-white" />
-        </div>
-        <span className="text-xs font-semibold flex-1 truncate" style={{ color: 'var(--ui-text-secondary)' }}>
-          BranchAI
-        </span>
-        {totalBranches > 0 && (
-          <span
-            className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-1"
-            style={{ backgroundColor: p.badge, color: p.dot }}
-          >
-            <GitBranch className="w-2.5 h-2.5" />
-            {totalBranches}
-          </span>
-        )}
-        <span className="text-[10px]" style={{ color: 'var(--ui-text-faint)' }}>
-          {node.blocks?.length ?? 0} sections
-        </span>
-      </div>
-    </div>
-  );
-}
 
 /* ─────────────────────────────────────────────────────
    Drag handle pill — shown above a sibling group
@@ -204,6 +157,7 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
   const draggingIsHere  = draggingId !== null && nodeIds.has(draggingId);
 
   const onDragStart = (e: React.DragEvent, id: string) => {
+    e.stopPropagation();
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', id);
     setLocalDragging(id);
@@ -233,7 +187,8 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
     reset();
   };
 
-  const reset = () => {
+  const reset = (e?: React.DragEvent) => {
+    if (e) e.stopPropagation();
     setLocalDragging(null);
     setLocalDragOver(null);
     setDraggingId(null);
@@ -257,9 +212,9 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
             <div
               key={node.id}
               draggable={nodes.length > 1}
-              onDragStart={e  => nodes.length > 1 && onDragStart(e, node.id)}
-              onDragOver={e   => nodes.length > 1 && onDragOver(e, node.id)}
-              onDrop={e       => nodes.length > 1 && onDrop(e, node.id)}
+              onDragStart={e  => { if (nodes.length > 1) onDragStart(e, node.id); }}
+              onDragOver={e   => { if (nodes.length > 1) onDragOver(e, node.id); }}
+              onDrop={e       => { if (nodes.length > 1) onDrop(e, node.id); }}
               onDragEnd={reset}
               className="transition-all duration-200 relative"
               style={{
@@ -299,33 +254,14 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
                 </>
               )}
 
-              {/*
-                While dragging: show every OTHER node as a collapsed
-                card — just the header, no content. The dragging node
-                itself is at 0.3 opacity (ghost).
-              */}
-              {groupIsDragging && !isThisDragging ? (
-                <div>
-                  {/* Question header — always show */}
-                  <CollapsedQuestionHeader node={node} depth={depth} />
-                  {/* Collapsed answer card */}
-                  {node.children?.filter(c => c.type === 'answer').map(ans => (
-                    <div key={ans.id}>
-                      <Connector color={pal(depth).line} height={12} />
-                      <DragCollapsedCard node={ans} depth={depth} />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <NodeRenderer
-                  node={node}
-                  conversationId={conversationId}
-                  onBranchCreate={onBranchCreate}
-                  hasSiblings={nodes.length > 1}
-                  forceCollapsed={forceCollapsed || (groupIsDragging && !isThisDragging)}
-                  depth={depth}
-                />
-              )}
+              <NodeRenderer
+                node={node}
+                conversationId={conversationId}
+                onBranchCreate={onBranchCreate}
+                hasSiblings={nodes.length > 1}
+                forceCollapsed={forceCollapsed || groupIsDragging}
+                depth={depth}
+              />
             </div>
           );
         })}
@@ -334,33 +270,6 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
   );
 };
 
-/* ─────────────────────────────────────────────────────
-   CollapsedQuestionHeader
-   Shown for non-dragging siblings during drag mode.
-   ───────────────────────────────────────────────────── */
-function CollapsedQuestionHeader({ node, depth }: { node: Node; depth: number }) {
-  const p = pal(depth);
-  const label = (node.content ?? '').length > 60
-    ? (node.content ?? '').slice(0, 60) + '…'
-    : (node.content ?? '');
-
-  return (
-    <div className="flex items-center gap-2.5 py-1">
-      <div
-        className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0"
-        style={{ backgroundColor: p.dot, opacity: 0.7 }}
-      >
-        Q
-      </div>
-      <p
-        className="text-sm font-medium truncate flex-1"
-        style={{ color: 'var(--ui-text-muted)' }}
-      >
-        {label}
-      </p>
-    </div>
-  );
-}
 
 /* ─────────────────────────────────────────────────────
    QuestionNode
