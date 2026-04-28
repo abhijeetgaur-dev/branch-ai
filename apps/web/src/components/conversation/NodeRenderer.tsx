@@ -241,6 +241,8 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
 
   if (nodes.length === 0) return null;
 
+  const gap = groupIsDragging ? 8 : 24; // space-y-2 is 8px, space-y-6 is 24px
+
   return (
     <div>
       {/* Drag mode banner */}
@@ -259,7 +261,7 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
               onDragOver={e   => nodes.length > 1 && onDragOver(e, node.id)}
               onDrop={e       => nodes.length > 1 && onDrop(e, node.id)}
               onDragEnd={reset}
-              className="transition-all duration-200"
+              className="transition-all duration-200 relative"
               style={{
                 opacity:       isThisDragging ? 0.3 : 1,
                 transform:     isDragTarget   ? 'translateY(-2px)' : 'translateY(0)',
@@ -270,6 +272,33 @@ export const SiblingGroup: React.FC<SiblingGroupProps> = ({
                 cursor:        nodes.length > 1 ? (isThisDragging ? 'grabbing' : 'grab') : 'default',
               }}
             >
+              {/* Connector lines from parent answer */}
+              {depth > 0 && parentNodeId && (
+                <>
+                  {/* Vertical line segment */}
+                  <div
+                    className="absolute w-px"
+                    style={{
+                      left: -27,
+                      top: i === 0 ? -16 : 0,
+                      bottom: i === nodes.length - 1 ? 'auto' : -gap,
+                      height: i === nodes.length - 1 ? (i === 0 ? 32 : 16) : 'auto',
+                      backgroundColor: pal(depth - 1).line,
+                    }}
+                  />
+                  {/* Horizontal line */}
+                  <div
+                    className="absolute h-px"
+                    style={{
+                      left: -27,
+                      width: 27,
+                      top: 16,
+                      backgroundColor: pal(depth - 1).line,
+                    }}
+                  />
+                </>
+              )}
+
               {/*
                 While dragging: show every OTHER node as a collapsed
                 card — just the header, no content. The dragging node
@@ -706,8 +735,7 @@ function AnswerNode({
                         onAskFollowup={(bId, q) => onBranchCreate?.(node.id, bId, q)}
                       />
                       {blockBranches.length > 0 && (
-                        <div className="mt-5">
-                          <Connector color={p.line} height={12} />
+                        <div className="mt-4" style={{ paddingLeft: '2.5rem' }}>
                           <SiblingGroup
                             nodes={blockBranches}
                             conversationId={conversationId}
@@ -772,8 +800,7 @@ function AnswerNode({
 
       {/* Follow-up branches */}
       {!isCollapsed && generalFollowups.length > 0 && (
-        <div className="mt-4" style={{ animation: 'nrFadeUp 0.35s ease' }}>
-          <Connector color={p.line} height={16} />
+        <div className="mt-4" style={{ animation: 'nrFadeUp 0.35s ease', paddingLeft: '2.5rem' }}>
           <SiblingGroup
             nodes={generalFollowups}
             conversationId={conversationId}
@@ -787,8 +814,9 @@ function AnswerNode({
 
       {/* Generation shimmer */}
       {!isCollapsed && isBranching && processingNodeId === node.id && (
-        <div className="mt-4" style={{ animation: 'nrFadeUp 0.25s ease' }}>
-          <Connector color={p.line} height={16} />
+        <div className="mt-4 relative" style={{ animation: 'nrFadeUp 0.25s ease', paddingLeft: '2.5rem' }}>
+          <div className="absolute w-px" style={{ left: 13, top: -16, height: 32, backgroundColor: p.line }} />
+          <div className="absolute h-px" style={{ left: 13, top: 16, width: 27, backgroundColor: p.line }} />
           <LoadingShimmer />
         </div>
       )}
