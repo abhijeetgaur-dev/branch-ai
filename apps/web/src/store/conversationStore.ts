@@ -384,11 +384,12 @@ function reorderInNode(
   orderedIds:   string[]
 ): TreeNode {
   if (node.id === parentNodeId) {
+    const otherChildren = (node.children ?? []).filter(c => !orderedIds.includes(c.id));
     const sorted = orderedIds
       .map((id) => node.children?.find((c) => c.id === id))
       .filter((c): c is TreeNode => !!c)
       .map((c, i) => ({ ...c, position: i }));
-    return { ...node, children: sorted };
+    return { ...node, children: [...otherChildren, ...sorted] };
   }
   return {
     ...node,

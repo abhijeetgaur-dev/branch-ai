@@ -67,10 +67,12 @@ interface TreeNodeItemProps {
   depth:        number;
   searchQuery:  string;
   forceExpand?: boolean;
+  onNodeDrop?:  (srcId: string, targetId: string) => void;
+  draggable?:   boolean;
 }
 
 const TreeNodeItem: React.FC<TreeNodeItemProps> = ({
-  node, activeNodeId, onNodeSelect, depth, searchQuery, forceExpand,
+  node, activeNodeId, onNodeSelect, depth, searchQuery, forceExpand, onNodeDrop, draggable,
 }) => {
   const { toggleNodeCollapse, collapsedNodeIds } = useConversationStore();
   const effectiveChildren = getEffectiveChildren(node);
@@ -106,6 +108,7 @@ const TreeNodeItem: React.FC<TreeNodeItemProps> = ({
   };
 
   const [mounted, setMounted] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   useEffect(() => { const t = setTimeout(() => setMounted(true), depth * 30); return () => clearTimeout(t); }, [depth]);
 
   const handleClick = () => {
@@ -137,11 +140,35 @@ const TreeNodeItem: React.FC<TreeNodeItemProps> = ({
         {/* Row button */}
         <button
           onClick={handleClick}
+          draggable={draggable}
+          onDragStart={(e) => {
+            e.stopPropagation();
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', node.id);
+          }}
+          onDragOver={(e) => {
+            if (!draggable) return;
+            e.preventDefault();
+            setIsDragOver(true);
+          }}
+          onDragLeave={() => setIsDragOver(false)}
+          onDrop={(e) => {
+            if (!draggable) return;
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDragOver(false);
+            const srcId = e.dataTransfer.getData('text/plain');
+            if (srcId && srcId !== node.id && onNodeDrop) {
+              onNodeDrop(srcId, node.id);
+            }
+          }}
           className="group relative flex items-center gap-2 w-full py-1.5 pr-2 rounded-xl text-left transition-all duration-150"
           style={{
             paddingLeft: `${depth * 16 + 8}px`,
             backgroundColor: isActive ? p.glow : 'transparent',
             outline: isActive ? `1.5px solid ${p.dot}40` : 'none',
+            borderTop: isDragOver ? `2px solid ${p.dot}` : '2px solid transparent',
+            marginTop: isDragOver ? -2 : 0,
           }}
           onMouseEnter={e => {
             if (!isActive)
@@ -233,6 +260,19 @@ const TreeNodeItem: React.FC<TreeNodeItemProps> = ({
               depth={depth + 1}
               searchQuery={searchQuery}
               forceExpand={forceExpand}
+              draggable={!searchQuery.trim() && effectiveChildren.length > 1}
+              onNodeDrop={(srcId, targetId) => {
+                const ids = effectiveChildren.map(c => c.id);
+                const from = ids.indexOf(srcId);
+                const to = ids.indexOf(targetId);
+                if (from === -1 || to === -1) return;
+                ids.splice(from, 1);
+                ids.splice(to, 0, srcId);
+                const srcNode = effectiveChildren.find(c => c.id === srcId);
+                if (srcNode && srcNode.parentNodeId) {
+                  useConversationStore.getState().reorderNodes(srcNode.parentNodeId, ids);
+                }
+              }}
             />
           ))}
         </div>
@@ -583,6 +623,16 @@ export const TreeSidebar: React.FC<TreeSidebarProps> = ({
                   depth={0}
                   searchQuery={searchQuery}
                   forceExpand={!!searchQuery.trim()}
+                  draggable={!searchQuery.trim() && visibleRoots.length > 1}
+                  onNodeDrop={(srcId, targetId) => {
+                    const ids = visibleRoots.map(c => c.id);
+                    const from = ids.indexOf(srcId);
+                    const to = ids.indexOf(targetId);
+                    if (from === -1 || to === -1) return;
+                    ids.splice(from, 1);
+                    ids.splice(to, 0, srcId);
+                    useConversationStore.getState().reorderNodes(null, ids);
+                  }}
                 />
               </div>
             ))}
